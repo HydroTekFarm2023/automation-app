@@ -1,3 +1,38 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu side="start">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>
+        Dashboard
+        </ion-title>
+      </ion-toolbar>
+    </ion-header>
+   <!--side menu options-->
+   <ion-content>
+      <ion-list>
+        <ion-menu-toggle>
+        <ion-item lines="none">
+            <ion-icon name="settings" slot="start"></ion-icon>
+            <ion-label>settings</ion-label>
+        </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+        <ion-item lines="none">
+           <ion-icon name="information" slot="start"></ion-icon>
+           <ion-label>information</ion-label>
+        </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+        <ion-item lines="none">
+          <ion-icon name="call" slot="start"></ion-icon>
+          <ion-label>call</ion-label>
+        </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+   </ion-content>
+  </ion-menu>  
+   <ion-router-outlet main></ion-router-outlet>
 </ion-app>
+
+
+
