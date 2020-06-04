@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from '../auth/auth.service'; //used to trigger the onLogin method
 import { Router } from '@angular/router'; //used to navigate through pages
-import {  FormControl} from '@angular/forms';
+import { FormControl} from '@angular/forms';
 import {LoadingController, AlertController} from '@ionic/angular';
 import { Validators, FormBuilder, FormGroup} from '@angular/forms';
 import {PasswordStrengthValidator, PasswordMatch} from '../auth/password';

@@ -41,7 +41,7 @@ isLogin = true; //set to true as a default.
     }
     //If the form is valid, the email and password properties are extracted.
     const email = this.formgroup.value['email'];
-    const password = this.formgroup.value.password;
+    const password = this.formgroup.value['password'];
     this.onLogin(email, password);
   }
   onLogin(email: string, password: string)
@@ -55,7 +55,7 @@ isLogin = true; //set to true as a default.
         let authObs: Observable<AuthResponseData>;  
         if (this.isLogin) {
           authObs = this.authService.login(email, password);
-        } 
+        }
         //Data is fetched when subscriber function is executed.
         authObs.subscribe(resData => {
             console.log(resData);
