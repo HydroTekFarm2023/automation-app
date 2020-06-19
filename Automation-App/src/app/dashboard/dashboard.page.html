@@ -1,9 +1,9 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-      <ion-title>Dashboard</ion-title>
+      <ion-title class="header">Dashboard</ion-title>
   </ion-toolbar> 
 </ion-header>
 <!--Navigation from one tab to other tab-->
@@ -11,16 +11,17 @@
   <ion-tabs>
     <ion-tab-bar color="primary" slot="top"> 
       <ion-tab-button tab="warnings">
-        <ion-label>Warnings</ion-label>
+        <ion-label class="tab-label">Warnings</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="monitoring">
-          <ion-label>Monitoring</ion-label>
+          <ion-label class="tab-label">Monitoring</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="control">
-          <ion-label>Control</ion-label>
+          <ion-label class="tab-label">Control</ion-label>
         </ion-tab-button>
     </ion-tab-bar> 
   </ion-tabs>
+  <!-- <ion-button (click)="onPublishMessage()">Publish Message</ion-button>  -->
 </ion-content>
 
 

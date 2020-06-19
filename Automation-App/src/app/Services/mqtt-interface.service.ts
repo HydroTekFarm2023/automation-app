@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from 'rxjs';
+import { VariableManagementService } from '../variable-management.service';
 
 
 declare const Paho: any;
@@ -9,10 +10,16 @@ declare const document: any;
 
 export class MqttInterfaceService {
 
+  private status: string[] = ['connecting', 'connected', 'disconnected'];
+  public mqttStatus = new BehaviorSubject(status[2]);
+
+  public systemLiveData = new BehaviorSubject<string>(null);
+  public growRoomLiveData = new BehaviorSubject<string>(null);
 
   private status: string[] = ['connecting', 'connected', 'disconnected'];
   public mqttStatus = new BehaviorSubject(status[2]);
   public client: any;
+
   private scripts: any = {};
   private ScriptStore: Scripts[] = [
     {
@@ -20,7 +27,7 @@ export class MqttInterfaceService {
     }
   ];
 
-  constructor() {
+  constructor(private variableManagementService: VariableManagementService) {
     this.ScriptStore.forEach((script: any) => {
         this.scripts[script.name] = {
             loaded: false,
@@ -69,7 +76,6 @@ export class MqttInterfaceService {
 
   public createClient(
     onConnectionLost,
-    onMessageArrived, 
     TOPIC: string[], 
     MQTT_CONFIG: {
       host: string,
@@ -81,7 +87,7 @@ export class MqttInterfaceService {
       this.mqttStatus.next(this.status[0]);
       this.client = new Paho.Client(MQTT_CONFIG.host, Number(MQTT_CONFIG.port), MQTT_CONFIG.path || "/mqtt", MQTT_CONFIG.clientId);
       this.client.onConnectionLost = onConnectionLost.bind(this);
-      this.client.onMessageArrived = onMessageArrived.bind(this);
+      this.client.onMessageArrived = this.onMessageArrived.bind(this);
       return this.client.connect(
         {
           onSuccess: this._onConnect.bind(this, TOPIC),
@@ -100,6 +106,26 @@ export class MqttInterfaceService {
       qos ? message.retained = retained : false;
       this.client.publish(message);
     };
+
+    onMessageArrived(ResponseObject) {
+      console.log(ResponseObject);
+      // Split TOPIC URL to extract IDs
+      var topicParam = ResponseObject.topic.split("/", 4);
+      // Check if incoming data is for selected grow room and system
+      if(topicParam[0] == this.variableManagementService.selectedGrowRoom){
+        if(topicParam[1] == "systems"){
+          if(topicParam[2] == this.variableManagementService.selectedSystem.value){
+            // Update selected system live data
+            this.systemLiveData.next(ResponseObject.payloadString);
+          }
+        }
+        if(topicParam[1] == "grow_room_variables"){
+          // Update selected grow room live data
+          this.growRoomLiveData.next(ResponseObject.payloadString);
+        }
+      }
+      }
+    
 
   public publishUpdate(topic: string, payload: string): void {
     var message = new Paho.Message(payload);
@@ -132,3 +158,5 @@ interface Scripts {
    name: string;
    src: string;
 }
+
+

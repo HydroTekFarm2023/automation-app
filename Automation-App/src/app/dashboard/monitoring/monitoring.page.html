@@ -1,14 +1,76 @@
 <!--selecting menu options-->
 <ion-item color="primary">
-  <ion-select value="system1"> 
-    <ion-select-option value="system1">System1</ion-select-option>
-    <ion-select-option value="system2">System2</ion-select-option>
+  <ion-select
+    #growRoomValue
+    [interfaceOptions]="growRoomAlertOptions"
+    class="dropdown"
+    [(ngModel)]="growRoomID"
+    (ionChange)="changeGrowRoom(growRoomValue.value)"
+  >
+    <ion-select-option
+      *ngFor="let growRoomVariable of variableManagentService.growRooms"
+      [value]="growRoomVariable"
+      >{{ growRoomVariable }}</ion-select-option
+    >
   </ion-select>
-  <ion-select value="grow room1">
-    <ion-select-option value="grow room1">Grow Room1</ion-select-option>
-    <ion-select-option value="grow room2">Grow Room2</ion-select-option>
+  <ion-select
+    [interfaceOptions]="systemAlertOptions"
+    class="dropdown"
+    #systemValue
+    [(ngModel)]="systemID"
+    (ionChange)="changeSystem(systemValue.value)"
+  >
+    <ion-select-option
+      *ngFor="let systemVariable of variableManagentService.systems"
+      [value]="systemVariable"
+      >{{ systemVariable }}</ion-select-option
+    >
   </ion-select>
   <ion-icon name="add-outline" slot="end"></ion-icon>
 </ion-item>
 
-  
+<ion-content>
+  <ion-title><h3>System Variables</h3></ion-title>
+  <ion-grid class="no-padding">
+    <ion-row class="no-padding">
+      <ion-col
+        *ngFor="let systemVariable of variableManagentService.systemVariableDisplays"
+        size="4"
+        class="no-padding"
+      >
+        <ion-card class="circular-monitor">
+          <ion-card-content class="card_content">
+            <h2>{{systemVariable.current_val}}</h2>
+            <h2>{{systemVariable.title}}</h2>
+            <hr color="white" />
+            <h4>{{systemVariable.range}}</h4>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-title><h3>GrowRoom Variables</h3></ion-title>
+    <ion-row class="no-padding">
+      <ion-col
+        *ngFor="let growRoomVariable of variableManagentService.growRoomVariableDisplays"
+        size="4"
+        class="no-padding"
+      >
+        <ion-card class="circular-monitor">
+          <ion-card-content class="card_content">
+            <h2>{{growRoomVariable.current_val}}</h2>
+            <h3>{{growRoomVariable.title}}</h3>
+            <hr color="white" />
+            <h4>{{growRoomVariable.range}}</h4>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-title><h3>Equipment Status</h3></ion-title>
+    <ion-row class="no-padding">
+      <ion-chip *ngFor="let specification of specifications">
+        <ion-icon name="ellipse" color="danger"></ion-icon>
+        <ion-label>{{specification}}</ion-label>
+      </ion-chip>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -21,7 +21,6 @@ const routes: Routes = [
     path: 'warnings',
     loadChildren: () => import('./warnings/warnings.module').then( m => m.WarningsPageModule)
   },
-  
   {
     path: '',
     redirectTo: '/dashboard/monitoring',
