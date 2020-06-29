@@ -1,174 +1,119 @@
-import { Injectable } from '@angular/core';
-import { Display } from './dashboard/display';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Display } from "./dashboard/display";
+import { BehaviorSubject } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { element } from 'protractor';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class VariableManagementService {
+  public brief_info_array: grow_room[];
 
-  public data: any;
-
-  public growRoomVariableDisplays: Display[] = []; 
+  public growRoomVariableDisplays: Display[] = [];
   public systemVariableDisplays: Display[] = [];
 
   public growRooms: string[] = [];
   public systems: string[] = [];
 
-  public selectedGrowRoom: string;
-  public selectedSystem = new BehaviorSubject<String>("");
+  public selectedGrowRoom = new BehaviorSubject<string>("");
+  public selectedSystem = new BehaviorSubject<string>("");
 
-  constructor() { }
+  constructor(private http: HttpClient) {}
 
-  public fetchBotData(){
-    // Pull Data from Database
-    //sampe JSON Data for Monitoring Page
-    this.data = {
-      "GrowRoom1": {
-        "growRoomVariables": {
-          "temperature": {
-             "desiredRange": "25 - 40", 
-             "targetValue": "35"
-          },
-          "humidity": {
-             "desiredRange": "35 - 65", 
-             "targetValue": "51"
-          },
-          "CO2": {
-            "desiredRange": "2.8 - 3.5",
-             "targetValue": "3.2"
-          }
-        },
-        "systems": {
-            "System1": {
-              "ph": {
-                "desiredRange": "3.5 - 6.0", 
-                "targetValue": "3.5"
-              },
-              "ec": { 
-                "desiredRange": "5.5 - 6.5", 
-                "targetValue": "5.8"
-              }
-            },
-            "System2": {
-              "ph": { 
-                "desiredRange": "1.5 - 4.0", 
-                "targetValue": "2.7"
-              },
-              "water temp": { 
-                "desiredRange": "1.8 - 3.0", 
-                "targetValue": "2.2"
-              },
-              "Oxygen": { 
-                "desiredRange": "4.0 - 6.0", 
-                "targetValue": "5.2"
-              }
-            },
-            "System3": {
-              "ph": { 
-                "desiredRange": "1.5 - 4.0", 
-                "targetValue": "2.7"
-              }
-            }
-        }
-      },
-      "GrowRoom2": {
-        "growRoomVariables": {
-          "temperature": {
-             "desiredRange": "35 - 40", 
-             "targetValue": "35"
-          },
-          "humidity": {
-             "desiredRange": "55 - 65", 
-             "targetValue": "51"
-          },
-          "CO2": {
-            "desiredRange": "2.5 - 3.5",
-             "targetValue": "2.8"
-          },
-          "DO": { 
-            "desiredRange": "25 - 35", 
-            "targetValue": "28"
-          }
-        },
-        "systems": {
-            "Zone_A": {
-              "ph": {
-                "desiredRange": "3.5 - 6.0", 
-                "targetValue": "3.5"
-              },
-              "ec": { 
-                "desiredRange": "5.5 - 6.5", 
-                "targetValue": "5.8"
-              },
-              "water temp": { 
-                "desiredRange": "4.0 - 6.0", 
-                "targetValue": "5.2"
-              },
-              "Oxygen": { 
-                "desiredRange": "20 - 60", 
-                "targetValue": "52"
-              }
-            },
-            "Zone_B": {
-              "ph": { 
-                "desiredRange": "2.5 - 3.0", 
-                "targetValue": "2.7"
-              },
-              "water temp": { 
-                "desiredRange": "1.0 - 3.0", 
-                "targetValue": "2.2"
-              },
-              "Oxygen": { 
-                "desiredRange": "4.0 - 6.0", 
-                "targetValue": "5.2"
-              }
-            }
-        }
-      }      
-    };
-
-    // Update growRooms Array
-    this.growRooms = [];
-    for(var key in this.data){
-      this.growRooms.push(key);
-    }
+  public fetchBotData() {
+    // Pull Brief_Info Data from Database
+    // Brief_Info is simply the data required for the dasboard page (number of growrooms, systems, and various sesnors the user has)
+    this.http
+      .get<brief_info>("http://localhost:3000/brief_info")
+      .subscribe((resData) => {
+        this.brief_info_array = resData.brief_info;
+        // Update growRooms Array
+        this.growRooms = [];
+        this.brief_info_array.forEach((element) => {
+          this.growRooms.push(element.name);
+        });
+        // Update the active grow room and system to the first one in array
+        this.updateVariables(null, null);
+      });
   }
 
-  public updateVariables(growRoomID: string, systemID: string){
+  public updateVariables(growRoomID: string, systemID: string) {
     // Reset all arrays
     this.growRoomVariableDisplays = [];
     this.systemVariableDisplays = [];
     this.systems = [];
 
     // Set default growRoom if growRoomID is null
-    if((growRoomID) == null){
+    if (growRoomID == null) {
       growRoomID = this.growRooms[0];
-    } 
+    }
+
+    const growRoomIndex = this.brief_info_array.findIndex(({name}) => name === growRoomID);
 
     // Push systemIDs into systems array
-    for(var key in this.data[growRoomID].systems){
-      this.systems.push(key);
-    }
+    this.brief_info_array[growRoomIndex].systems.forEach((element) => {
+      this.systems.push(element.name);
+    })
 
     // Push grow room display information into growRoomVariableDisplays Array
-    for(var key in this.data[growRoomID].growRoomVariables){
-      this.growRoomVariableDisplays.push(new Display(key, this.data[growRoomID].growRoomVariables[key].desiredRange, this.data[growRoomID].growRoomVariables[key].targetValue));
-    }
+    this.brief_info_array[growRoomIndex].growRoomVariables.forEach((element) => {
+      this.growRoomVariableDisplays.push(
+        new Display(
+          element.name,
+          element.desired_range_low.toString() + " - " + element.desired_range_high.toString(),
+          element.target_value.toString()
+        )
+      );
+    })
 
     // set default systemID if systemID is null
-    if((systemID) == null){
+    if (systemID == null) {
       systemID = this.systems[0];
-    } 
-
-    // Push system display information into systemVariableDisplays Array
-    for(var key in this.data[growRoomID].systems[systemID]){
-      this.systemVariableDisplays.push(new Display(key, this.data[growRoomID].systems[systemID][key].desiredRange, this.data[growRoomID].systems[systemID].targetValue));
     }
 
+    // Push system display information into systemVariableDisplays Array
+    const systemIndex = this.brief_info_array[growRoomIndex].systems.findIndex(({name}) => name === systemID);
+
+    this.brief_info_array[growRoomIndex].systems[systemIndex].systemVariables.forEach((element) => {
+      this.systemVariableDisplays.push(
+        new Display(
+          element.name,
+          element.desired_range_low.toString() + " - " + element.desired_range_high.toString(),
+          element.target_value.toString()
+        )
+      );
+    });
+
     // Update the selected Grow Room and System
-    this.selectedGrowRoom = growRoomID;
+    this.selectedGrowRoom.next(growRoomID);
     this.selectedSystem.next(systemID);
-}
+  }
 }
 
+// format of breif_info data coming from backend
+interface brief_info {
+  brief_info: [grow_room];
+}
+
+interface grow_room {
+  _id: string;
+  name: string;
+  growRoomVariables: [sensor];
+  systems: [systems];
+  __v: 0;
+}
+
+interface systems {
+  systemVariables: [sensor];
+  _id: string;
+  name: string;
+}
+
+interface sensor {
+  _id: string;
+  name: string;
+  target_value: Number;
+  desired_range_low: Number;
+  desired_range_high: Number;
+}

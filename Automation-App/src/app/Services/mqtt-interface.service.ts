@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { VariableManagementService } from '../variable-management.service';
 
 
@@ -13,8 +13,8 @@ export class MqttInterfaceService {
   private status: string[] = ['connecting', 'connected', 'disconnected'];
   public mqttStatus = new BehaviorSubject(status[2]);
 
-  public systemLiveData = new BehaviorSubject<string>(null);
-  public growRoomLiveData = new BehaviorSubject<string>(null);
+  public systemLiveData = new Subject<string>();
+  public growRoomLiveData = new Subject<string>();
 
   public client: any;
 
@@ -110,7 +110,7 @@ export class MqttInterfaceService {
       // Split TOPIC URL to extract IDs
       var topicParam = ResponseObject.topic.split("/", 4);
       // Check if incoming data is for selected grow room and system
-      if(topicParam[0] == this.variableManagementService.selectedGrowRoom){
+      if(topicParam[0] == this.variableManagementService.selectedGrowRoom.value){
         if(topicParam[1] == "systems"){
           if(topicParam[2] == this.variableManagementService.selectedSystem.value){
             // Update selected system live data

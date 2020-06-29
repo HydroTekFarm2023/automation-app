@@ -48,6 +48,7 @@ export class MonitoringPage implements OnInit {
   TOPIC: string[] = ["#"];
 
   constructor(private mqttService: MqttInterfaceService, public variableManagentService: VariableManagementService, public route: ActivatedRoute, private router: Router) {
+
     // Log MQTT Status
     this.mqttService.mqttStatus.pipe(skip(1)).subscribe((status) => {
       console.log(status);
@@ -66,7 +67,6 @@ export class MonitoringPage implements OnInit {
  
   ngOnInit() {
     // Set Default Grow Room and System
-    this.variableManagentService.updateVariables(null, null);
 
     this.mqttService.systemLiveData.subscribe(resData => {
       // Try parsing system MQTT string as JSON Data
@@ -106,11 +106,13 @@ export class MonitoringPage implements OnInit {
 
     // Subscribe to changes in System ID
     this.variableManagentService.selectedSystem.subscribe(resData => {
-      this.systemID = resData.toString();
+      this.systemID = resData;
     })
     
     // Update GrowRoom ID selection
-    this.growRoomID = this.variableManagentService.selectedGrowRoom;
+    this.variableManagentService.selectedGrowRoom.subscribe(resData => {
+      this.growRoomID = resData;
+    });
   }
 
   // Change System 
