@@ -72,6 +72,7 @@ export class MonitoringPage implements OnInit {
       // Try parsing system MQTT string as JSON Data
       try{
         var jsonSensorData = JSON.parse(resData);
+        console.log(jsonSensorData);
         // Store Time Stamp of Message
         this.systemTimeStamp = Object.keys(jsonSensorData)[0];
         // Store sensor values into Display Objects to update UI
