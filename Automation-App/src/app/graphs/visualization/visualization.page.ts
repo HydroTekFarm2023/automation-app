@@ -10,6 +10,7 @@ import * as moment from 'moment';
 import { ModalController } from '@ionic/angular';
 import { AddSystemPage } from 'src/app/add-system/add-system.page';
 import { AddGrowroomPage } from 'src/app/add-growroom/add-growroom.page';
+import { skipWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-visualization',
@@ -23,6 +24,7 @@ export class VisualizationPage implements OnInit {
   endDate:string=new Date().toString();
   deviceName: string;
   clusterName: string;
+  selectedCluster:string;
   start_date:string;
   end_date:string;
   
@@ -52,9 +54,9 @@ export class VisualizationPage implements OnInit {
     }
   ];
 
-compareWithFn(o1, o2) {
-  return o1 === o2;
-};
+// compareWithFn(o1, o2) {
+//   return o1 === o2;
+// };
 
 dateChanged(date){
   //console.log(date.detail.value);
@@ -64,7 +66,7 @@ dateChanged(date){
   this.start_date=moment(this.startDate).format("YYYY-MM-DDTHH:mm:ss");
   this.end_date=moment(this.endDate).format("YYYY-MM-DDTHH:mm:ss");
   //console.log(this.end_date);
-  this.onApply(this.start_date,this.end_date);   
+  this.onApply(this.clusterName,this.deviceName,this.start_date,this.end_date);   
 }
 
 onSelectedChange(event:any){
@@ -75,14 +77,14 @@ onSelectedChange(event:any){
     //console.log("inside")
     this.start_date=moment(this.today).subtract(7,"days").format("YYYY-MM-DDTHH:mm:ss");
     this.today = moment(this.today).format("YYYY-MM-DDTHH:mm:ss");
-    this.onApply(this.start_date,this.today);
+    this.onApply(this.clusterName,this.deviceName,this.start_date,this.today);
   }
   else if(event.target.value=="2")
   {
     this.start_date=moment(this.today).subtract(1,"month").format("YYYY-MM-DDTHH:mm:ss");
     this.today = moment(this.today).format("YYYY-MM-DDTHH:mm:ss");
     //console.log(this.start_date);
-    this.onApply(this.start_date,this.today);
+    this.onApply(this.clusterName,this.deviceName,this.start_date,this.today);
   }
 }
 
@@ -97,9 +99,15 @@ chartType = 'line';
 
 chartOptions= {
   responsive: true,
+  legend: {
+    labels: {
+        fontColor: "white",
+    }
+  },
   title: {
     display: true,
-    text: 'Sensors Data Visualization'
+    text: 'Sensors Data Visualization',
+    fontColor: "white"
   },
   scales:{
           yAxes:[
@@ -107,9 +115,16 @@ chartOptions= {
               id:'ph-ec',
               type:'linear',
               position:'left',
+              gridLines: {
+                color:"white"
+              },
+              ticks: {
+                fontColor: "white"
+            },
               scaleLabel: {
                 display: true,
-                labelString: 'ph-ec scale'
+                labelString: 'ph-ec scale',
+                fontColor: "white"
               },
               //ticks:{beginAtZero:true}
           },
@@ -117,20 +132,33 @@ chartOptions= {
             id:'temp',
             type:'linear',
             position:'right',
+            gridLines: {
+              // color:"grey"
+              display:false
+            },
             scaleLabel: {
               display: true,
-              labelString: 'Temperature'
+              labelString: 'Temperature',
+              fontColor: "white"
             },
             //ticks:{beginAtZero:true}
 
             ticks: {
-              // Include a dollar sign in the ticks
+              fontColor: "white",
               callback: function(value, index, values) {
                   return  value + '°C';
               },
               
           }
-          }]
+          }],
+          xAxes: [{
+            gridLines: {
+              color:"white"
+            },
+            ticks: {
+                fontColor: "white"
+            }
+        }]
         }, 
 };
 
@@ -180,15 +208,37 @@ chartOptions= {
   ngOnInit() {
     console.log('inside ngOnInit');
 
-    this.DefaultValue = "0" ;
-    this.compareWith = this.compareWithFn;
     this.variableManagentService.fetchClusters(false);
-    this.getData();
+    
+    // Update GrowRoom ID selection
+    this.variableManagentService.selectedCluster.pipe(skipWhile(str => str == "")).subscribe(resData => {
+      console.log("monitoring page selected cluster");
+      this.clusterName = resData;
+    });
+
+    // Subscribe to changes in System ID
+    this.variableManagentService.selectedDevice.pipe(skipWhile(str => str == "")).subscribe(resData => {
+      console.log("monitoring page selected device");
+      this.deviceName = resData;
+      this.getData();
+    });
+
+    this.DefaultValue = "0" ;
+    // this.compareWith = this.compareWithFn;
+    
+    
+  
+    
+    console.log(this.deviceName);
+  
+      
+
   }
 
   getData()
   {
-    // console.log(this.growRoomID);
+
+    // console.log(this.clusterName);
     this.startDate=moment().format("YYYY-MM-DDTHH:mm:ss");
     this.endDate=moment().format("YYYY-MM-DDTHH:mm:ss");  
     
@@ -201,11 +251,12 @@ chartOptions= {
     this.chartData[2].data=[];
     this.chartLabels =[];
 
-  //  this.variableManagentService.getAllSensorsData(this.growRoomID,this.systemID,this.start_date,this.end_date);
+    this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,this.start_date,this.end_date);
     this.chartLabels = this.variableManagentService.sensorsTimeData;
     this.chartData[0].data=this.variableManagentService.phValueData;
     this.chartData[1].data=this.variableManagentService.ecValueData;
-    this.chartData[2].data=[20,21,23,24,20,26,21,22,21,24,29,27,28,26,28,23,21,20,21,22];
+    this.chartData[2].data=this.variableManagentService.tempValueData;
+    // this.chartData[2].data=[20,21,23,24,20,26,21,22,21,24,29,27,28,26,28,23,21,20,21,22];
   }
 
 
@@ -221,7 +272,7 @@ chartOptions= {
     this.variableManagentService.updateCurrentCluster(clusterName, null);
   }
 
-    onApply(newstartDate:string,newendDate:string){
+  onApply(clusterName:string,deviceName:string,newstartDate:string,newendDate:string){
 
       newstartDate = newstartDate+'.000Z';
       newendDate = newendDate+'.000Z';
@@ -232,12 +283,13 @@ chartOptions= {
       this.chartData[2].data=[];
       this.chartLabels =[];
       
-//      this.variableManagentService.getAllSensorsData(this.growRoomID,this.systemID,newstartDate,newendDate);
+      this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,newstartDate,newendDate);
       // console.log(this.variableManagentService.phValueData);
       this.chartLabels = this.variableManagentService.sensorsTimeData;
       this.chartData[0].data=this.variableManagentService.phValueData;
       this.chartData[1].data=this.variableManagentService.ecValueData;
-      this.chartData[2].data=[20,21,23,24,20,26,21,22,21,24,29,27,28,26,28,23,21,20,21,22];
+      this.chartData[2].data=this.variableManagentService.tempValueData;
+      //this.chartData[2].data=[20,21,23,24,20,26,21,22,21,24,29,27,28,26,28,23,21,20,21,22];
     }
 
 

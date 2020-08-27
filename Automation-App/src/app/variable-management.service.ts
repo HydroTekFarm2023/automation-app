@@ -27,6 +27,7 @@ export class VariableManagementService {
   public sensorsValueData:number[]=[];
   public phValueData: number[]=[];
   public ecValueData: number[]=[];
+  public tempValueData: number[]=[];
 
 
   public clusters: cluster[] = [];
@@ -71,40 +72,34 @@ export class VariableManagementService {
   // }
 
 
-  public getAllSensorsData(growRoomId:string,systemId:string,startdate:string, enddate: string)
+  public getAllSensorsData(clusterName:string,deviceName:string,startdate:string, enddate: string)
   {
-    console.log(growRoomId,systemId);
-    //console.log(new Date(startdate).toISOString(),new Date(enddate).toISOString());
-    
-    //this.start_date = new Date(startdate).toISOString();
-    //this.end_date= new Date(enddate).toISOString();
     this.sensorsTimeData=[];
     this.phValueData=[];
     this.ecValueData=[];
+    this. tempValueData=[];
+
+
     this.http
-      .get<sensor_info>("http://localhost:3000/get_all/GrowRoom1/system1/"+startdate+"/"+enddate+"/")
+      .get<sensor_info>("http://localhost:3000/get_all/"+clusterName+"/"+deviceName+"/"+startdate+"/"+enddate+"/")
       .subscribe((resData) => {
         
         this.all_sensor_data_array = resData.sensor_info;
-        //console.log(this.all_sensor_data_array);
         for(var i=0;i<this.all_sensor_data_array.length;i++)
         {
-          //this.sensorsTimeData.push();
-          //console.log('Test');
           this.labelDate = moment(this.all_sensor_data_array[i]['_id']).format("MMM DD, HH:mm:ss")
-          //console.log(this.labelDate);
-          //this.sensorsTimeData.push(new Date(this.all_sensor_data_array[i]['_id']).toUTCString());  
           this.sensorsTimeData.push(this.labelDate);
           for(var j=0;j<this.all_sensor_data_array[i].sensors.length;j++)
           {
-            //console.log(this.all_sensor_data_array[i]['_id']);
-            switch(this.all_sensor_data_array[i].sensors[j]['name']){
+             switch(this.all_sensor_data_array[i].sensors[j]['name']){
               case 'ph':
                 this.phValueData.push(this.all_sensor_data_array[i].sensors[j]['value']);
                 break;
               case 'ec':
                 this.ecValueData.push(this.all_sensor_data_array[i].sensors[j]['value']);
                 break;
+              case 'temp':
+                this.tempValueData.push(this.all_sensor_data_array[i].sensors[j]['value']);
             }
           }
         }

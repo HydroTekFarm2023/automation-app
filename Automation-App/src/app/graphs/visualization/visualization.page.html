@@ -46,11 +46,12 @@
     <div class="ion-padding">
       <ion-item>
         <ion-label>Start Date</ion-label>
-        <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" pickerFormat="YYYY-MM-DDTHH:mm:ss" [(ngModel)]="startDate" (ionChange)="dateChanged($event)"></ion-datetime>
+        <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss"  [(ngModel)]="startDate" (ionChange)="dateChanged($event)"></ion-datetime>
+        <!-- <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" [(ngModel)]="startDate" (ionChange)="getData()"></ion-datetime> -->
       </ion-item>
       <ion-item>
         <ion-label>End Date</ion-label>
-        <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" [(ngModel)]="endDate" (ionChange)="getData()"></ion-datetime>
+        <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" [(ngModel)]="endDate" (ionChange)="dateChanged($event)"></ion-datetime>
       </ion-item>
       <ion-item>
       <ion-label>Quick Views:</ion-label>
