@@ -6,9 +6,12 @@ h3 {
     margin-bottom: 0px;
 }
 
+input[type=number]:before {
+    content: "$";
+}
+
 ion-label {
     font-size: 14px;
-    color: black;
     font-weight: 400;
     margin: 10px;
 }
@@ -17,13 +20,13 @@ ion-col {
     padding: 0px;
 }
 
-.group {
-    margin-top: 10px;;
-}
-
 ion-card-content {
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 0px;
     padding-right: 0px;
+}
+
+.settings-group {
+    margin-top: 10px;
 }

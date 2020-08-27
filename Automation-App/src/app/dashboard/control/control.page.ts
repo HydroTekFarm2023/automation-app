@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { VariableManagementService } from 'src/app/variable-management.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { skipWhile } from 'rxjs/operators';
+import { skipWhile, map, filter } from 'rxjs/operators';
 import { AddGrowroomPage } from 'src/app/add-growroom/add-growroom.page';
 import { AddSystemPage } from 'src/app/add-system/add-system.page';
 import { CreateClusterPage } from 'src/app/create-cluster/create-cluster.page';
@@ -20,6 +20,8 @@ export class ControlPage implements OnInit {
   clusterName: string;
   isGrowRoom: boolean;
   isSystem: boolean;
+
+  
 
   ph: boolean = false;
   ec: boolean = false;
@@ -60,7 +62,7 @@ export class ControlPage implements OnInit {
     }); 
 
     // Subscribe to changes in System ID
-    this.variableManagementService.selectedDevice.pipe(skipWhile(str => str == "")).subscribe(resData => {
+    this.variableManagementService.selectedDevice.pipe(filter((str) => str != null)).subscribe(resData => {
       // Delete exisiting sensor cards
       this.resetDevice();
       console.log(resData);
@@ -88,14 +90,15 @@ export class ControlPage implements OnInit {
       // Detect and update UI
       this.changeDetector.detectChanges();
       // Check if settings data is already stored locally
-      var dataFound = this.variableManagementService.deviceSettings.some((element, index) => {
-        this.variableManagementService.deviceSettingsIndex = index;
-        return element.name == (this.deviceName || this.clusterName);
-      });
+      console.log(this.variableManagementService.deviceSettings);
+      console.log(this.clusterName);
+      var dataIndex = this.variableManagementService.deviceSettings.findIndex(({clusterName, name}) => clusterName === this.clusterName && name === this.deviceName);
+      console.log(dataIndex);
       // If data is stored locally populate systems form with settings data
       // If data isn't found locally fetch it from backend
-      if(dataFound){
+      if(dataIndex != -1){
         console.log("data found");
+        this.variableManagementService.deviceSettingsIndex = dataIndex;
         if(this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].type == 'system'){
           this.isSystem = true;
           this.isGrowRoom = false;
@@ -110,11 +113,10 @@ export class ControlPage implements OnInit {
         this.variableManagementService.getDeviceSettings();
       }
     });
-    
+
     // Update GrowRoom ID selection
-    this.variableManagementService.selectedCluster.pipe(skipWhile(str => str == "")).subscribe(resData => {
-      console.log("control page selected cluster")
-      // Delete exisiting sensor cards
+    this.variableManagementService.selectedCluster.pipe(filter(str => str != null)).subscribe(resData => {
+      console.log("control page selected cluster");
       this.clusterName = resData;
       // Detect and update UI
       this.changeDetector.detectChanges();     
@@ -123,7 +125,9 @@ export class ControlPage implements OnInit {
 
   // Change System 
   changeDevice(deviceName : string){
-    this.variableManagementService.updateCurrentCluster(this.clusterName, deviceName);
+    if(this.variableManagementService.selectedDevice.value != deviceName){
+      this.variableManagementService.updateCurrentCluster(this.clusterName, deviceName);
+    }
   }
 
   // Change Grow Room

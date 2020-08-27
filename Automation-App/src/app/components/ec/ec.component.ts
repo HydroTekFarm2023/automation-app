@@ -25,7 +25,29 @@ export class EcComponent implements OnInit, OnDestroy {
       'day_and_night': this.fb.control(true),
       'day_target_value': this.fb.control(null),
       'night_target_value': this.fb.control(null),
-      'target_value': this.fb.control(null)
+      'target_value': this.fb.control(null),
+      'pumps': this.fb.group({
+        'pump 1': this.fb.group({
+          'enabled': this.fb.control(null),
+          'value': this.fb.control(null)
+        }),
+        'pump 2': this.fb.group({
+          'enabled': this.fb.control(null),
+          'value': this.fb.control(null)
+        }),
+        'pump 3': this.fb.group({
+          'enabled': this.fb.control(null),
+          'value': this.fb.control(null)
+        }),
+        'pump 4': this.fb.group({
+          'enabled': this.fb.control(null),
+          'value': this.fb.control(null)
+        }),
+        'pump 5': this.fb.group({
+          'enabled': this.fb.control(null),
+          'value': this.fb.control(null)
+        })
+      })
     });
 
     this.ecForm = this.fb.group({

@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Display } from "../display";
-import { skip, skipWhile } from "rxjs/operators";
+import { skip, filter } from "rxjs/operators";
 import { MqttInterfaceService } from "src/app/Services/mqtt-interface.service";
 import { VariableManagementService } from 'src/app/variable-management.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -92,13 +92,13 @@ export class MonitoringPage implements OnInit {
     });
 
     // Subscribe to changes in System ID
-    this.variableManagentService.selectedDevice.pipe(skipWhile(str => str == "")).subscribe(resData => {
+    this.variableManagentService.selectedDevice.pipe(filter(str => str != null)).subscribe(resData => {
       console.log("monitoring page selected device");
       this.deviceName = resData;
     });
     
     // Update GrowRoom ID selection
-    this.variableManagentService.selectedCluster.pipe(skipWhile(str => str == "")).subscribe(resData => {
+    this.variableManagentService.selectedCluster.pipe(filter(str => str != null)).subscribe(resData => {
       console.log("monitoring page selected cluster");
       this.clusterName = resData;
     });
@@ -107,7 +107,9 @@ export class MonitoringPage implements OnInit {
   // Change System 
   changeDevice(deviceName : string){
     console.log("change device monitoring page");
-    this.variableManagentService.updateCurrentCluster(this.clusterName, deviceName);
+    if(this.variableManagentService.selectedDevice.value != deviceName){
+      this.variableManagentService.updateCurrentCluster(this.clusterName, deviceName);
+    }
   }
 
   // Change Grow Room

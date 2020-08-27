@@ -28,7 +28,11 @@ export class PhComponent implements OnInit, OnDestroy {
       'day_and_night': this.fb.control(true),
       'day_target_value': this.fb.control(null),
       'night_target_value': this.fb.control(null),
-      'target_value': this.fb.control(null)
+      'target_value': this.fb.control(null),
+      'pumps': this.fb.group({
+        'pump_1_enabled': this.fb.control(null),
+        'pump_2_enabled': this.fb.control(null)
+      })
     });
 
     this.phForm = this.fb.group({

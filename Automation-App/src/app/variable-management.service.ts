@@ -33,8 +33,8 @@ export class VariableManagementService {
   public clusters: cluster[] = [];
   public clusterNames: string[] = [];
   public sensorDisplays: Display[] = []; 
-  public selectedCluster = new BehaviorSubject<string>("");
-  public selectedDevice = new BehaviorSubject<string>("");
+  public selectedCluster = new BehaviorSubject<string>(null);
+  public selectedDevice = new BehaviorSubject<string>(null);
   public devices: string[] = [];
 
   public deviceSettingsSubject = new Subject();
@@ -135,7 +135,6 @@ export class VariableManagementService {
   public updateCurrentCluster(clusterName: string, deviceName: string) {
     console.log("Update Cluster")
     this.sensorDisplays = [];
-
     if (clusterName == null) {
       clusterName = this.clusterNames[0];
     }
@@ -145,6 +144,7 @@ export class VariableManagementService {
       console.log("Update Cluster and Device");
       this.noDevices = false;
       if(this.selectedCluster.value != clusterName){
+        this.devices = [];
         this.clusters[clusterIndex].systems.forEach((element) => {
           this.devices.push(element.name);
         });
@@ -186,9 +186,11 @@ export class VariableManagementService {
       }
       this.selectedCluster.next(clusterName);
       this.selectedDevice.next(deviceName);
+
     } else {
       this.noDevices = true;
       this.devices = [];
+      this.selectedDevice.next(null);
       this.selectedCluster.next(clusterName);
     }
   }
@@ -235,7 +237,7 @@ export class VariableManagementService {
         _id: resData._id,
         name: data.name,
         type: "growroom",
-        clusterID: data.cluster_name,
+        clusterName: data.cluster_name,
         settings: data.settings
       });
       this.noDevices = false;
@@ -275,7 +277,7 @@ export class VariableManagementService {
           _id: resData._id,
           name: data.name,
           type: "system",
-          clusterID: data.cluster_name,
+          clusterName: data.cluster_name,
           settings: data.settings
         });
         this.noDevices = false;
@@ -298,6 +300,7 @@ export class VariableManagementService {
   }
 
   public getDeviceSettings(){
+    console.log(this.selectedCluster.value);
     this.http.get<device_settings>("http://localhost:3000/device_settings/" + this.selectedCluster.value + "/" + this.selectedDevice.value).subscribe(resData => {
       this.deviceSettings.push(resData);
       this.deviceSettingsIndex = this.deviceSettings.length - 1;
@@ -352,7 +355,7 @@ interface device_settings {
   _id: string;
   name: string;
   type: string;
-  clusterID: string;
+  clusterName: string;
   settings: any;
 }
 
