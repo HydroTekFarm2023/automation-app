@@ -10,11 +10,7 @@ import * as moment from 'moment';
 import { ModalController } from '@ionic/angular';
 import { AddSystemPage } from 'src/app/add-system/add-system.page';
 import { AddGrowroomPage } from 'src/app/add-growroom/add-growroom.page';
-<<<<<<< HEAD
-import { skipWhile } from 'rxjs/operators';
-=======
 import { skipWhile, filter } from 'rxjs/operators';
->>>>>>> 8bb9510f8f2f43272f5561b310bf0ba914667ae9
 
 @Component({
   selector: 'app-visualization',
@@ -211,24 +207,6 @@ chartOptions= {
   
   ngOnInit() {
     console.log('inside ngOnInit');
-<<<<<<< HEAD
-
-=======
-    // Subscribe to changes in System ID
-    this.variableManagentService.selectedDevice.pipe(filter(str => str != null)).subscribe(resData => {
-      console.log("monitoring page selected device");
-      this.deviceName = resData;
-    });
-    
-    // Update GrowRoom ID selection
-    this.variableManagentService.selectedCluster.pipe(filter(str => str != null)).subscribe(resData => {
-      console.log("monitoring page selected cluster");
-      this.clusterName = resData;
-    });
-    
-    this.DefaultValue = "0" ;
-    this.compareWith = this.compareWithFn;
->>>>>>> 8bb9510f8f2f43272f5561b310bf0ba914667ae9
     this.variableManagentService.fetchClusters(false);
     
     // Update GrowRoom ID selection
