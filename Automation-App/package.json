@@ -29,6 +29,7 @@
     "bootstrap": "^4.5.0",
     "chart.js": "^2.9.3",
     "core-js": "^2.5.4",
+    "date-fns": "^2.16.1",
     "ion-datetime-picker": "^0.5.2",
     "moment": "^2.27.0",
     "ng2-charts": "^2.3.2",

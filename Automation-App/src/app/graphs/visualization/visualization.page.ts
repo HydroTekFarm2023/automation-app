@@ -12,6 +12,8 @@ import { AddSystemPage } from 'src/app/add-system/add-system.page';
 import { AddGrowroomPage } from 'src/app/add-growroom/add-growroom.page';
 import { skipWhile, filter } from 'rxjs/operators';
 
+// import { Console } from 'console';
+
 @Component({
   selector: 'app-visualization',
   templateUrl: './visualization.page.html',
@@ -19,6 +21,7 @@ import { skipWhile, filter } from 'rxjs/operators';
 })
 export class VisualizationPage implements OnInit {
 
+  
   today: string;
   startDate:string=new Date().toString();
   endDate:string=new Date().toString();
@@ -30,6 +33,17 @@ export class VisualizationPage implements OnInit {
   
   compareWith : any ;
   DefaultValue:string;
+  disableDateTime:boolean;
+
+
+  
+  ph: boolean = true;
+  ec: boolean = true;
+  temperature: boolean = true;
+
+  humidity: boolean = false;
+  air_temperature: boolean = false;
+
 
   deviceAlertOptions: any = {
     header: "Device Name"
@@ -42,7 +56,7 @@ export class VisualizationPage implements OnInit {
   options:any[]=[
     {
       id:0,
-      name:'Please Select'
+      name:'Custom Date'
     },
     {
       id:1,
@@ -54,9 +68,9 @@ export class VisualizationPage implements OnInit {
     }
   ];
 
-// compareWithFn(o1, o2) {
-//   return o1 === o2;
-// };
+compareWithFn(o1, o2) {
+  return o1 === o2;
+};
 
 dateChanged(date){
   //console.log(date.detail.value);
@@ -66,94 +80,226 @@ dateChanged(date){
   this.start_date=moment(this.startDate).format("YYYY-MM-DDTHH:mm:ss");
   this.end_date=moment(this.endDate).format("YYYY-MM-DDTHH:mm:ss");
   //console.log(this.end_date);
-  this.onApply(this.clusterName,this.deviceName,this.start_date,this.end_date);   
+  this.onApply(this.clusterName,this.deviceName,this.start_date,this.end_date,'0');   
 }
 
 onSelectedChange(event:any){
   console.log(event.target.value);
 
-  if(event.target.value=="1")
+  if(event.target.value=="0")
+  {
+    this.disableDateTime=false;
+  }
+
+  else if(event.target.value=="1")
   {
     //console.log("inside")
+    this.disableDateTime=true;
     this.start_date=moment(this.today).subtract(7,"days").format("YYYY-MM-DDTHH:mm:ss");
     this.today = moment(this.today).format("YYYY-MM-DDTHH:mm:ss");
-    this.onApply(this.clusterName,this.deviceName,this.start_date,this.today);
+    this.onApply(this.clusterName,this.deviceName,this.start_date,this.today,event.target.value);
   }
   else if(event.target.value=="2")
   {
+    this.disableDateTime=true;
     this.start_date=moment(this.today).subtract(1,"month").format("YYYY-MM-DDTHH:mm:ss");
     this.today = moment(this.today).format("YYYY-MM-DDTHH:mm:ss");
     //console.log(this.start_date);
-    this.onApply(this.clusterName,this.deviceName,this.start_date,this.today);
+    this.onApply(this.clusterName,this.deviceName,this.start_date,this.today,event.target.value);
   }
 }
 
 //New piece of code
-chartData:ChartDataSets[]=[
-  {data:[],label:'ph',borderColor: "#3e95cd",fill: false,lineTension:0,yAxisID:'ph-ec'},
-  {data:[],label:'ec',borderColor: "#8e5ea2",fill: false,lineTension:0,yAxisID:'ph-ec'},
-  {data:[],label:'temp',borderColor: "#FF4233",fill: false,lineTension:0,yAxisID:'temp'}];
 
-chartLabels: Label[];
-chartType = 'line';
+// //all sensors in one
+// chartData:ChartDataSets[]=[
+//   {data:[],label:'ph',borderColor: "#3e95cd",fill: false,lineTension:0,yAxisID:'ph-ec'},
+//   {data:[],label:'ec',borderColor: "#8e5ea2",fill: false,lineTension:0,yAxisID:'ph-ec'},
+//   {data:[],label:'temp',borderColor: "#FF4233",fill: false,lineTension:0,yAxisID:'temp'}];
 
-chartOptions= {
+// chartLabels: Label[];
+// chartType = 'line';
+
+// chartOptions= {
+//   responsive: true,
+//   legend: {
+//     labels: {
+//         fontColor: "white",
+//     }
+//   },
+//   title: {
+//     display: true,
+//     text: 'Sensors Data Visualization',
+//     fontColor: "white"
+//   },
+//   scales:{
+//           yAxes:[
+//             {
+//               id:'ph-ec',
+//               type:'linear',
+//               position:'left',
+//               gridLines: {
+//                 color:"white"
+//               },
+//               ticks: {
+//                 fontColor: "white"
+//             },
+//               scaleLabel: {
+//                 display: true,
+//                 labelString: 'ph-ec scale',
+//                 fontColor: "white"
+//               },
+//               //ticks:{beginAtZero:true}
+//           },
+//           {
+//             id:'temp',
+//             type:'linear',
+//             position:'right',
+//             gridLines: {
+//               // color:"grey"
+//               display:false
+//             },
+//             scaleLabel: {
+//               display: true,
+//               labelString: 'Temperature',
+//               fontColor: "white"
+//             },
+//             //ticks:{beginAtZero:true}
+
+//             ticks: {
+//               fontColor: "white",
+//               callback: function(value, index, values) {
+//                   return  value + '°C';
+//               },
+              
+//           }
+//           }],
+//           xAxes: [{
+//             gridLines: {
+//               color:"white"
+//             },
+//             ticks: {
+//                 fontColor: "white"
+//             }
+//         }]
+//         }, 
+// };
+
+
+
+//ph
+phData:ChartDataSets[]=[
+  {data:[],label:'ph',borderColor: "#00EEFF",fill: false,lineTension:0,yAxisID:'ph'}]
+
+phLabels: Label[];
+phType = 'line';
+
+phOptions= {
   responsive: true,
   legend: {
-    labels: {
-        fontColor: "white",
-    }
+    // labels: {
+    //     fontColor: "white",
+    // }
+    display: false
   },
   title: {
     display: true,
-    text: 'Sensors Data Visualization',
+    text: 'ph sensor',
     fontColor: "white"
   },
   scales:{
           yAxes:[
             {
-              id:'ph-ec',
+              id:'ph',
               type:'linear',
               position:'left',
               gridLines: {
-                color:"white"
+                // color:"rgba(0, 0, 0, 0)",
+                drawOnChartArea: false,
+                color: "#FFFFFF"
               },
               ticks: {
-                fontColor: "white"
+                fontColor: "white",
+                stepSize: 0.5,
+                //fontSize: 10
+                //beginAtZero:true
             },
               scaleLabel: {
                 display: true,
-                labelString: 'ph-ec scale',
+                labelString: 'ph scale',
+                fontColor: "white"
+              },
+              
+             //ticks:{beginAtZero:true}
+          },
+          ],
+          xAxes: [{
+            type:'time',
+            time: {
+              displayFormats: {quarter: 'MMM YYYY'},
+              // tooltipFormat: 'DD/MM/YY',
+              //unit: 'day',
+             },
+            gridLines: {
+              //color:"white"
+              drawOnChartArea: false,
+              color: "#FFFFFF"
+            },
+            ticks: {
+                fontColor: "white",
+                source: 'auto'
+            }
+        }]
+        }, 
+};
+
+
+//ec
+ecData:ChartDataSets[]=[
+  {data:[],label:'ec',borderColor: "#FFF300",fill: false,lineTension:0,yAxisID:'ec'}]
+
+ecLabels: Label[];
+ecType = 'line';
+
+ecOptions= {
+  responsive: true,
+  legend: {
+    // labels: {
+    //     fontColor: "white",
+    // }
+    display: false
+  },
+  title: {
+    display: true,
+    text: 'ec sensor',
+    fontColor: "white"
+  },
+  scales:{
+          yAxes:[
+            {
+              id:'ec',
+              type:'linear',
+              position:'left',
+              gridLines: {
+                drawOnChartArea: false,
+                color: "#FFFFFF"
+              },
+              ticks: {
+                fontColor: "white",
+                stepSize: 0.5
+            },
+              scaleLabel: {
+                display: true,
+                labelString: 'ec scale',
                 fontColor: "white"
               },
               //ticks:{beginAtZero:true}
           },
-          {
-            id:'temp',
-            type:'linear',
-            position:'right',
-            gridLines: {
-              // color:"grey"
-              display:false
-            },
-            scaleLabel: {
-              display: true,
-              labelString: 'Temperature',
-              fontColor: "white"
-            },
-            //ticks:{beginAtZero:true}
-
-            ticks: {
-              fontColor: "white",
-              callback: function(value, index, values) {
-                  return  value + '°C';
-              },
-              
-          }
-          }],
+          ],
           xAxes: [{
             gridLines: {
-              color:"white"
+              drawOnChartArea: false,
+              color: "#FFFFFF"
             },
             ticks: {
                 fontColor: "white"
@@ -162,6 +308,64 @@ chartOptions= {
         }, 
 };
 
+
+//temperature
+//ec
+tempData:ChartDataSets[]=[
+  {data:[],label:'temperature',borderColor: "#FF4233",fill: false,lineTension:0,yAxisID:'temp'}]
+
+tempLabels: Label[];
+tempType = 'line';
+
+tempOptions= {
+  responsive: true,
+  legend: {
+    // labels: {
+    //     fontColor: "white",
+    // }
+    display: false
+  },
+  title: {
+    display: true,
+    text: 'temperature sensor (in °C)',
+    fontColor: "white"
+  },
+  scales:{
+          yAxes:[
+            {
+              id:'temp',
+              type:'linear',
+              position:'left',
+              gridLines: {
+                drawOnChartArea: false,
+                color: "#FFFFFF"
+              },
+              
+              scaleLabel: {
+                display: true,
+                labelString: 'temperature scale ',
+                fontColor: "white"
+              },
+              ticks: {
+                fontColor: "white",
+                stepSize: 0.5,
+                // callback: function(value, index, values) {
+                //     return  value + '°C';
+                //},
+              },
+            }
+          ],
+          xAxes: [{
+            gridLines: {
+              drawOnChartArea: false,
+              color: "#FFFFFF"
+            },
+            ticks: {
+                fontColor: "white"
+            }
+        }]
+        }, 
+};
 
 
 // end
@@ -192,6 +396,7 @@ chartOptions= {
     
     // this.radio_option="A";
     this.today = new Date().toString();
+
     
     // Fetch Display Data from Database
     //this.variableManagentService.fetchBotData();
@@ -223,7 +428,7 @@ chartOptions= {
     });
 
     this.DefaultValue = "0" ;
-    // this.compareWith = this.compareWithFn;
+    this.compareWith = this.compareWithFn;
     
     
   
@@ -244,17 +449,34 @@ chartOptions= {
     this.start_date = this.startDate+'.000Z';
     this.end_date=  this.end_date+'.000Z';
 
-    this.chartData[0].data=[];
-    this.chartData[1].data=[];
-    this.chartData[2].data=[];
-    this.chartLabels =[];
+    // this.chartData[0].data=[];
+    // this.chartData[1].data=[];
+    // this.chartData[2].data=[];
+    
+    this.phData[0].data=[];
+    this.ecData[0].data=[];
+    this.tempData[0].data=[];
+    
+    //this.chartLabels =[];
+    this.phLabels =[];
+    this.ecLabels =[];
+    this.tempLabels =[];
 
-    this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,this.start_date,this.end_date);
-    this.chartLabels = this.variableManagentService.sensorsTimeData;
-    this.chartData[0].data=this.variableManagentService.phValueData;
-    this.chartData[1].data=this.variableManagentService.ecValueData;
-    this.chartData[2].data=this.variableManagentService.tempValueData;
-    // this.chartData[2].data=[20,21,23,24,20,26,21,22,21,24,29,27,28,26,28,23,21,20,21,22];
+
+    this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,this.start_date,this.end_date,'0');
+    // this.chartLabels = this.variableManagentService.sensorsTimeData;
+    // this.chartData[0].data=this.variableManagentService.phValueData;
+    // this.chartData[1].data=this.variableManagentService.ecValueData;
+    // this.chartData[2].data=this.variableManagentService.tempValueData;
+
+
+    this.phLabels = this.variableManagentService.sensorsTimeData;
+    this.ecLabels = this.variableManagentService.sensorsTimeData;
+    this.tempLabels = this.variableManagentService.sensorsTimeData;
+    this.phData[0].data = this.variableManagentService.phValueData;
+    this.ecData[0].data = this.variableManagentService.ecValueData;
+    this.tempData[0].data = this.variableManagentService.tempValueData;
+
   }
 
   // Change Device
@@ -271,25 +493,39 @@ chartOptions= {
     this.variableManagentService.updateCurrentCluster(clusterName, null);
   }
 
-  onApply(clusterName:string,deviceName:string,newstartDate:string,newendDate:string){
+  onApply(clusterName:string,deviceName:string,newstartDate:string,newendDate:string,option:string){
 
       newstartDate = newstartDate+'.000Z';
       newendDate = newendDate+'.000Z';
       console.log(newstartDate);
 
-      this.chartData[0].data=[];
-      this.chartData[1].data=[];
-      this.chartData[2].data=[];
-      this.chartLabels =[];
-      
-      this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,newstartDate,newendDate);
+      // this.chartData[0].data=[];
+      // this.chartData[1].data=[];
+      // this.chartData[2].data=[];
+
+      this.phData[0].data=[];
+      this.ecData[0].data=[];
+      this.tempData[0].data=[];
+    
+      //this.chartLabels =[];
+      this.phLabels =[];
+      this.ecLabels =[];
+      this.tempLabels =[];
+ 
+      this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,newstartDate,newendDate,option);
       // console.log(this.variableManagentService.phValueData);
-      this.chartLabels = this.variableManagentService.sensorsTimeData;
-      this.chartData[0].data=this.variableManagentService.phValueData;
-      this.chartData[1].data=this.variableManagentService.ecValueData;
-      this.chartData[2].data=this.variableManagentService.tempValueData;
-      //this.chartData[2].data=[20,21,23,24,20,26,21,22,21,24,29,27,28,26,28,23,21,20,21,22];
-    }
+      // this.chartLabels = this.variableManagentService.sensorsTimeData;
+      // this.chartData[0].data=this.variableManagentService.phValueData;
+      // this.chartData[1].data=this.variableManagentService.ecValueData;
+      // this.chartData[2].data=this.variableManagentService.tempValueData;
+
+      this.phLabels = this.variableManagentService.sensorsTimeData;
+      this.ecLabels = this.variableManagentService.sensorsTimeData;
+      this.tempLabels = this.variableManagentService.sensorsTimeData;
+      this.phData[0].data = this.variableManagentService.phValueData;
+      this.ecData[0].data = this.variableManagentService.ecValueData;
+      this.tempData[0].data = this.variableManagentService.tempValueData;
+      }
 
 
     

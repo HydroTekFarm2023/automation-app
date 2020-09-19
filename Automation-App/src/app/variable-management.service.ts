@@ -5,12 +5,15 @@ import * as moment from 'moment';
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { map } from 'rxjs/operators';
+import { DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: "root",
 })
 export class VariableManagementService {
  
+  public datePipeString : string;
+
   public sensor_data_array: sensor_data[];
   
   public all_sensor_data_array: sensor_data[];
@@ -18,6 +21,7 @@ export class VariableManagementService {
   public end_date: string;
 
   public labelDate:string;
+  public formatDate:string;
 
   public on_update=new Subject();
   
@@ -46,7 +50,7 @@ export class VariableManagementService {
 
   public plants: plant[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private datePipe: DatePipe) {}
 
   // public getSensorData(){
   //   this.sensorsTimeData=[];
@@ -72,13 +76,14 @@ export class VariableManagementService {
   // }
 
 
-  public getAllSensorsData(clusterName:string,deviceName:string,startdate:string, enddate: string)
+  public getAllSensorsData(clusterName:string,deviceName:string,startdate:string, enddate: string,option:string)
   {
     this.sensorsTimeData=[];
     this.phValueData=[];
     this.ecValueData=[];
     this. tempValueData=[];
 
+    // this.labelDate = new Date().toString();
 
     this.http
       .get<sensor_info>("http://localhost:3000/get_all/"+clusterName+"/"+deviceName+"/"+startdate+"/"+enddate+"/")
@@ -87,7 +92,24 @@ export class VariableManagementService {
         this.all_sensor_data_array = resData.sensor_info;
         for(var i=0;i<this.all_sensor_data_array.length;i++)
         {
-          this.labelDate = moment(this.all_sensor_data_array[i]['_id']).format("MMM DD, HH:mm:ss")
+          console.log("Date: "+moment.utc(this.all_sensor_data_array[i]['_id']).format("YYYY-MMM-DDTHH:mm"));
+          //this.all_sensor_data_array[i]['_id']
+          this.datePipeString = this.datePipe.transform(new Date(this.all_sensor_data_array[i]['_id']),'yyyy-MM-dd HH:mm');
+          switch(option){
+            case '0':
+              this.labelDate = moment.utc(this.all_sensor_data_array[i]['_id']).format("MMM DD, HH:mm");
+              break;
+            case '1':
+              this.labelDate = moment.utc(this.all_sensor_data_array[i]['_id']).format("MMM DD, HH:mm");
+              break;
+            case '2':
+              this.labelDate = moment.utc(this.all_sensor_data_array[i]['_id']).format("MMM DD");
+              break;           
+          }
+          
+          // this.labelDate = moment(this.all_sensor_data_array[i]['_id'].toString()).format("MMM DD, HH:mm");
+          
+          console.log("Label data: "+this.datePipeString);
           this.sensorsTimeData.push(this.labelDate);
           for(var j=0;j<this.all_sensor_data_array[i].sensors.length;j++)
           {
@@ -103,6 +125,7 @@ export class VariableManagementService {
             }
           }
         }
+
         //console.log(this.sensorsTimeData);
         //return[this.sensorsTimeData,this.phValueData,this.ecValueData]
 
