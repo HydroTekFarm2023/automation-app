@@ -12,12 +12,9 @@ import {HttpClientModule} from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartsModule } from 'ng2-charts';
-<<<<<<< HEAD
 import { VariableManagementService } from './variable-management.service';
-=======
 import { DatePipe } from '@angular/common';
 
->>>>>>> 8d32ac044289f768f41b313f243eeb5a796b36f1
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],

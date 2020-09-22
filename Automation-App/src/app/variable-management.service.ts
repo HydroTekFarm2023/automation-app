@@ -5,11 +5,8 @@ import * as moment from 'moment';
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { map } from 'rxjs/operators';
-<<<<<<< HEAD
 import * as _ from "lodash";
-=======
 import { DatePipe } from '@angular/common';
->>>>>>> 8d32ac044289f768f41b313f243eeb5a796b36f1
 
 @Injectable({
   providedIn: "root",
