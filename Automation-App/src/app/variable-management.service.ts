@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { map } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
+// import { Console } from 'console';
 
 @Injectable({
   providedIn: "root",
@@ -22,7 +23,8 @@ export class VariableManagementService {
 
   public labelDate:string;
   public formatDate:string;
-
+  public dateDifference:number;
+  
   public on_update=new Subject();
   
   public growRooms: string[] = [];
@@ -32,7 +34,22 @@ export class VariableManagementService {
   public phValueData: number[]=[];
   public ecValueData: number[]=[];
   public tempValueData: number[]=[];
+  public labelDataArray: string[]=[];
 
+  public all_ph_data:number[]=[];
+  public all_ec_data:number[]=[];
+  public all_temp_data:number[]=[];
+
+  public selected_ph_data:number[]=[];
+  public selected_ec_data:number[]=[];
+  public selected_temp_data:number[]=[];
+  public selected_label_data:string[]=[];
+
+  public sampleArray:number[]=[];
+
+  public phTimeData: string[]=[];
+  public ecTimeData: string[]=[];
+  public tempTimeData: string[]=[];
 
   public clusters: cluster[] = [];
   public clusterNames: string[] = [];
@@ -52,87 +69,34 @@ export class VariableManagementService {
 
   constructor(private http: HttpClient,private datePipe: DatePipe) {}
 
-  // public getSensorData(){
-  //   this.sensorsTimeData=[];
-  //   this.sensorsValueData=[];
-  //   this.http
-  //     .get<sensor_info>("http://localhost:3000/sensors_data/GrowRoom1/system1/ph")
-  //     .subscribe((resData) => {
-        
-  //       //console.log(resData.sensor_info);
-  //       this.sensor_data_array = resData.sensor_info;
 
-  //       //console.log(this.sensor_data_array);
-  //       for(var i=0;i<this.sensor_data_array.length;i++)
-  //       {
-  //         //this.sensor_data_array[i]._id['name']==
-  //         this.sensorsTimeData.push(this.sensor_data_array[i]._id['time'])
-  //         this.sensorsValueData.push(parseFloat(this.sensor_data_array[i]._id['value']))
-  //       }
-  //       // return this.sensorsValueData;        
-  //     });
-  //     return [this.sensorsValueData,this.sensorsTimeData];
-  //     //console.log(this.sensorsValueData);
-  // }
-
-
-  public getAllSensorsData(clusterName:string,deviceName:string,startdate:string, enddate: string,option:string)
+  public getAllSensorsData(clusterName:string,deviceName:string,startdate:string, enddate: string) :Observable<any>
   {
+   
+    this.selected_ph_data=[];
+    this.selected_ec_data=[];
+    this.selected_temp_data=[];
+    this.selected_label_data=[];
+
     this.sensorsTimeData=[];
     this.phValueData=[];
     this.ecValueData=[];
     this. tempValueData=[];
 
-    // this.labelDate = new Date().toString();
-
-    this.http
+   
+    var dateDifference= (new Date(enddate).getTime()-new Date(startdate).getTime())/(1000 * 3600 * 24);
+   
+    var threshold = 40;
+   
+    return this.http
       .get<sensor_info>("http://localhost:3000/get_all/"+clusterName+"/"+deviceName+"/"+startdate+"/"+enddate+"/")
-      .subscribe((resData) => {
-        
+      .pipe(map((resData) => {
+      
+        console.log("fetched data");
         this.all_sensor_data_array = resData.sensor_info;
-        for(var i=0;i<this.all_sensor_data_array.length;i++)
-        {
-          console.log("Date: "+moment.utc(this.all_sensor_data_array[i]['_id']).format("YYYY-MMM-DDTHH:mm"));
-          //this.all_sensor_data_array[i]['_id']
-          this.datePipeString = this.datePipe.transform(new Date(this.all_sensor_data_array[i]['_id']),'yyyy-MM-dd HH:mm');
-          switch(option){
-            case '0':
-              this.labelDate = moment.utc(this.all_sensor_data_array[i]['_id']).format("MMM DD, HH:mm");
-              break;
-            case '1':
-              this.labelDate = moment.utc(this.all_sensor_data_array[i]['_id']).format("MMM DD, HH:mm");
-              break;
-            case '2':
-              this.labelDate = moment.utc(this.all_sensor_data_array[i]['_id']).format("MMM DD");
-              break;           
-          }
-          
-          // this.labelDate = moment(this.all_sensor_data_array[i]['_id'].toString()).format("MMM DD, HH:mm");
-          
-          console.log("Label data: "+this.datePipeString);
-          this.sensorsTimeData.push(this.labelDate);
-          for(var j=0;j<this.all_sensor_data_array[i].sensors.length;j++)
-          {
-             switch(this.all_sensor_data_array[i].sensors[j]['name']){
-              case 'ph':
-                this.phValueData.push(this.all_sensor_data_array[i].sensors[j]['value']);
-                break;
-              case 'ec':
-                this.ecValueData.push(this.all_sensor_data_array[i].sensors[j]['value']);
-                break;
-              case 'temp':
-                this.tempValueData.push(this.all_sensor_data_array[i].sensors[j]['value']);
-            }
-          }
-        }
+        this.downsample(this.all_sensor_data_array,threshold,dateDifference);
 
-        //console.log(this.sensorsTimeData);
-        //return[this.sensorsTimeData,this.phValueData,this.ecValueData]
-
-        this.on_update.next();
-      })
-      //console.log(this.phValueData);
-      //return[this.sensorsTimeData,this.phValueData,this.ecValueData]
+      }))
   }
 
   public fetchClusters(repeat: boolean){
@@ -336,6 +300,97 @@ export class VariableManagementService {
       this.plants = plants;
     }));
   }
+
+
+  public downsample(data, threshold,dateDifference) {
+    var difference;
+
+    for(var i=0;i<data.length;i++)
+      {
+        this.labelDate = moment.utc(data[i]['_id']).format("MMM DD");
+        this.sensorsTimeData.push(this.labelDate);
+      }
+
+      var unique_days = [...new Set(this.sensorsTimeData)];
+
+      var dataPerDay = threshold/unique_days.length;
+
+      for(var i=0;i<unique_days.length;i++)
+      {
+      console.log("Day: "+unique_days[i]);
+        for(var j=0;j<data.length;j++)
+        {
+          if(moment.utc(data[j]['_id']).format("MMM DD")==unique_days[i])
+          {
+            this.labelDataArray.push(moment.utc(data[j]['_id']).format("DD MMM, HH:mm"));
+            for(var k=0;k<data[j].sensors.length;k++)
+            {
+             switch(data[j].sensors[k]['name']){
+              case 'ph':
+                this.all_ph_data.push(data[j].sensors[k]['value']);
+                break;
+              case 'ec':
+                this.all_ec_data.push(data[j].sensors[k]['value']);
+                break;
+              case 'temp':
+                this.all_temp_data.push(data[j].sensors[k]['value']);
+            }
+          }
+        }
+      }
+
+      for(var a=0;a<dataPerDay;a++)
+      {
+        if(Math.abs(dateDifference)<15)
+        {
+          console.log("it is <15");
+          difference = Math.floor(this.labelDataArray.length/dataPerDay);
+         
+          if(a==0)
+          {
+            this.selected_label_data.push(this.labelDataArray[a]);
+            this.selected_ph_data.push(this.all_ph_data[a]);
+            this.selected_ec_data.push(this.all_ec_data[a]);
+            this.selected_temp_data.push(this.all_temp_data[a]);
+          }
+          else{
+            if(this.labelDataArray[a+difference]!=undefined)
+            {
+            this.selected_label_data.push(this.labelDataArray[a+difference]);
+
+            this.selected_ph_data.push(this.all_ph_data[a+difference]);
+            this.selected_ec_data.push(this.all_ec_data[a+difference]);
+            this.selected_temp_data.push(this.all_temp_data[a+difference]);
+            }
+            else{
+              break;
+            }
+          }
+        }
+        else{
+          console.log("inside else");
+        this.selected_label_data.push(unique_days[i]);
+        
+        this.selected_ph_data.push(this.all_ph_data[Math.floor(Math.random() * this.all_ph_data.length)]);
+        this.selected_ec_data.push(this.all_ec_data[Math.floor(Math.random() * this.all_ec_data.length)]);
+        this.selected_temp_data.push(this.all_temp_data[Math.floor(Math.random() * this.all_temp_data.length)]);
+      }
+    }
+      this.all_ph_data= [];
+      this.all_ec_data= [];
+      this.all_temp_data= [];
+      this.labelDataArray=[];
+    }
+
+      this.sensorsTimeData = this.selected_label_data;
+      this.phValueData = this.selected_ph_data;
+      this.ecValueData = this.selected_ec_data;
+      this.tempValueData = this.selected_temp_data;
+  }
+
+
+
+
 }
 
 // format of brief_info data coming from backend
