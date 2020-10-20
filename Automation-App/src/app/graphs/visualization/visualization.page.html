@@ -46,11 +46,12 @@
     <div class="ion-padding">
       <ion-item>
         <ion-label>Start Date</ion-label>
-        <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" pickerFormat="YYYY-MM-DDTHH:mm:ss" [(ngModel)]="startDate" (ionChange)="dateChanged($event)"></ion-datetime>
+        <ion-datetime placeholder="Select Date" displayFormat="DD MMM YYYY, HH:mm"  [(ngModel)]="startDate" (ionChange)="dateChanged($event)" [disabled]="disableDateTime"></ion-datetime>
+        <!-- <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" [(ngModel)]="startDate" (ionChange)="getData()"></ion-datetime> -->
       </ion-item>
       <ion-item>
         <ion-label>End Date</ion-label>
-        <ion-datetime placeholder="Select Date" displayFormat="YYYY-MM-DD HH:mm:ss" [(ngModel)]="endDate" (ionChange)="getData()"></ion-datetime>
+        <ion-datetime placeholder="Select Date" displayFormat="DD MMM YYYY, HH:mm" [(ngModel)]="endDate" (ionChange)="dateChanged($event)" [disabled]="disableDateTime"></ion-datetime>
       </ion-item>
       <ion-item>
       <ion-label>Quick Views:</ion-label>
@@ -62,16 +63,38 @@
     </div>
       
     <!-- <ion-card class="welcome-card"> -->
-    <div class="chart-container">
-        <ion-card-content>
-          <canvas baseChart
-            [datasets]="chartData"
-            [labels]="chartLabels"
-            [chartType]="chartType"
-            [options]="chartOptions">
+    <!-- <div class="chart-container"> -->
+     
+        <ion-card-content *ngIf="ph" >
+          <canvas style="height: 400vh;" baseChart
+            [datasets]="phData"
+            [labels]="phLabels"
+            [chartType]="phType"
+            [options]="phOptions">
           </canvas>
         </ion-card-content>
-    </div>
+     
+
+        <ion-card-content *ngIf="ec">
+          <canvas baseChart
+            [datasets]="ecData"
+            [labels]="ecLabels"
+            [chartType]="ecType"
+            [options]="ecOptions">
+          </canvas>
+        </ion-card-content>
+
+        <ion-card-content *ngIf="temperature">
+          <canvas baseChart
+            [datasets]="tempData"
+            [labels]="tempLabels"
+            [chartType]="tempType"
+            [options]="tempOptions">
+          </canvas>
+        </ion-card-content>
+
+
+    <!-- </div> -->
   <!-- </ion-card> -->
   </div>
   <div *ngIf="!variableManagentService.noClusters && variableManagentService.noDevices" class="center">

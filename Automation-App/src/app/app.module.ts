@@ -13,6 +13,8 @@ import { ComponentsModule } from './components/components.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartsModule } from 'ng2-charts';
 import { VariableManagementService } from './variable-management.service';
+import { DatePipe } from '@angular/common';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -21,7 +23,8 @@ import { VariableManagementService } from './variable-management.service';
     VariableManagementService,
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
