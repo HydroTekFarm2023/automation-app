@@ -48,8 +48,11 @@
         </ion-card-content>
       </ion-card>
       <h2>Sensor List</h2>
+      <grow-lights *ngIf="growLights" [parentForm]="sensorsForm"></grow-lights>
       <ph *ngIf="ph" [parentForm]="sensorsForm"></ph>
       <ec *ngIf="ec" [parentForm]="sensorsForm"></ec>
+      <water-temp *ngIf="waterTemp" [parentForm]="sensorsForm"></water-temp>
+      <reservoir *ngIf="reservoir" [parentForm]="sensorsForm"></reservoir>
     </form>
   </div>
 </ion-content>

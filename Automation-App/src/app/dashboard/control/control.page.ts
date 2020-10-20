@@ -1,11 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { VariableManagementService } from 'src/app/variable-management.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { skipWhile, map, filter } from 'rxjs/operators';
+import { skipWhile, map, filter, debounceTime, startWith, skip } from 'rxjs/operators';
 import { AddGrowroomPage } from 'src/app/add-growroom/add-growroom.page';
 import { AddSystemPage } from 'src/app/add-system/add-system.page';
 import { CreateClusterPage } from 'src/app/create-cluster/create-cluster.page';
 import { ModalController } from '@ionic/angular';
+import { Observable, combineLatest } from 'rxjs';
+import * as _ from "lodash";
+import { MqttInterfaceService } from 'src/app/Services/mqtt-interface.service';
 
 @Component({
   selector: 'app-control',
@@ -13,15 +16,13 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./control.page.scss'],
 })
 export class ControlPage implements OnInit {
-  
-  settingsForm: FormGroup;
+
+  settingsForm: FormGroup = new FormGroup({});
 
   deviceName: string;
   clusterName: string;
   isGrowRoom: boolean;
   isSystem: boolean;
-
-  
 
   ph: boolean = false;
   ec: boolean = false;
@@ -30,6 +31,8 @@ export class ControlPage implements OnInit {
   humidity: boolean = false;
   air_temperature: boolean = false;
 
+  formValue$: Observable<any>;
+  isDirty: boolean = false;
 
   clusterAlertOptions: any = {
     header: "Cluster Name"
@@ -39,15 +42,21 @@ export class ControlPage implements OnInit {
     header: "Device Name"
   }
 
-  constructor(public variableManagementService: VariableManagementService, private fb: FormBuilder, private changeDetector: ChangeDetectorRef, private modalController: ModalController) { 
+  constructor(public variableManagementService: VariableManagementService, private fb: FormBuilder, private changeDetector: ChangeDetectorRef, private modalController: ModalController, private mqttService: MqttInterfaceService) { 
     this.variableManagementService.fetchClusters(false);
+    this.mqttService.mqttStatus.subscribe((status) => {
+      console.log(status);
+    });
   }
 
   ngOnInit() {
-
-    this.settingsForm = new FormGroup({});
+    this.formValue$ = this.settingsForm.valueChanges.pipe(debounceTime(300), filter(() => this.variableManagementService.deviceSettings.length != 0));
+    combineLatest(this.formValue$, this.variableManagementService.deviceSettingsSubject).subscribe(([a, b]) => {
+      console.log(a);
+      this.isDirty = (_.isEqual(a, this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].settings) === false);
+    });
     // Respond to grow room settings data fetched from backend
-    this.variableManagementService.deviceSettingsSubject.subscribe(() => {
+    this.variableManagementService.deviceSettingsSubject.pipe(filter((sameData) => sameData === false)).subscribe(() => {
       //Reset systems Form and populate control fields with settings data
       this.settingsForm.reset();
       if(this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].type == 'system'){
@@ -65,7 +74,6 @@ export class ControlPage implements OnInit {
     this.variableManagementService.selectedDevice.pipe(filter((str) => str != null)).subscribe(resData => {
       // Delete exisiting sensor cards
       this.resetDevice();
-      console.log(resData);
       this.deviceName = resData;
       // add sensor cards based on sensors for system
       this.variableManagementService.sensorDisplays.forEach((element) => {
@@ -82,7 +90,7 @@ export class ControlPage implements OnInit {
           case "humidity":
             this.humidity = true;
             break;
-          case "Air Temperature":
+          case "air_temperature":
             this.air_temperature = true;
             break;
         }
@@ -90,33 +98,19 @@ export class ControlPage implements OnInit {
       // Detect and update UI
       this.changeDetector.detectChanges();
       // Check if settings data is already stored locally
-      console.log(this.variableManagementService.deviceSettings);
-      console.log(this.clusterName);
       var dataIndex = this.variableManagementService.deviceSettings.findIndex(({clusterName, name}) => clusterName === this.clusterName && name === this.deviceName);
-      console.log(dataIndex);
       // If data is stored locally populate systems form with settings data
       // If data isn't found locally fetch it from backend
       if(dataIndex != -1){
-        console.log("data found");
         this.variableManagementService.deviceSettingsIndex = dataIndex;
-        if(this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].type == 'system'){
-          this.isSystem = true;
-          this.isGrowRoom = false;
-        } else if (this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].type == 'growroom'){
-          this.isSystem = false;
-          this.isGrowRoom = true;
-        }
-        this.changeDetector.detectChanges();
-        this.settingsForm.patchValue(this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].settings);
+        this.variableManagementService.deviceSettingsSubject.next(false);
       } else {
-        console.log("Data Not Found");
         this.variableManagementService.getDeviceSettings();
       }
     });
 
     // Update GrowRoom ID selection
     this.variableManagementService.selectedCluster.pipe(filter(str => str != null)).subscribe(resData => {
-      console.log("control page selected cluster");
       this.clusterName = resData;
       // Detect and update UI
       this.changeDetector.detectChanges();     
@@ -136,12 +130,21 @@ export class ControlPage implements OnInit {
   }
   
   // update data in backend
-  pushData(){
-    if(this.settingsForm.dirty){
-      this.variableManagementService.updateDeviceSettings(this.settingsForm.value).subscribe(() => {
-        this.settingsForm.markAsPristine();
-      });
-    } 
+  pushData(deviceForm: any){
+    var changedData = [];
+    for(var key in deviceForm){
+      if(!_.isEqual(deviceForm[key], this.variableManagementService.deviceSettings[this.variableManagementService.deviceSettingsIndex].settings[key])) {
+        changedData.push({ [key]: deviceForm[key] });
+      }
+    }
+    console.log(changedData);
+    this.mqttService.publishMessage("device_settings", JSON.stringify({ data: changedData}), 1, false).then(() => {
+      console.log("mqttservice published");
+      this.variableManagementService.updateDeviceSettings(this.settingsForm.value).subscribe(() => {}, (error) => {console.log(error)});
+    },
+    (error) => {
+      console.log(error);
+    });
   }
 
   // delete system sensor cards 

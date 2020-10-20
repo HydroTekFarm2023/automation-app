@@ -20,27 +20,7 @@ export class MonitoringPage implements OnInit {
   deviceName: string;
   clusterName: string;
   timeStamp: string;
-
-  public specifications = [
-    "Humidifier",
-    "Fan 2",
-    "pH Probe",
-    "Grow Lights",
-    "EC Probe",
-    "Water Temp Probe",
-  ];
-
-  MQTT_CONFIG: {
-    host: string;
-    port: number;
-    clientId: string;
-    path?: string;
-  } = {
-    host: "192.168.1.16",
-    port: 9001,
-    clientId: "Test",
-  };
-
+  
   deviceAlertOptions: any = {
     header: "Device Name"
   }
@@ -49,21 +29,12 @@ export class MonitoringPage implements OnInit {
     header: "Cluster Name"
   }
 
-  TOPIC: string[] = ["#"];
-
   constructor(private mqttService: MqttInterfaceService, public variableManagentService: VariableManagementService, public route: ActivatedRoute, private actionSheetController: ActionSheetController, private modalController: ModalController) {
 
     // Log MQTT Status
     this.mqttService.mqttStatus.pipe(skip(1)).subscribe((status) => {
       console.log(status);
     });
-
-    // Create MQTT Client, connect to broker and subscribe to topics
-    this.mqttService.createClient(
-      this.onConnectionLost,
-      this.TOPIC,
-      this.MQTT_CONFIG
-    );
 
     // Fetch Display Data from Database
     this.variableManagentService.fetchClusters(false);
@@ -118,16 +89,6 @@ export class MonitoringPage implements OnInit {
     this.variableManagentService.updateCurrentCluster(clusterName, null);
   }
 
-  onConnectionLost(ResponseObject) {
-    console.log(ResponseObject);
-  }
-  
-  onPublishMessage() {
-    // var name : number;
-    // console.log('hello');
-    // this.name = ['7']
-    this.mqttService.publishMessage(this.TOPIC[0], "hello");
-  }
 
   async presentActionSheet() {
     const actionSheet = await this.actionSheetController.create({

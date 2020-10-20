@@ -30,8 +30,8 @@ export class PhComponent implements OnInit, OnDestroy {
       'night_target_value': this.fb.control(null),
       'target_value': this.fb.control(null),
       'pumps': this.fb.group({
-        'pump_1_enabled': this.fb.control(null),
-        'pump_2_enabled': this.fb.control(null)
+        'pump_1_enabled': this.fb.control(false),
+        'pump_2_enabled': this.fb.control(false)
       })
     });
 
@@ -44,18 +44,18 @@ export class PhComponent implements OnInit, OnDestroy {
 
     this.parentForm.addControl('ph', this.phForm);
     console.log(this.parentForm.value);
+
+    this.phForm.get('monitoring_only').valueChanges.subscribe(resData => {
+      if(resData) {
+        this.phForm.removeControl('control');
+      } else {
+        this.phForm.addControl('control', this.controlForm);
+      }
+    });
   }
 
   toggleAccordion() {
     this.isOpen = !this.isOpen;
-  }
-
-  onMonitoringOnly() {
-    if(this.phForm.get("monitoring_only").value == true){
-      this.phForm.removeControl('control');
-    } else {
-      this.phForm.addControl('control', this.controlForm);
-    }
   }
 
   ngOnDestroy(){

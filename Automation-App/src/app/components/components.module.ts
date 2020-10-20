@@ -8,11 +8,13 @@ import { AirTemperatureComponent } from './air-temperature/air-temperature.compo
 import { HumidityComponent } from './humidity/humidity.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { WaterTempComponent } from './water-temp/water-temp.component';
+import { ReservoirComponent } from './reservoir/reservoir.component';
+import { GrowLightsComponent } from './grow-lights/grow-lights.component';
 
 @NgModule({
-    declarations: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent],
+    declarations: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent, ReservoirComponent, GrowLightsComponent],
     imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
-    exports: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent]
+    exports: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent, ReservoirComponent, GrowLightsComponent]
 })
 
 export class ComponentsModule {}

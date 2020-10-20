@@ -15,7 +15,7 @@
           <hr color="grey"/>
           <div class="group">
             <ion-item lines="none">
-              <ion-checkbox formControlName="monitoring_only" mode="md" (ionChange)="onMonitoringOnly()" slot="end"></ion-checkbox>
+              <ion-checkbox formControlName="monitoring_only" mode="md" slot="end"></ion-checkbox>
               <ion-label>Monitoring Only</ion-label>
             </ion-item>
             <hr color="grey"/>
@@ -27,7 +27,7 @@
               <ion-list>
                 <ion-item>
                   <ion-label position="floating">Dose Time</ion-label>
-                  <ion-input formControlName="dosing_time"></ion-input>
+                  <ion-input formControlName="dosing_time" type="number"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-label position="floating">Dosing Interval</ion-label>

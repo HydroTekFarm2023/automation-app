@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from 'rxjs';
 import { VariableManagementService } from '../variable-management.service';
+import { timeout, filter, take } from 'rxjs/operators';
 
 
 declare const Paho: any;
@@ -10,12 +11,26 @@ declare const document: any;
 
 export class MqttInterfaceService {
 
-  private status: string[] = ['connecting', 'connected', 'disconnected'];
-  public mqttStatus = new BehaviorSubject(status[2]);
+  private status: string[] = ['uninitialized', 'connecting', 'connected', 'disconnected'];
+  public mqttStatus = new BehaviorSubject(status[0]);
 
   public deviceLiveData = new Subject<string>();
 
   public client: any;
+  private topics: string[] = ['#'];
+
+  private messageConfirmation = new Subject<string>();
+
+  MQTT_CONFIG: {
+    host: string;
+    port: number;
+    clientId: string;
+    path?: string;
+  } = {
+    host: "192.168.86.55",
+    port: 9001,
+    clientId: "User122",
+  };
 
   private scripts: any = {};
   private ScriptStore: Scripts[] = [
@@ -31,6 +46,11 @@ export class MqttInterfaceService {
             src: script.src
         };
     });
+    this.createClient(
+      this.onConnectionLost,
+      this.topics,
+      this.MQTT_CONFIG
+    );
   }
 
   
@@ -81,10 +101,11 @@ export class MqttInterfaceService {
       path?: string,
     }): any {
     return this._load('paho_mqtt').then(data => {
-      this.mqttStatus.next(this.status[0]);
+      this.mqttStatus.next(this.status[1]);
       this.client = new Paho.Client(MQTT_CONFIG.host, Number(MQTT_CONFIG.port), MQTT_CONFIG.path || "/mqtt", MQTT_CONFIG.clientId);
       this.client.onConnectionLost = onConnectionLost.bind(this);
       this.client.onMessageArrived = this.onMessageArrived.bind(this);
+      this.client.onMessageDelivered = this.onMessageDelivered.bind(this);
       return this.client.connect(
         {
           onSuccess: this._onConnect.bind(this, TOPIC),
@@ -95,29 +116,60 @@ export class MqttInterfaceService {
     })
   };
 
-  public publishMessage(topic: string, playload: string, qos?: number, retained?: boolean): void {
-      console.log('msg, topic', topic, playload);
-      var message = new Paho.Message(playload);
+  public publishMessage(topic: string, payload: string, qos?: number, retained?: boolean): Promise<any> {
+      console.log('msg, topic', topic, payload);
+      var message = new Paho.Message(payload);
       message.topic = topic;
       qos ? message.qos = qos : 1;
       qos ? message.retained = retained : false;
       this.client.publish(message);
-    };
+      var messageConfirmationSubscribtion;
+      let messageConfirmationPromise = new Promise((resolve, reject) => {
+        messageConfirmationSubscribtion = this.messageConfirmation.pipe(filter((message) => message == payload), take(1)).subscribe(() => {
+          console.log("resolved");
+          resolve();
+        },
+        (error) => {
+          console.log("heee");
+          reject(error);
+        });
+      });
 
-    onMessageArrived(ResponseObject) {
-      console.log(ResponseObject);
-      // Split TOPIC URL to extract IDs
-      var topicParam = ResponseObject.topic.split("/", 4);
-      // Check if incoming data is for selected device
-      if(topicParam[0] == this.variableManagementService.selectedCluster.value){
-        if(topicParam[2] == this.variableManagementService.selectedDevice.value){
+      let timeOutPromise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log("timeout");
+          reject();
+        }, 10000);
+      })
+
+      return Promise.race([messageConfirmationPromise, timeOutPromise]);
+  };
+
+  public onMessageDelivered(ResponseObject) {
+    this.messageConfirmation.next(ResponseObject.payloadString);
+  }
+
+  onMessageArrived(ResponseObject) {
+    console.log(ResponseObject);
+    // Split TOPIC URL to extract IDs
+    var topicParam = ResponseObject.topic.split("/", 3);
+    // Check if incoming data is for selected device
+    if(topicParam[0] == this.variableManagementService.selectedCluster.value && topicParam[1] == this.variableManagementService.selectedDevice.value) {
+      switch(topicParam[2]) {
+        case 'live_data': {
           // Update selected system live data
           this.deviceLiveData.next(ResponseObject.payloadString);
+          break;
         }
       }
-      }
-    
+    }
+  }
 
+  onConnectionLost(ResponseObject) {
+    console.log(ResponseObject);
+    this.mqttStatus.next('connection lost');
+  }
+    
   public publishUpdate(topic: string, payload: string): void {
     var message = new Paho.Message(payload);
     message.topic = topic;
@@ -130,7 +182,8 @@ export class MqttInterfaceService {
     topic.forEach((tp) => {
       this.client.subscribe(tp);
     });
-    this.mqttStatus.next(this.status[1]);
+    console.log("connected");
+    this.mqttStatus.next(this.status[2]);
     return this.client;
   }
 
@@ -140,7 +193,7 @@ export class MqttInterfaceService {
 
   public disconnectClient() {
     this.client.disconnect();
-    this.mqttStatus.next(this.status[2]);
+    this.mqttStatus.next(this.status[3]);
   }
 }
 

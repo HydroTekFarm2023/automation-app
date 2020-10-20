@@ -9,7 +9,7 @@
   <ion-select-option *ngFor="let device of variableManagementService.devices" [value]="device">
     {{ device }}</ion-select-option>
 </ion-select>
-<ion-button *ngIf="!variableManagementService.noDevices" class="save_button" slot="end" (click)="pushData()" [disabled]="!settingsForm.dirty">Push Changes</ion-button>
+<ion-button *ngIf="!variableManagementService.noDevices" class="save_button" slot="end" (click)="pushData(settingsForm.value)" [disabled]="!(isDirty)">Push Changes</ion-button>
 </ion-toolbar>
 
 <ion-content>

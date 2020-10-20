@@ -15,14 +15,16 @@ export class HumidityComponent implements OnInit, OnDestroy {
   controlForm: FormGroup;
   day_and_night_targetForm: FormGroup;
   
-  constructor(private variableManagementService: VariableManagementService, private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
     this.controlForm = this.fb.group({
       'day_and_night': this.fb.control(true),
       'day_target_value': this.fb.control(null),
       'night_target_value': this.fb.control(null),
-      'target_value': this.fb.control(null)
+      'target_value': this.fb.control(null),
+      'humidifier_enabled': this.fb.control(false),
+      'dehumidifier_enabled': this.fb.control(false)
     });
 
     this.humidityForm = this.fb.group({
@@ -32,19 +34,19 @@ export class HumidityComponent implements OnInit, OnDestroy {
       'alarm_max': this.fb.control(null)
     });
 
+    this.humidityForm.get('monitoring_only').valueChanges.subscribe(resData => {
+      if(resData) {
+        this.humidityForm.removeControl('control');
+      } else {
+        this.humidityForm.addControl('control', this.controlForm);
+      }
+    });
+
     this.parentForm.addControl('humidity', this.humidityForm);
   }
 
   toggleAccordion() {
     this.isOpen = !this.isOpen;
-  }
-
-  onMonitoringOnly() {
-    if(this.humidityForm.get("monitoring_only").value == true){
-      this.humidityForm.removeControl('control');
-    } else {
-      this.humidityForm.addControl('control', this.controlForm);
-    }
   }
 
   ngOnDestroy(){

@@ -28,23 +28,23 @@ export class EcComponent implements OnInit, OnDestroy {
       'target_value': this.fb.control(null),
       'pumps': this.fb.group({
         'pump 1': this.fb.group({
-          'enabled': this.fb.control(null),
+          'enabled': this.fb.control(false),
           'value': this.fb.control(null)
         }),
         'pump 2': this.fb.group({
-          'enabled': this.fb.control(null),
+          'enabled': this.fb.control(false),
           'value': this.fb.control(null)
         }),
         'pump 3': this.fb.group({
-          'enabled': this.fb.control(null),
+          'enabled': this.fb.control(false),
           'value': this.fb.control(null)
         }),
         'pump 4': this.fb.group({
-          'enabled': this.fb.control(null),
+          'enabled': this.fb.control(false),
           'value': this.fb.control(null)
         }),
         'pump 5': this.fb.group({
-          'enabled': this.fb.control(null),
+          'enabled': this.fb.control(false),
           'value': this.fb.control(null)
         })
       })
@@ -58,18 +58,18 @@ export class EcComponent implements OnInit, OnDestroy {
     });
 
     this.parentForm.addControl('ec', this.ecForm);
+
+    this.ecForm.get('monitoring_only').valueChanges.subscribe(resData => {
+      if(resData) {
+        this.ecForm.removeControl('control');
+      } else {
+        this.ecForm.addControl('control', this.controlForm);
+      }
+    });
   }
 
   toggleAccordion() {
     this.isOpen = !this.isOpen;
-  }
-
-  onMonitoringOnly() {
-    if(this.ecForm.get("monitoring_only").value == true){
-      this.ecForm.removeControl('control');
-    } else {
-      this.ecForm.addControl('control', this.controlForm);
-    }
   }
 
   ngOnDestroy(){

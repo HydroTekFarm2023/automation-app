@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { map } from 'rxjs/operators';
+import * as _ from "lodash";
 import { DatePipe } from '@angular/common';
 // import { Console } from 'console';
 
@@ -276,13 +277,14 @@ export class VariableManagementService {
         this.devices.push(data.name);
         this.updateCurrentCluster(data.cluster_name, data.name);
       }));
-  }
+  } 
 
   // Update grow room and system settings in backend
-  public updateDeviceSettings(deviceForm: any): Observable<any>{
+  public updateDeviceSettings(deviceForm: any): Observable<any> {
     return this.http.put("http://localhost:3000/device_settings/" + this.deviceSettings[this.deviceSettingsIndex]._id, deviceForm)
       .pipe(map(() => {
         this.deviceSettings[this.deviceSettingsIndex].settings = deviceForm;
+        this.deviceSettingsSubject.next(true);
       }));
   }
 
@@ -291,7 +293,7 @@ export class VariableManagementService {
     this.http.get<device_settings>("http://localhost:3000/device_settings/" + this.selectedCluster.value + "/" + this.selectedDevice.value).subscribe(resData => {
       this.deviceSettings.push(resData);
       this.deviceSettingsIndex = this.deviceSettings.length - 1;
-      this.deviceSettingsSubject.next();
+      this.deviceSettingsSubject.next(false);
     });
   }
 
@@ -456,14 +458,6 @@ export interface plant {
     ph: plant_settings,
     water_temperature: plant_settings
   }
-}
-
-interface sensor {
-  _id: string;
-  name: string;
-  target_value: number;
-  desired_range_low: number;
-  desired_range_high: number;
 }
 
 interface sensor_info{

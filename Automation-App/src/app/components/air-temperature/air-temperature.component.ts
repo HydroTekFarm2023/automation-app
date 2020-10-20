@@ -22,7 +22,9 @@ export class AirTemperatureComponent implements OnInit, OnDestroy {
       'day_and_night': this.fb.control(true),
       'day_target_value': this.fb.control(null),
       'night_target_value': this.fb.control(null),
-      'target_value': this.fb.control(null)
+      'target_value': this.fb.control(null),
+      'heater_enabled': this.fb.control(false),
+      'cooler_enabled': this.fb.control(false)
     });
 
     this.airTemperatureForm = this.fb.group({
@@ -33,18 +35,18 @@ export class AirTemperatureComponent implements OnInit, OnDestroy {
     });
 
     this.parentForm.addControl('air_temperature', this.airTemperatureForm);
+
+    this.airTemperatureForm.get('monitoring_only').valueChanges.subscribe(resData => {
+      if(resData) {
+        this.airTemperatureForm.removeControl('control');
+      } else {
+        this.airTemperatureForm.addControl('control', this.controlForm);
+      }
+    });
   }
 
   toggleAccordion() {
     this.isOpen = !this.isOpen;
-  }
-
-  onMonitoringOnly() {
-    if(this.airTemperatureForm.get("monitoring_only").value == true){
-      this.airTemperatureForm.removeControl('control');
-    } else {
-      this.airTemperatureForm.addControl('control', this.controlForm);
-    }
   }
 
   ngOnDestroy(){

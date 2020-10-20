@@ -10,10 +10,11 @@ import { VariableManagementService, plant } from '../variable-management.service
 })
 export class AddSystemPage implements OnInit {
 
+  growLights = true;
   ph: boolean = true;
   ec: boolean = true;
-  water_temp: boolean = true;
-  grow_rooms: string[];
+  waterTemp: boolean = true;
+  reservoir: boolean = true;
 
   plantName: string;
 
