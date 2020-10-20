@@ -84,9 +84,10 @@ export class VariableManagementService {
     this.ecValueData=[];
     this. tempValueData=[];
 
-   
+   //calculate differnce between start date and end date
     var dateDifference= (new Date(enddate).getTime()-new Date(startdate).getTime())/(1000 * 3600 * 24);
    
+    //threshold tells you max number of data points to be plotted on graph
     var threshold = 40;
    
     return this.http
@@ -95,6 +96,8 @@ export class VariableManagementService {
       
         console.log("fetched data");
         this.all_sensor_data_array = resData.sensor_info;
+        
+        // data decimation function call
         this.downsample(this.all_sensor_data_array,threshold,dateDifference);
 
       }))
@@ -307,19 +310,21 @@ export class VariableManagementService {
   public downsample(data, threshold,dateDifference) {
     var difference;
 
+    //push time label data to array
     for(var i=0;i<data.length;i++)
       {
         this.labelDate = moment.utc(data[i]['_id']).format("MMM DD");
         this.sensorsTimeData.push(this.labelDate);
       }
 
+      //get unique days from the time label array
       var unique_days = [...new Set(this.sensorsTimeData)];
 
+      //calculate number of data points to be plotted for every day
       var dataPerDay = threshold/unique_days.length;
 
       for(var i=0;i<unique_days.length;i++)
       {
-      console.log("Day: "+unique_days[i]);
         for(var j=0;j<data.length;j++)
         {
           if(moment.utc(data[j]['_id']).format("MMM DD")==unique_days[i])
@@ -343,9 +348,10 @@ export class VariableManagementService {
 
       for(var a=0;a<dataPerDay;a++)
       {
+        //check if selected time duration is <15 days
         if(Math.abs(dateDifference)<15)
         {
-          console.log("it is <15");
+          //get every (difference) consecutive data from array
           difference = Math.floor(this.labelDataArray.length/dataPerDay);
          
           if(a==0)
@@ -370,7 +376,6 @@ export class VariableManagementService {
           }
         }
         else{
-          console.log("inside else");
         this.selected_label_data.push(unique_days[i]);
         
         this.selected_ph_data.push(this.all_ph_data[Math.floor(Math.random() * this.all_ph_data.length)]);

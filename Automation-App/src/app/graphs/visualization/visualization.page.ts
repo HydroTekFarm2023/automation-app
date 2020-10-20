@@ -83,7 +83,6 @@ dateChanged(date){
 }
 
 onSelectedChange(event:any){
-  console.log(event.target.value);
 
   if(event.target.value=="0")
   {
@@ -109,6 +108,7 @@ onSelectedChange(event:any){
 }
 
 
+//declare charts for various sensors here:
 
 //ph
 phData:ChartDataSets[]=[
@@ -116,22 +116,9 @@ phData:ChartDataSets[]=[
 
 phLabels: Label[];
 phType = 'line';
-Options:{
-  downsample: {
-  enabled: true,
-  threshold:30,
-      
-  auto: false, 
-  onInit: true,
-      
-  preferOriginalData: true,
-  restoreOriginalData: false, 
-  },
-};
+
 phOptions= {
   responsive: true,
-  maintainAspectRatio: true,
-  spanGaps: false,
   legend: {
     display: false
   },
@@ -186,9 +173,6 @@ ecType = 'line';
 ecOptions= {
   responsive: true,
   legend: {
-    // labels: {
-    //     fontColor: "white",
-    // }
     display: false
   },
   title: {
@@ -320,7 +304,6 @@ tempOptions= {
   getData()
   {
 
-    // console.log(this.clusterName);
     this.startDate=moment().format("YYYY-MM-DDTHH:mm:ss");
     this.endDate=moment().format("YYYY-MM-DDTHH:mm:ss");  
     
@@ -331,12 +314,11 @@ tempOptions= {
     this.ecData[0].data=[];
     this.tempData[0].data=[];
     
-    //this.chartLabels =[];
     this.phLabels =[];
     this.ecLabels =[];
     this.tempLabels =[];
 
-
+    //async call to function
     this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,this.start_date,this.end_date).subscribe(()=>{;
     
     this.phLabels = this.variableManagentService.sensorsTimeData;
@@ -364,7 +346,6 @@ tempOptions= {
 
   async onApply(clusterName:string,deviceName:string,newstartDate:string,newendDate:string){
 
-      console.log("inside onApply");
       newstartDate = newstartDate+'.000Z';
       newendDate = newendDate+'.000Z';
       
@@ -373,14 +354,13 @@ tempOptions= {
       this.ecData[0].data=[];
       this.tempData[0].data=[];
     
-      //this.chartLabels =[];
       this.phLabels =[];
       this.ecLabels =[];
       this.tempLabels =[];
 
+      //async call to function
       this.variableManagentService.getAllSensorsData(this.clusterName,this.deviceName,newstartDate,newendDate).subscribe(()=>{
-        
-      console.log("after arrays are filled");
+    
       this.phLabels = this.variableManagentService.sensorsTimeData;
       this.ecLabels = this.variableManagentService.sensorsTimeData;
       this.tempLabels = this.variableManagentService.sensorsTimeData;
