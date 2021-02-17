@@ -17,31 +17,31 @@
             <ion-row>
               <ion-col size="12">
                 <ion-item lines="none">
-                  <ion-checkbox formControlName="monitoring_only" mode="md"></ion-checkbox>
+                  <ion-checkbox formControlName="monit_only" mode="md"></ion-checkbox>
                   <ion-label>Monitoring Only</ion-label>
                 </ion-item>
               </ion-col>
             </ion-row>
           </div>
   
-          <div *ngIf="!ecForm.get('monitoring_only').value" [formGroup]="controlForm"> 
+          <div *ngIf="!ecForm.get('monit_only').value" [formGroup]="controlForm"> 
             <ion-row>
               <ion-col size="5">
                 <ion-item>
                   <ion-label position="floating">Dosing Time</ion-label>
-                  <ion-input formControlName="dosing_time" type="number"></ion-input>
+                  <ion-input formControlName="dose_time" type="number"></ion-input>
                 </ion-item>
               </ion-col>
               <ion-col offset="1" size="5">
                 <ion-item>
                   <ion-label position="floating">Dosing Interval</ion-label>
-                  <ion-input formControlName="dosing_interval" type="number"></ion-input>
+                  <ion-input formControlName="dose_interv" type="number"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>
             <h3>Pumps</h3>
             <div formGroupName="pumps">
-              <ion-row formGroupName="pump 1">
+              <ion-row formGroupName="pump_1">
                 <ion-col size="6">
                   <ion-item>
                     <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
@@ -54,7 +54,7 @@
                   </ion-item>
                 </ion-col>
               </ion-row>
-              <ion-row formGroupName="pump 2">
+              <ion-row formGroupName="pump_2">
                 <ion-col size="6">
                   <ion-item>
                     <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
@@ -67,7 +67,7 @@
                   </ion-item>
                 </ion-col>
               </ion-row>
-              <ion-row formGroupName="pump 3">
+              <ion-row formGroupName="pump_3">
                 <ion-col size="6">
                   <ion-item>
                     <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
@@ -80,7 +80,7 @@
                   </ion-item>
                 </ion-col>
               </ion-row>
-              <ion-row formGroupName="pump 4">
+              <ion-row formGroupName="pump_4">
                 <ion-col size="6">
                   <ion-item>
                     <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
@@ -93,7 +93,7 @@
                   </ion-item>
                 </ion-col>
               </ion-row>
-              <ion-row formGroupName="pump 5">
+              <ion-row formGroupName="pump_5">
                 <ion-col size="6">
                   <ion-item>
                     <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
@@ -110,29 +110,29 @@
             <h3>Desired Value</h3>
             <ion-row>
               <ion-item lines="none">
-                <ion-checkbox formControlName="day_and_night" mode="md"></ion-checkbox>
+                <ion-checkbox formControlName="d_n_enabled" mode="md"></ion-checkbox>
                 <ion-label>Different Targets for Day and Night</ion-label>
               </ion-item>
             </ion-row>
-            <ion-row *ngIf="controlForm.get('day_and_night').value">
+            <ion-row *ngIf="controlForm.get('d_n_enabled').value">
               <ion-col size="6">
                 <ion-item>
                   <ion-label position="floating">Day Target Value</ion-label>
-                  <ion-input formControlName="day_target_value" type="number"></ion-input>
+                  <ion-input formControlName="day_tgt" type="number"></ion-input>
                 </ion-item>
               </ion-col>
               <ion-col size="6">
                 <ion-item>
                   <ion-label position="floating">Night Target Value</ion-label>
-                  <ion-input formControlName="night_target_value" type="number"></ion-input>
+                  <ion-input formControlName="night_tgt" type="number"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>
-            <ion-row *ngIf="!controlForm.get('day_and_night').value">
+            <ion-row *ngIf="!controlForm.get('d_n_enabled').value">
               <ion-col size="12">
                 <ion-item>
                   <ion-label position="floating">Target Value</ion-label>
-                  <ion-input formControlName="target_value" type="number"></ion-input>
+                  <ion-input formControlName="tgt" type="number"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>

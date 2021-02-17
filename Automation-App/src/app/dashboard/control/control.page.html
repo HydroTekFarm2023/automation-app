@@ -1,81 +1,40 @@
-<ion-toolbar color="primary">
-  <ion-select #clusterValue slot="start" [interfaceOptions]="clusterAlertOptions" class="dropdown" [(ngModel)]="clusterName"
-  (ionChange)="changeCluster(clusterValue.value)" placeholder='Select a Cluster'>
-  <ion-select-option *ngFor="let cluster of variableManagementService.clusterNames" [value]="cluster">
-    {{ cluster }}</ion-select-option>
-</ion-select>
-  <ion-select *ngIf="!variableManagementService.noDevices" slot="start" [interfaceOptions]="deviceAlertOptions" class="dropdown" #deviceValue [(ngModel)]="deviceName"
-  (ionChange)="changeDevice(deviceValue.value)" placeholder='Select a Device'>
-  <ion-select-option *ngFor="let device of variableManagementService.devices" [value]="device">
-    {{ device }}</ion-select-option>
-</ion-select>
-<ion-button *ngIf="!variableManagementService.noDevices" class="save_button" slot="end" (click)="pushData(settingsForm.value)" [disabled]="!(isDirty)">Push Changes</ion-button>
-</ion-toolbar>
-
 <ion-content>
   <div class="content">
-    <div *ngIf="!variableManagementService.noDevices && !variableManagementService.noClusters">
+
+    <div *ngIf="currentDevice != null">
       <form [formGroup]="settingsForm">
-        <div *ngIf="isSystem">
-          <h2>System Settings</h2>
+        <div>
+          <h2 class="inline-heading">{{ currentDevice.name }}</h2>
+          <ion-button class="inline-button" (click)="onSettingsFormSubmit()" [disabled]="!isDirty">Save</ion-button>
+          <ion-button class="start-button" (click)="onBootButtonClick()">{{ currentDevice.device_started? stopDeviceString: startDeviceString }}</ion-button>
+        </div>
+
+        <div *ngIf="currentDeviceType == FertigationSystemString">  
           <ph *ngIf="ph" [parentForm]="settingsForm"></ph>
           <ec *ngIf="ec" [parentForm]="settingsForm"></ec>
           <water-temp *ngIf="water_temperature" [parentForm]="settingsForm"></water-temp>
         </div>
-        <div *ngIf="isGrowRoom">
-          <h2>Grow Room Settings</h2>
+        <div *ngIf="currentDeviceType == ClimateControllerString">
           <air-temperature *ngIf="air_temperature" [parentForm]="settingsForm"></air-temperature>
           <humidity *ngIf="humidity" [parentForm]="settingsForm"></humidity>
         </div>
       </form>
     </div>
-    <div *ngIf="variableManagementService.noClusters" class="center">
+
+    <div *ngIf="noDevices" class="center">
       <ion-grid>
         <ion-row>
           <ion-col size="10" offset="1">
-            <h6>There are no clusters to display</h6>
+            <h6>You have no Hydrotek Devices</h6>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col size="10" offset="1">
-            <h6>Click the Create Cluster button to create a new cluster</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button class="add_button" (click)="presentClusterModal()">Create Cluster</ion-button>
+            <h6>Click the Create Device Button in the side menu to create a Hydrotek Device</h6>
           </ion-col>
         </ion-row>
       </ion-grid>
     </div>
-    <div *ngIf="!variableManagementService.noClusters && variableManagementService.noDevices" class="center">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="10" offset="1">
-            <h6>There are no devices in this cluster</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="10" offset="1">
-            <h6>Click the Create Grow Room button to setup a Grow Room</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button class="add_button" (click)="presentGrowRoomModal()">Create Grow Room</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="10" offset="1">
-            <h6>Click the Create System button to setup a System</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button class="add_button" (click)="presentSystemModal()">Create System</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+
   </div>
 </ion-content>

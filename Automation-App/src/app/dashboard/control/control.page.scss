@@ -8,14 +8,28 @@ h2, h6 {
     display: inline;
 }
 
+ion-label {
+    color: white;
+    margin-left: 10px;
+}
+
+.start-button {
+    width: max-content;
+}
+
 .content {
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;;
 }
 
-.save_button {
-    margin-right: 20px;
+.inline-heading {
+    display: inline-block;
+}
+
+.inline-button {
+    display: inline-block;
+    margin-left: 20px;
     font-weight: bolder;
     letter-spacing: 1px;
 }

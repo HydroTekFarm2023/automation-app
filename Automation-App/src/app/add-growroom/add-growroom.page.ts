@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { VariableManagementService } from '../variable-management.service';
-import { plant } from '../variable-management.service';
+import { VariableManagementService } from '../Services/variable-management.service';
+import { plant } from '../Services/variable-management.service';
 import { Router } from '@angular/router';
 import { MqttInterfaceService } from '../Services/mqtt-interface.service';
 

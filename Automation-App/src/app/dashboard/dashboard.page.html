@@ -13,10 +13,10 @@
       <ion-tab-button tab="warnings">
         <ion-label class="tab-label">Warnings</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="monitoring">
+        <ion-tab-button (click)="navigateToMonitoringTab()">
           <ion-label class="tab-label">Monitoring</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="control">
+        <ion-tab-button (click)="navigateToControlTab()">
           <ion-label class="tab-label">Control</ion-label>
         </ion-tab-button>
     </ion-tab-bar> 

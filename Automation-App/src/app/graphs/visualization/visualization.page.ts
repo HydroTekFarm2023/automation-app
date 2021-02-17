@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {Chart} from 'chart.js';
 import {ChartDataSets} from 'chart.js';
 
-import { VariableManagementService } from 'src/app/variable-management.service';
+import { VariableManagementService } from 'src/app/Services/variable-management.service';
 import { Variable } from '@angular/compiler/src/render3/r3_ast';
 import { Label } from 'ng2-charts';
 import { ChartsModule } from 'ng2-charts';
@@ -194,7 +194,7 @@ chartOptions= {
     
     this.DefaultValue = "0" ;
     this.compareWith = this.compareWithFn;
-    this.variableManagentService.fetchClusters(false);
+   // this.variableManagentService.fetchClusters(false);
     this.getData();
   }
 
@@ -223,14 +223,14 @@ chartOptions= {
   changeDevice(deviceName : string){
     console.log("change device");
     if(this.variableManagentService.selectedDevice.value != deviceName){
-      this.variableManagentService.updateCurrentCluster(this.clusterName, deviceName);
+    //  this.variableManagentService.updateCurrentCluster(this.clusterName, deviceName);
     }
   }
 
   // Change Cluster
   changeCluster(clusterName: string){
     console.log("change cluster");
-    this.variableManagentService.updateCurrentCluster(clusterName, null);
+  //  this.variableManagentService.updateCurrentCluster(clusterName, null);
   }
 
     onApply(newstartDate:string,newendDate:string){

@@ -5,36 +5,22 @@
         <ion-col size="6">
           <h3 class="header-title" lines="none">{{ sensor.title }}</h3>
           <ion-item lines="none">
-            <h1>{{ sensor.current_val }}&#8451;</h1>
+            <h1>{{ currentValue }}&#8451;</h1>
             <ion-icon class="check-icon" name="checkmark-circle"></ion-icon>
           </ion-item>
         </ion-col>
         <ion-col offset="1" size="5" class="details">
-            <div *ngIf="!sensor.monitoring_only">
-              <div *ngIf="!sensor.day_and_night">
-                <ion-label class="title">Target Value</ion-label>
-                <div>
-                  <ion-icon name="locate-sharp"></ion-icon>
-                  <ion-label class="value">{{ sensor.target_val }} &#8451;</ion-label>
-                </div>
-              </div>
-              <div *ngIf="sensor.day_and_night">
-                <ion-label class="title">Day Target Value</ion-label>
-                <div>
-                  <ion-icon name="locate-sharp"></ion-icon>
-                  <ion-label class="value">{{ sensor.day_target_value }} &#8451;</ion-label>
-                </div>
-                <ion-label class="title">Night Target Value</ion-label>
-                <div>
-                  <ion-icon name="locate-sharp"></ion-icon>
-                  <ion-label class="value">{{ sensor.night_target_value }} &#8451;</ion-label>
-                </div>
+            <div *ngIf="!sensor.monit_only">
+              <ion-label class="title">Target Value</ion-label>
+              <div>
+                <ion-icon name="locate-sharp"></ion-icon>
+                <ion-label class="value">{{ sensor.tgt }} &#8451;</ion-label>
               </div>
             </div>
             <ion-label class="title">Alarm Settings</ion-label>
             <div>
               <ion-icon name="alarm"></ion-icon>
-              <ion-label class="value">{{ sensor.range }} &#8451;</ion-label>
+              <ion-label class="value">{{ sensor.alarm_min + ' - ' + sensor.alarm_max }} &#8451;</ion-label>
             </div>
         </ion-col>
       </ion-row>

@@ -6,6 +6,7 @@ import {LoadingController, AlertController } from '@ionic/angular';
 import { Validators, FormBuilder, FormGroup} from '@angular/forms'; 
 import {PasswordStrengthValidator} from './password';
 import { Observable } from 'rxjs';
+import { VariableManagementService } from '../Services/variable-management.service';
 
 @Component({
   selector: 'app-auth',
@@ -20,23 +21,19 @@ isLoading = false; //set to false as a default.
 isLogin = true; //set to true as a default.
   //Parameters injected to trigger the necessary methods.
   constructor( private authService: AuthService, private router : Router, private loadingCtrl: LoadingController,
-    public formbuilder: FormBuilder, private alertCtrl: AlertController) 
-   {
+    public formbuilder: FormBuilder, private alertCtrl: AlertController, private variableManagementService: VariableManagementService) {
     this.formgroup = this.formbuilder.group(
       {
         email: new FormControl('', Validators.compose([Validators.required, Validators.email])), 
         password: new FormControl('', Validators.compose([Validators.required, Validators.minLength(6),PasswordStrengthValidator.isValid]))
       }
     );
-   
-   
    }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
+
   onSubmit(){
-    if (!this.formgroup.valid) //Cannot proceed if the form is invalid.
-    {
+    if(!this.formgroup.valid) {
       return;
     }
     //If the form is valid, the email and password properties are extracted.
@@ -44,8 +41,7 @@ isLogin = true; //set to true as a default.
     const password = this.formgroup.value['password'];
     this.onLogin(email, password);
   }
-  onLogin(email: string, password: string)
-  {
+  onLogin(email: string, password: string) {
     this.isLoading = true;
     this.loadingCtrl
       .create({ keyboardClose: true, message: 'Logging in...' })
@@ -61,8 +57,12 @@ isLogin = true; //set to true as a default.
             console.log(resData);
             this.isLoading = false;
             loadingEl.dismiss();
-            console.log('Logged in!!')
-            this.router.navigateByUrl('/dashboard');
+            console.log('Logged in!!');
+            this.variableManagementService.fetchDevices().subscribe(() => {
+              this.router.navigateByUrl('/dashboard/monitoring');
+            }, (error: any) => {
+              console.log(error);
+            });
           },
           //In case of errors while logging in, custom error messages are displayed.
           errRes => {
@@ -79,8 +79,8 @@ isLogin = true; //set to true as a default.
           }
         );
       });
-   
   }
+
   //Alert box display function.
   private showAlert(message: string) {
     this.alertCtrl
@@ -91,10 +91,12 @@ isLogin = true; //set to true as a default.
       })
       .then(alertEl => alertEl.present());
   }
-    //Navigated to the Signup Page when Sign Up option is selected.
-   signUp(){
+ 
+  //Navigated to the Signup Page when Sign Up option is selected.
+  signUp() {
     this.router.navigateByUrl('/register')
-    }  }
+  }  
+}
  
   
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { VariableManagementService, plant } from '../variable-management.service';
+import { VariableManagementService, plant } from '../Services/variable-management.service';
 
 @Component({
   selector: 'add-system',

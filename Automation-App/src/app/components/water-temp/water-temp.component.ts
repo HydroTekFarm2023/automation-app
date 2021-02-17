@@ -17,32 +17,23 @@ export class WaterTempComponent implements OnInit, OnDestroy {
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
-    console.log("water temp intialized");
     this.controlForm = this.fb.group({
-      'day_and_night': this.fb.control(true),
-      'day_target_value': this.fb.control(null),
-      'night_target_value': this.fb.control(null),
-      'target_value': this.fb.control(null),
-      'heater_enabled': this.fb.control(false),
-      'cooler_enabled': this.fb.control(false)
+      'd_n_enabled': this.fb.control(true),
+      'day_tgt': this.fb.control(null),
+      'night_tgt': this.fb.control(null),
+      'tgt': this.fb.control(null),
+      'up_ctrl': this.fb.control(false),
+      'down_ctrl': this.fb.control(false)
     });
 
     this.waterTemperatureForm = this.fb.group({
-      'monitoring_only': this.fb.control(false),
+      'monit_only': this.fb.control(false),
       'control': this.controlForm,
       'alarm_min': this.fb.control(null),
       'alarm_max': this.fb.control(null)
     });
 
-    this.parentForm.addControl('water_temperature', this.waterTemperatureForm);
-
-    this.waterTemperatureForm.get('monitoring_only').valueChanges.subscribe(resData => {
-      if(resData) {
-        this.waterTemperatureForm.removeControl('control');
-      } else {
-        this.waterTemperatureForm.addControl('control', this.controlForm);
-      }
-    });
+    this.parentForm.addControl('water_temp', this.waterTemperatureForm);
   }
 
   toggleAccordion() {
@@ -50,6 +41,6 @@ export class WaterTempComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.parentForm.removeControl('water_temperature');
+    this.parentForm.removeControl('water_temp');
   }
 }

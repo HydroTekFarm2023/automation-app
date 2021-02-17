@@ -1,0 +1,40 @@
+<ion-card class="dashboard-card">
+  <ion-card-content>
+    <ion-grid>
+    
+      <ion-row>
+        <ion-item tappable (click)="toggleAccordion()" lines="none">
+          <ion-icon slot="start" name="chevron-forward-outline" *ngIf="!isOpen"></ion-icon>
+          <ion-icon slot="start" name="chevron-down-outline" *ngIf="isOpen"></ion-icon>
+          <h3 fill="clear" class="color">General Settings</h3>
+        </ion-item>
+      </ion-row>
+    
+      <form [formGroup]="generalSettingsForm">
+        <div *ngIf="isOpen">
+          <hr color="grey"/>
+          <div class="group">
+            <ion-row>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating">Device Name</ion-label>
+                  <ion-input formControlName="device_name"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+            
+            <h3>Reservoir Settings</h3>
+            <ion-row>
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label position="floating">Reservoir Size</ion-label>
+                  <ion-input formControlName="reserv_size" type="number"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </div>
+        </div>
+      </form>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>

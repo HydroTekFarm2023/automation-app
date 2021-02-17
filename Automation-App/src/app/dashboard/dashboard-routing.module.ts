@@ -14,7 +14,15 @@ const routes: Routes = [
     loadChildren: () => import('./monitoring/monitoring.module').then( m => m.MonitoringPageModule)
   },
   {
+    path: 'monitoring/:deviceType/:deviceIndex',
+    loadChildren: () => import('./monitoring/monitoring.module').then( m => m.MonitoringPageModule)
+  },
+  {
     path: 'control',
+    loadChildren: () => import('./control/control.module').then( m => m.ControlPageModule)
+  },
+  {
+    path: 'control/:deviceType/:deviceIndex',
     loadChildren: () => import('./control/control.module').then( m => m.ControlPageModule)
   },
   {
@@ -27,12 +35,12 @@ const routes: Routes = [
     pathMatch: 'full'
   }
  ]
-},
-  {
-    path: '',
-    redirectTo: '/dashboard/monitoring',
-    pathMatch: 'full'
-  },
+}
+  // {
+  //   path: '',
+  //   redirectTo: '',
+  //   pathMatch: 'full'
+  // },
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

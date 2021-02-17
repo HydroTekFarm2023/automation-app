@@ -1,35 +1,45 @@
 <ion-app>
-  <ion-menu side="start">
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>Hydrotek Farms</ion-title>
-      </ion-toolbar>
-    </ion-header>
-   <!--side menu options-->
-   <ion-content>
+  <ion-split-pane contentId="main">
+    <ion-menu contentId="main">
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Hydrotek Farms</ion-title>
+        </ion-toolbar>
+      </ion-header>
+     <!--side menu options-->
+     <ion-content>
       <ion-list>
-        <ion-menu-toggle>
-        <ion-item lines="none">
-            <ion-icon name="settings" slot="start"></ion-icon>
-            <ion-label>settings</ion-label>
+        <ion-item>
+          <ion-title>Fertigation Systems</ion-title>
+          <ion-button (click)="newDevice()" fill="clear" size="large">
+            <ion-icon name="add-circle-outline"></ion-icon>
+          </ion-button>
         </ion-item>
-        </ion-menu-toggle>
-        <ion-menu-toggle>
-        <ion-item lines="none">
-           <ion-icon name="information" slot="start"></ion-icon>
-           <ion-label>information</ion-label>
-        </ion-item>
-        </ion-menu-toggle>
-        <ion-menu-toggle>
-        <ion-item lines="none">
-          <ion-icon name="call" slot="start"></ion-icon>
-          <ion-label>call</ion-label>
-        </ion-item>
+        <ion-menu-toggle *ngFor="let device of (variableManagementService.fertigationSystemSettings | async); let i = index">
+          <ion-item lines="none" routerLink="/dashboard/monitoring" [queryParams]="{ deviceType: device.type, deviceIndex: i }">
+            <ion-icon name="leaf-outline" slot="start"></ion-icon>
+            <ion-label>{{ device.name }}</ion-label>
+          </ion-item>
         </ion-menu-toggle>
       </ion-list>
-   </ion-content>
-  </ion-menu>  
-   <ion-router-outlet main></ion-router-outlet>
+      <ion-list>
+        <ion-item>
+          <ion-title>Climate Controllers</ion-title>
+          <ion-button (click)="newDevice()" fill="clear" size="large">
+            <ion-icon name="add-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <ion-menu-toggle *ngFor="let device of (variableManagementService.climateControllerSettings | async); let i = index">
+          <ion-item lines="none" routerLink="/dashboard/monitoring" [queryParams]="{ deviceType: device.type, deviceIndex: i }">
+            <ion-icon name="cloudy-outline" slot="start"></ion-icon>
+            <ion-label>{{ device.name }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+     </ion-content>
+    </ion-menu> 
+    <ion-router-outlet id="main"></ion-router-outlet> 
+  </ion-split-pane>
 </ion-app>
 
 

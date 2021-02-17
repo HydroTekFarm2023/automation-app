@@ -1,77 +1,37 @@
-<!--selecting menu options-->
-<ion-toolbar color="primary" *ngIf="!variableManagentService.noClusters">
-    <ion-select #clusterValue slot="start" [interfaceOptions]="clusterAlertOptions" class="dropdown" [(ngModel)]="clusterName"
-    (ionChange)="changeCluster(clusterValue.value)" placeholder='Select a Cluster'>
-    <ion-select-option *ngFor="let cluster of variableManagentService.clusterNames" [value]="cluster">
-      {{ cluster }}</ion-select-option>
-  </ion-select>
-    <ion-select *ngIf="!variableManagentService.noDevices" slot="start" [interfaceOptions]="deviceAlertOptions" class="dropdown" #deviceValue [(ngModel)]="deviceName"
-    (ionChange)="changeDevice(deviceValue.value)" placeholder='Select a Device'>
-    <ion-select-option *ngFor="let device of variableManagentService.devices" [value]="device">
-      {{ device }}</ion-select-option>
-  </ion-select>
-  <ion-button slot="end" class="add_button" (click)="presentModalIdentifyDevice()">Setup</ion-button>
-</ion-toolbar>
-
 <ion-content>
   <div class="content">
-    <div *ngIf="!variableManagentService.noDevices && !variableManagentService.noClusters">
+ 
+    <div *ngIf="currentDeviceSettings != null">
       <div>
         <h2>Live Sensor Data</h2>
         <h2>{{ timeStamp }}</h2>
       </div>
-      <span *ngFor="let sensorValues of variableManagentService.sensorDisplays">
-        <sensor-display [sensor]="sensorValues"></sensor-display>
+      <span *ngFor="let sensor of (currentDeviceSettings.settings | keyvalue)">
+        <sensor-display 
+          [sensor]="{ title: sensor.key, 
+                      monit_only: sensor.value.monit_only,
+                      tgt: sensor.value.control.tgt,
+                      alarm_min: sensor.value.alarm_min,
+                      alarm_max: sensor.value.alarm_max }">
+          </sensor-display>
       </span>
     </div>
-    <div *ngIf="variableManagentService.noClusters" class="center">
+   
+    <div *ngIf="noDevices" class="center">
       <ion-grid>
         <ion-row>
           <ion-col size="10" offset="1">
-            <h6>There are no clusters to display</h6>
+            <h6>You have no Hydrotek Devices</h6>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col size="10" offset="1">
-            <h6>Click the Create Cluster button to create a new cluster</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button class="add_button" (click)="presentClusterModal()">Create Cluster</ion-button>
+            <h6>Click the Create Device Button in the side menu to create a Hydrotek Device</h6>
           </ion-col>
         </ion-row>
       </ion-grid>
     </div>
-    <div *ngIf="!variableManagentService.noClusters && variableManagentService.noDevices" class="center">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="10" offset="1">
-            <h6>There are no devices in this cluster</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="10" offset="1">
-            <h6>Click the Create Grow Room button to setup a Grow Room</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button class="add_button" (click)="presentGrowRoomModal()">Create Grow Room</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="10" offset="1">
-            <h6>Click the Create System button to setup a System</h6>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button class="add_button" (click)="presentSystemModal()">Create System</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+
   </div>
 </ion-content>
 

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from 'rxjs';
-import { VariableManagementService } from '../variable-management.service';
+import { VariableManagementService } from './variable-management.service';
 import { timeout, filter, take } from 'rxjs/operators';
 
 
@@ -132,7 +132,7 @@ export class MqttInterfaceService {
       qos ? message.qos = qos : 1;
       qos ? message.retained = retained : false;
       this.client.publish(message);
-      var messageConfirmationSubscribtion;
+      let messageConfirmationSubscribtion;
       let messageConfirmationPromise = new Promise<void>((resolve, reject) => {
         messageConfirmationSubscribtion = this.messageConfirmation.pipe(filter((message) => message == payload), take(1)).subscribe(() => {
           console.log("resolved");
