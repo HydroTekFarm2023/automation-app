@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthService, AuthResponseData } from './auth.service'; 
+import { AuthService, AuthResponseData } from './auth.service'; 
 import { Router } from '@angular/router'; 
 import { FormControl} from '@angular/forms'; //Imported to track the value and validation status of an individual form control.
-import {LoadingController, AlertController } from '@ionic/angular'; 
-import { Validators, FormBuilder, FormGroup} from '@angular/forms'; 
-import {PasswordStrengthValidator} from './password';
+import { LoadingController, AlertController } from '@ionic/angular'; 
+import { Validators, FormBuilder, FormGroup } from '@angular/forms'; 
+import { PasswordStrengthValidator } from './password';
 import { Observable } from 'rxjs';
-import { VariableManagementService } from '../Services/variable-management.service';
+import { VariableManagementService, Devices } from '../Services/variable-management.service';
+import { MqttInterfaceService } from '../Services/mqtt-interface.service';
 
 @Component({
   selector: 'app-auth',
@@ -17,11 +18,11 @@ export class AuthPage implements OnInit {
 
   formgroup: FormGroup;
   
-isLoading = false; //set to false as a default.
-isLogin = true; //set to true as a default.
+  isLoading = false; //set to false as a default.
+  isLogin = true; //set to true as a default.
   //Parameters injected to trigger the necessary methods.
-  constructor( private authService: AuthService, private router : Router, private loadingCtrl: LoadingController,
-    public formbuilder: FormBuilder, private alertCtrl: AlertController, private variableManagementService: VariableManagementService) {
+  constructor(private authService: AuthService, private mqttService: MqttInterfaceService, private router : Router, private loadingCtrl: LoadingController,
+    public formbuilder: FormBuilder, private alertCtrl: AlertController, private variableManagementService: VariableManagementService) {  
     this.formgroup = this.formbuilder.group(
       {
         email: new FormControl('', Validators.compose([Validators.required, Validators.email])), 
@@ -57,8 +58,11 @@ isLogin = true; //set to true as a default.
             console.log(resData);
             this.isLoading = false;
             loadingEl.dismiss();
-            console.log('Logged in!!');
+            console.log('Logged in!');
             this.variableManagementService.fetchDevices().subscribe(() => {
+              let mqttHost = "broker.hivemq.com";
+              let topics: string[] = [];
+              this.mqttService.createClient(topics, { host: mqttHost, port: 8000 });
               this.router.navigateByUrl('/dashboard/monitoring');
             }, (error: any) => {
               console.log(error);

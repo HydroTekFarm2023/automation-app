@@ -1,19 +1,13 @@
 <ion-content>
   <div class="content">
  
-    <div *ngIf="currentDeviceSettings != null">
+    <div *ngIf="currentDevice != null">
       <div>
         <h2>Live Sensor Data</h2>
         <h2>{{ timeStamp }}</h2>
       </div>
-      <span *ngFor="let sensor of (currentDeviceSettings.settings | keyvalue)">
-        <sensor-display 
-          [sensor]="{ title: sensor.key, 
-                      monit_only: sensor.value.monit_only,
-                      tgt: sensor.value.control.tgt,
-                      alarm_min: sensor.value.alarm_min,
-                      alarm_max: sensor.value.alarm_max }">
-          </sensor-display>
+      <span *ngFor="let sensorSettings of currentDeviceSettings">
+        <sensor-display [sensor]="sensorSettings" [allLiveData]="liveData"></sensor-display>
       </span>
     </div>
    

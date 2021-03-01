@@ -53,6 +53,7 @@ export class ControlPage implements OnInit {
       if((this.currentDeviceType && this.currentDeviceIndex) != null) {
         console.log(this.variableManagementService.fertigationSystemSettings.value);
         this.currentDevice = this.variableManagementService.getCurrentDeviceSettings(this.currentDeviceType, this.currentDeviceIndex);
+        console.log(this.currentDevice);
         this.changeDetector.detectChanges();
         this.settingsForm.patchValue(this.currentDevice.settings);
         console.log(this.settingsForm.value);
@@ -66,28 +67,55 @@ export class ControlPage implements OnInit {
     });
     this.formValue$ = this.settingsForm.valueChanges.pipe(debounceTime(300), filter(() => this.noDevices != true));
     this.formValue$.subscribe((formValue) => {
-      this.isDirty = (_.isEqual(formValue, this.currentDevice.settings) == false);
+      console.log(formValue);
+      console.log(this.currentDevice.settings);
+      console.log(this.currentDevice.settings["ph"]);
+      
+      this.isDirty = (_.isEqual(formValue, JSON.parse(JSON.stringify(this.currentDevice.settings))) == false);
+      console.log(formValue);
+      console.log(JSON.parse(JSON.stringify(this.currentDevice.settings)));
     });
   }
+
+//   getObjectDiff(obj1, obj2) {
+//     const diff = Object.keys(obj1).reduce((result, key) => {
+//         if (!obj2.hasOwnProperty(key)) {
+//             console.log(key);
+//             result.push(key);
+//         } else if (_.isEqual(obj1[key], obj2[key])) {
+//             const resultKeyIndex = result.indexOf(key);
+//             console.log(key);
+//             result.splice(resultKeyIndex, 1);
+//         }
+//         return result;
+//     }, Object.keys(obj2));
+
+//     return diff;
+// }
 
   onBootButtonClick() {
     let device = {...this.currentDevice}
     device.settings = this.settingsForm.value;
     //this.mqttService.publishMessage();
     device.device_started = !this.currentDevice.device_started;
-    this.onSettingsFormSubmit(device);    
+  //  this.onSettingsFormSubmit(device);    
   }
   
   // update data in backend
   onSettingsFormSubmit(currentDevice?: Devices){
+    console.log(this.currentDevice);
      var changedData = [];
      for(var key in this.settingsForm.value){
+       console.log(key);
        if(!_.isEqual(this.settingsForm.value[key], this.currentDevice.settings[key])) {
+         console.log(this.settingsForm.value[key]);
+         console.log(this.currentDevice.settings[key]);
+        console.log("h");
         changedData.push({ [key]: this.settingsForm.value[key] });
       }
     }
     console.log(changedData);
-    // this.mqttService.publishMessage("D1000/device_settings", JSON.stringify({ data: changedData}), 1, false).then(() => {
+    this.mqttService.publishMessage("device_settings/" + this.currentDevice.topicID, JSON.stringify({ data: changedData}), 1, false).then(() => {
     let device;
     if(currentDevice) {
         device = currentDevice
@@ -95,16 +123,17 @@ export class ControlPage implements OnInit {
       device = {...this.currentDevice}
       device.settings = this.settingsForm.value;
     }
-      
+    console.log("pushed changes");
     this.variableManagementService
       .updateDeviceSettings(device, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex)
         .subscribe(() => {
           this.currentDevice = device;
           this.isDirty = false;
         }, (error) => {console.log(error)});
-    // },
-    // (error) => {
-    //   console.log(error);
-    // });
+    },
+    (error) => {
+      console.log(error);
+    });
   }
 }
+

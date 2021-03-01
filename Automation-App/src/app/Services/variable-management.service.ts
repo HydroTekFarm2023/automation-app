@@ -6,7 +6,8 @@ import { BehaviorSubject, forkJoin, Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { map } from 'rxjs/operators';
 import * as _ from "lodash";
-import { error } from "@angular/compiler/src/util";
+import { FertigationSystem } from "../models/fertigation-system.model";
+import { ClimateController } from "../models/climate-controller.model";
 
 @Injectable({
   providedIn: "root",
@@ -184,22 +185,25 @@ export class VariableManagementService {
   }
 
   public fetchDevices() {
-    let $fertigationSystemSettings = this.http.get<FertigationSystem[]>(this.dbURL + '/fertigation-system-settings/find');
-    let $climateControllerSettings = this.http.get<ClimateController[]>(this.dbURL + '/climate-controller-settings/find');
+    let $fertigationSystems = this.http.get<FertigationSystem[]>(this.dbURL + '/fertigation-system-settings/find');
+    let $climateControllers = this.http.get<ClimateController[]>(this.dbURL + '/climate-controller-settings/find');
 
-    return forkJoin([$fertigationSystemSettings, $climateControllerSettings]).pipe(map(settings => {
-      this.fertigationSystemSettings.next(settings[0]);
+    return forkJoin([$fertigationSystems, $climateControllers]).pipe(map(settings => {
+      const fertigationSystemsDeserialized = settings[0].map(fertigationSystemJSON => new FertigationSystem().deserialize(fertigationSystemJSON));
+      const climateControllerDeserialized = settings[1].map(climateControllerJSON => new ClimateController().deserialize(climateControllerJSON));
+
+      this.fertigationSystemSettings.next(fertigationSystemsDeserialized);
+      this.climateControllerSettings.next(climateControllerDeserialized);
       console.log(this.fertigationSystemSettings.value);
-      this.climateControllerSettings.next(settings[1]);
     }));
   }
 
-  public getCurrentDeviceSettings(currentDeviceType: string, currentDeviceIndex: number) {
+  public getCurrentDeviceSettings(currentDeviceType: string, currentDeviceIndex: number): Devices {
     switch(currentDeviceType) {
       case FertigationSystemString:
-        return { ...this.fertigationSystemSettings.value[currentDeviceIndex] };
+        return this.fertigationSystemSettings.value[currentDeviceIndex];
       case ClimateControllerString:
-        return { ...this.climateControllerSettings.value[currentDeviceIndex] };
+        return this.climateControllerSettings.value[currentDeviceIndex];
       default:  // TODO add error handling code
         return null;
     }
@@ -218,118 +222,6 @@ export const FertigationSystemString = 'fertigation-system';
 export const ClimateControllerString = 'climate-controller';
 
 export type Devices = FertigationSystem | ClimateController;
-
-interface Device {
-  _id: string;
-  name: string;
-  type: string;
-  device_started: boolean;
-}
-
-interface FertigationSystem extends Device {
-  settings: {
-    ph?: PhSensor;
-    ec?: EcSensor;
-    water_temp?: WaterTempSensor;
-  }
-}
-
-interface ClimateController extends Device {
-  settings: {
-    air_temp?: AirTempSensor;
-    humidity?: HumiditySensor;
-  }
-}
-
-interface Sensor {
-  monit_only: boolean;
-  control: ControlSettings;
-  alarm_min: number;
-  alarm_max: number;
-}
-
-interface ControlSettings {
-  d_n_enabled: boolean;
-  day_tgt: number;
-  night_tgt: number;
-  tgt: number;
-}
-
-interface PhSensor extends Sensor {
-  control: PhControlSettings;
-}
-
-interface EcSensor {
-  control: EcControlSettings;
-}
-
-interface WaterTempSensor {
-  control: WaterTempControlSettings;
-}
-
-interface AirTempSensor {
-  control: AirTempControlSettings;
-}
-
-interface HumiditySensor {
-  control: HumidityControlSettings;
-}
-
-interface PhControlSettings extends ControlSettings {
-  dose_time: number;
-  dose_interv: number;
-  pumps: {
-    pump_1: {
-      enabled: boolean;
-    }
-    pump_2: {
-      enabled: boolean;
-    }
-  }
-}
-
-interface EcControlSettings extends ControlSettings {
-  dose_time: number;
-  dose_interv: number;
-  pumps: {
-    pump_1: {
-      enabled: boolean;
-      value: number;
-    }
-    pump_2: {
-      enabled: boolean;
-      value: number;
-    }
-    pump_3: {
-      enabled: boolean;
-      value: number;
-    }
-    pump_4: {
-      enabled: boolean;
-      value: number;
-    }
-    pump_5: {
-      enabled: boolean;
-      value: number;
-    }
-  }
-}
-
-interface WaterTempControlSettings extends ControlSettings {
-  up_ctrl: boolean;
-  down_ctrl: boolean;
-}
-
-interface AirTempControlSettings extends ControlSettings {
-  up_ctrl: boolean;
-  down_ctrl: boolean;
-}
-
-interface HumidityControlSettings extends ControlSettings {
-  up_ctrl: boolean;
-  down_ctrl: boolean;
-}
-
 
 // Format of settings data coming from backend
 

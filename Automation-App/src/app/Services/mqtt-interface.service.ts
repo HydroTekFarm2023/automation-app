@@ -1,16 +1,16 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from 'rxjs';
-import { VariableManagementService } from './variable-management.service';
-import { timeout, filter, take } from 'rxjs/operators';
-
+import { filter, take } from 'rxjs/operators';
 
 declare const Paho: any;
 declare const document: any;
 
+const CLIENTID = "Hydrotek App";
+const PORT = 9001;
+
 @Injectable({providedIn: "root"})
 
 export class MqttInterfaceService {
-
   private status: string[] = ['uninitialized', 'connecting', 'connected', 'disconnected'];
   public mqttStatus = new BehaviorSubject(status[0]);
 
@@ -18,20 +18,8 @@ export class MqttInterfaceService {
   public wifiConnectStatus = new Subject<boolean>();
 
   public client: any;
-  private topics: string[] = ['#'];
 
   private messageConfirmation = new Subject<string>();
-
-  MQTT_CONFIG: {
-    host: string;
-    port: number;
-    clientId: string;
-    path?: string;
-  } = {
-    host: "136.37.190.205",
-    port: 9001,
-    clientId: "User122",
-  };
 
   private scripts: any = {};
   private ScriptStore: Scripts[] = [
@@ -40,29 +28,15 @@ export class MqttInterfaceService {
     }
   ];
 
-  constructor(private variableManagementService: VariableManagementService) {
+  constructor() {
     this.ScriptStore.forEach((script: any) => {
         this.scripts[script.name] = {
             loaded: false,
             src: script.src
         };
     });
-    this.createClient(
-      this.onConnectionLost,
-      this.topics,
-      this.MQTT_CONFIG
-    );
   }
 
-  public connectToBroker() {
-    this.createClient(
-      this.onConnectionLost,
-      this.topics,
-      this.MQTT_CONFIG
-    );
-  }
-
-  
   private _load(...scripts: string[]) {
       var promises: any[] = [];
       scripts.forEach((script) => promises.push(this._loadScript(script)));
@@ -101,18 +75,17 @@ export class MqttInterfaceService {
   }
 
   public createClient(
-    onConnectionLost,
     TOPIC: string[], 
     MQTT_CONFIG: {
       host: string,
-      port: number,
-      clientId: string,
+      port?: number,
+      clientId?: string,
       path?: string,
     }): any {
-    return this._load('paho_mqtt').then(data => {
+    return this._load('paho_mqtt').then(() => {
       this.mqttStatus.next(this.status[1]);
-      this.client = new Paho.Client(MQTT_CONFIG.host, Number(MQTT_CONFIG.port), MQTT_CONFIG.path || "/mqtt", MQTT_CONFIG.clientId);
-      this.client.onConnectionLost = onConnectionLost.bind(this);
+      this.client = new Paho.Client(MQTT_CONFIG.host, Number(MQTT_CONFIG.port) || PORT, MQTT_CONFIG.path || "/mqtt", MQTT_CONFIG.clientId || CLIENTID);
+      this.client.onConnectionLost = this.onConnectionLost.bind(this);
       this.client.onMessageArrived = this.onMessageArrived.bind(this);
       this.client.onMessageDelivered = this.onMessageDelivered.bind(this);
       return this.client.connect(
@@ -121,7 +94,7 @@ export class MqttInterfaceService {
           onFailure: this._onConnectionFailure.bind(this)
       });
     }).catch(error => {
-   
+      console.log(error);
     })
   };
 
@@ -132,9 +105,8 @@ export class MqttInterfaceService {
       qos ? message.qos = qos : 1;
       qos ? message.retained = retained : false;
       this.client.publish(message);
-      let messageConfirmationSubscribtion;
       let messageConfirmationPromise = new Promise<void>((resolve, reject) => {
-        messageConfirmationSubscribtion = this.messageConfirmation.pipe(filter((message) => message == payload), take(1)).subscribe(() => {
+        this.messageConfirmation.pipe(filter((message) => message == payload), take(1)).subscribe(() => {
           console.log("resolved");
           resolve();
         },
@@ -160,19 +132,22 @@ export class MqttInterfaceService {
   onMessageArrived(ResponseObject) {
     console.log(ResponseObject.payloadString);
     // Split TOPIC URL to extract IDs
-    var topicParam = ResponseObject.topic.split("/", 3);
+    console.log(ResponseObject);
+    var topicParam = ResponseObject.topic.split("/", 2);
     // Check if incoming data is for selected device
-    if(topicParam[0] == this.variableManagementService.selectedCluster.value && topicParam[1] == this.variableManagementService.selectedDevice.value) {
-      switch(topicParam[2]) {
-        case 'live_data': {
-          // Update selected system live data
-          this.deviceLiveData.next(ResponseObject.payloadString);
-          break;
-        }
-        case 'wifi_connect_status': {
-          this.wifiConnectStatus.next(true);
-          break;
-        }
+    switch(topicParam[0]) {
+      case 'live_data': {
+        // Update selected system live data
+        this.deviceLiveData.next(ResponseObject.payloadString);
+        break;
+      }
+      case 'wifi_connect_status': {
+        this.wifiConnectStatus.next(true);
+        break;
+      }
+      default: {
+        console.log("Unkown Level 0 Case for MQTT Topic");
+        break;
       }
     }
   }
@@ -194,8 +169,20 @@ export class MqttInterfaceService {
     this.client.subscribe(topic);
   }
 
+  public subscribeToTopics(topics: string[]) {
+    topics.forEach(topic => {
+      this.client.subscribe(topic);
+    });
+  }
+
   public unsubscribeToTopic(topic: string) {
     this.client.unsubscribe(topic);
+  }
+
+  public unsubscribeToTopics(topics: string[]) {
+    topics.forEach(topic => {
+      this.client.unsubscribe(topic);
+    });
   }
 
   private _onConnect(topic: string[]) {
