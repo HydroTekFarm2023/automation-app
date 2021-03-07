@@ -94,35 +94,26 @@ export class ControlPage implements OnInit {
 // }
 
   onBootButtonClick() {
-    let device = {...this.currentDevice}
-    device.settings = this.settingsForm.value;
-    //this.mqttService.publishMessage();
-    device.device_started = !this.currentDevice.device_started;
-  //  this.onSettingsFormSubmit(device);    
+    this.currentDevice.device_started = !this.currentDevice.device_started;
+    this.mqttService.publishMessage("device_status", this.currentDevice.device_started? "1" : "0");
+    this.onSettingsFormSubmit();    
   }
   
   // update data in backend
-  onSettingsFormSubmit(currentDevice?: Devices){
-    console.log(this.currentDevice);
+  onSettingsFormSubmit(){
      var changedData = [];
      for(var key in this.settingsForm.value){
        console.log(key);
        if(!_.isEqual(this.settingsForm.value[key], this.currentDevice.settings[key])) {
-         console.log(this.settingsForm.value[key]);
-         console.log(this.currentDevice.settings[key]);
-        console.log("h");
         changedData.push({ [key]: this.settingsForm.value[key] });
       }
     }
     console.log(changedData);
     this.mqttService.publishMessage("device_settings/" + this.currentDevice.topicID, JSON.stringify({ data: changedData}), 1, false).then(() => {
     let device;
-    if(currentDevice) {
-        device = currentDevice
-    } else {
-      device = {...this.currentDevice}
-      device.settings = this.settingsForm.value;
-    }
+    device = {...this.currentDevice};
+    device.settings = this.settingsForm.value;
+    
     console.log("pushed changes");
     this.variableManagementService
       .updateDeviceSettings(device, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex)
