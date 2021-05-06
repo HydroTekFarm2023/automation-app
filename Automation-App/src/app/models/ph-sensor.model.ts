@@ -10,18 +10,16 @@ export class PhSensor extends Sensor implements Deserializable {
         tgt: number;
         dose_time: number;
         dose_interv: number;
-        pumps: {
-            pump_1: {
-                enabled: boolean;
-            }
-            pump_2: {
-                enabled: boolean;
-            }
-        }
+        up_ctrl: boolean,
+        down_ctrl: boolean
     }
     
 
     deserialize(input: any): this {
         return Object.assign(this, input);
+    }
+
+    getDisplayName(): string {
+        return 'PH'
     }
 }

@@ -1,0 +1,5 @@
+<ion-item lines="none">
+  <ion-icon [name]="data.logo"></ion-icon>
+  <ion-text style="margin-left: 20px;">{{ data.name }}</ion-text>
+  <ion-toggle slot="end" [(ngModel)]="data.currentValue" (click)="onToggleClick()"></ion-toggle>
+</ion-item>

@@ -16,7 +16,7 @@ export class PhComponent implements OnInit, OnDestroy {
   controlForm: FormGroup;
   day_and_night_targetForm: FormGroup;
   
-  constructor(private variableManagementService: VariableManagementService, private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
     this.day_and_night_targetForm = this.fb.group({});
@@ -28,14 +28,8 @@ export class PhComponent implements OnInit, OnDestroy {
       'day_tgt': this.fb.control(null),
       'night_tgt': this.fb.control(null),
       'tgt': this.fb.control(null),
-      'pumps': this.fb.group({
-        'pump_1': this.fb.group({
-          'enabled': this.fb.control(false)
-        }),
-        'pump_2': this.fb.group({
-          'enabled': this.fb.control(false)
-        })
-      })
+      'up_ctrl': this.fb.control(false),
+      'down_ctrl': this.fb.control(false)
     });
 
     this.phForm = this.fb.group({

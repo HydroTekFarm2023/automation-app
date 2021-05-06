@@ -27,26 +27,11 @@ export class EcComponent implements OnInit, OnDestroy {
       'night_tgt': this.fb.control(null),
       'tgt': this.fb.control(null),
       'pumps': this.fb.group({
-        'pump_1': this.fb.group({
-          'enabled': this.fb.control(false),
-          'value': this.fb.control(null)
-        }),
-        'pump_2': this.fb.group({
-          'enabled': this.fb.control(false),
-          'value': this.fb.control(null)
-        }),
-        'pump_3': this.fb.group({
-          'enabled': this.fb.control(false),
-          'value': this.fb.control(null)
-        }),
-        'pump_4': this.fb.group({
-          'enabled': this.fb.control(false),
-          'value': this.fb.control(null)
-        }),
-        'pump_5': this.fb.group({
-          'enabled': this.fb.control(false),
-          'value': this.fb.control(null)
-        })
+        'pump_1': this.fb.control(null),
+        'pump_2': this.fb.control(null),
+        'pump_3': this.fb.control(null),
+        'pump_4': this.fb.control(null),
+        'pump_5': this.fb.control(null)
       })
     });
 

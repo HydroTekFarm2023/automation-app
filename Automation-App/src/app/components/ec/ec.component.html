@@ -1,7 +1,7 @@
 <ion-card class="dashboard-card">
   <ion-card-content>
     <ion-grid>
-      <!--Card Header-->
+    
       <ion-row>
         <ion-item tappable (click)="toggleAccordion()" lines="none">
           <ion-icon slot="start" name="chevron-forward-outline" *ngIf="!isOpen"></ion-icon>
@@ -9,7 +9,7 @@
           <h3 fill="clear" class="color">EC</h3>
         </ion-item>
       </ion-row>
-      <!--Card Content-->
+      
       <form [formGroup]="ecForm">
         <div *ngIf="isOpen">
           <hr color="grey" />
@@ -39,74 +39,37 @@
                 </ion-item>
               </ion-col>
             </ion-row>
+            
             <h3>Pumps</h3>
             <div formGroupName="pumps">
-              <ion-row formGroupName="pump_1">
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
-                    <ion-label>Pump 1</ion-label>
-                  </ion-item>
-                </ion-col>
-                <ion-col offset="1" size="5">
-                  <ion-item>
-                    <ion-input placeholder="ratio (ml/l)" type="number" formControlName="value"></ion-input>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-              <ion-row formGroupName="pump_2">
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
-                    <ion-label>Pump 2</ion-label>
-                  </ion-item>
-                </ion-col>
-                <ion-col offset="1" size="5">
-                  <ion-item>
-                    <ion-input placeholder="ratio (ml/l)" type="number" formControlName="value"></ion-input>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-              <ion-row formGroupName="pump_3">
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
-                    <ion-label>Pump 3</ion-label>
-                  </ion-item>
-                </ion-col>
-                <ion-col offset="1" size="5">
-                  <ion-item>
-                    <ion-input placeholder="ratio (ml/l)" type="number" formControlName="value"></ion-input>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-              <ion-row formGroupName="pump_4">
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
-                    <ion-label>Pump 4</ion-label>
-                  </ion-item>
-                </ion-col>
-                <ion-col offset="1" size="5">
-                  <ion-item>
-                    <ion-input placeholder="ratio (ml/l)" type="number" formControlName="value"></ion-input>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
-              <ion-row formGroupName="pump_5">
-                <ion-col size="6">
-                  <ion-item>
-                    <ion-toggle slot="start" formControlName="enabled"></ion-toggle>
-                    <ion-label>Pump 5</ion-label>
-                  </ion-item>
-                </ion-col>
-                <ion-col offset="1" size="5">
-                  <ion-item>
-                    <ion-input placeholder="ratio (ml/l)" type="number" formControlName="value"></ion-input>
-                  </ion-item>
-                </ion-col>
-              </ion-row>
+              <ion-list>
+                <ion-item>
+                  <ion-label position="floating">Pump 1 Ratio</ion-label>
+                  <ion-input formControlName="pump_1" type="number"></ion-input>
+                </ion-item>
+  
+                <ion-item>
+                  <ion-label position="floating">Pump 2 Ratio</ion-label>
+                  <ion-input formControlName="pump_2" type="number"></ion-input>
+                </ion-item>
+  
+                <ion-item>
+                  <ion-label position="floating">Pump 3 Ratio</ion-label>
+                  <ion-input formControlName="pump_3" type="number"></ion-input>
+                </ion-item>
+  
+                <ion-item>
+                  <ion-label position="floating">Pump 4 Ratio</ion-label>
+                  <ion-input formControlName="pump_4" type="number"></ion-input>
+                </ion-item>
+  
+                <ion-item>
+                  <ion-label position="floating">Pump 5 Ratio</ion-label>
+                  <ion-input formControlName="pump_5" type="number"></ion-input>
+                </ion-item>
+              </ion-list>
             </div>
+
             <h3>Desired Value</h3>
             <ion-row>
               <ion-item lines="none">
@@ -137,6 +100,7 @@
               </ion-col>
             </ion-row>
           </div>
+          
           <h3>Alarm Settings</h3>
             <ion-row>
               <ion-col size="5">

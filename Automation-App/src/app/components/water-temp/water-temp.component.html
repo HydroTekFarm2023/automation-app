@@ -1,7 +1,7 @@
 <ion-card class="dashboard-card">
   <ion-card-content>
     <ion-grid>
-      <!--Card Header-->
+
       <ion-row>
         <ion-item tappable (click)="toggleAccordion()" lines="none">
           <ion-icon slot="start" name="chevron-forward-outline" *ngIf="!isOpen"></ion-icon>
@@ -9,7 +9,7 @@
           <h3 fill="clear" class="color">Water Temperature</h3>
         </ion-item>
       </ion-row>
-      <!--Card Content-->
+
       <form [formGroup]="waterTemperatureForm">
         <div *ngIf="isOpen">
           <hr color="grey" />
@@ -54,18 +54,20 @@
               </ion-col>
             </ion-row>
             <h3>Power Outlets</h3>
-            <ion-row>
-              <ion-list>
-                <ion-item>
-                  <ion-toggle slot="start" formControlName="up_ctrl"></ion-toggle>
-                  <ion-label>Heater</ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-toggle slot="start" formControlName="down_ctrl"></ion-toggle>
-                  <ion-label>Cooler</ion-label>
-                </ion-item>
-              </ion-list>
-            </ion-row>
+            <ion-list>
+              <ion-item lines="none">
+                <ion-toggle slot="start" formControlName="up_ctrl" (click)="onOutletToggleChange('Water Heater', 'up_ctrl')"></ion-toggle>
+                <ion-icon name="flame-outline"></ion-icon>
+                <ion-label>Heater</ion-label>
+                <ion-button slot="end" (click)="presentAddPowerOutletModal('Water Heater', 'up_ctrl')">{{ isPowerOutletSetup('Water Heater')? "Edit": "Setup"}}</ion-button>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-toggle slot="start" formControlName="down_ctrl" (click)="onOutletToggleChange('Water Cooler', 'down_ctrl')"></ion-toggle>
+                <ion-icon name="snow-outline"></ion-icon>
+                <ion-label>Cooler</ion-label>
+                <ion-button slot="end" (click)="presentAddPowerOutletModal('Water Cooler', 'down_ctrl')">{{ isPowerOutletSetup('Water Cooler')? "Edit": "Setup"}}</ion-button>
+              </ion-item>
+            </ion-list>
           </div>
           <h3>Alarm Settings</h3>
           <ion-row>

@@ -17,6 +17,8 @@ export class MqttInterfaceService {
   public deviceLiveData = new Subject<string>();
   public wifiConnectStatus = new Subject<boolean>();
 
+  public equipmentStatus = new BehaviorSubject<EquipmentStatus>(null);
+
   public client: any;
 
   private messageConfirmation = new Subject<string>();
@@ -88,15 +90,19 @@ export class MqttInterfaceService {
       this.client.onConnectionLost = this.onConnectionLost.bind(this);
       this.client.onMessageArrived = this.onMessageArrived.bind(this);
       this.client.onMessageDelivered = this.onMessageDelivered.bind(this);
-      return this.client.connect(
-        {
-          onSuccess: this._onConnect.bind(this, TOPIC),
-          onFailure: this._onConnectionFailure.bind(this)
-      });
+      return this.connectToBroker(TOPIC);
     }).catch(error => {
       console.log(error);
     })
   };
+
+  public connectToBroker(topic: string[]) {
+    return this.client.connect(
+      {
+        onSuccess: this._onConnect.bind(this, topic),
+        onFailure: this._onConnectionFailure.bind(this)
+    });
+  } 
 
   public publishMessage(topic: string, payload: string, qos?: number, retained?: boolean): Promise<any> {
       console.log('msg, topic', topic, payload);
@@ -143,6 +149,11 @@ export class MqttInterfaceService {
       }
       case 'wifi_connect_status': {
         this.wifiConnectStatus.next(true);
+        break;
+      }
+      case 'equipment_status': {
+        var equipmentStatusObject = JSON.parse(ResponseObject.payloadString);
+        this.equipmentStatus.next(equipmentStatusObject);
         break;
       }
       default: {
@@ -208,6 +219,11 @@ export class MqttInterfaceService {
 interface Scripts {
    name: string;
    src: string;
+}
+
+interface EquipmentStatus {
+  rf: any,
+  control: any
 }
 
 

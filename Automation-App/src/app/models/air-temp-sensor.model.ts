@@ -15,4 +15,8 @@ export class AirTempSensor extends Sensor implements Deserializable {
     deserialize(input: any): this {
         return Object.assign(this, input);
     }
+
+    getDisplayName(): string {
+        return 'Air Temperature'
+    }
 }

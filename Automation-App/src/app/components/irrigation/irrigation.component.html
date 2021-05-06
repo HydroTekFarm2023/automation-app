@@ -1,0 +1,45 @@
+<ion-card class="dashboard-card">
+  <ion-card-content>
+    <ion-grid>
+
+      <ion-row>
+        <ion-item tappable (click)="toggleAccordion()" lines="none">
+          <ion-icon slot="start" name="chevron-forward-outline" *ngIf="!isOpen"></ion-icon>
+          <ion-icon slot="start" name="chevron-down-outline" *ngIf="isOpen"></ion-icon>
+          <h3 fill="clear" class="color">Irrigation</h3>
+        </ion-item>
+      </ion-row>
+
+      <form [formGroup]="irrigationForm">
+        <div *ngIf="isOpen">
+        <hr color="grey" />
+        <h3>Power Outlets</h3>
+          <ion-list>
+            <ion-item lines="none">
+              <ion-icon name="water-outline"></ion-icon>
+              <ion-label>Irrigation Pump</ion-label>
+              <ion-button slot="end" (click)="presentAddPowerOutletModal('Irrigation')">{{ isPowerOutletSetup('Irrigation')? "Edit": "Setup"}}</ion-button>
+            </ion-item>
+          </ion-list>
+          <h3>Irrigation Schedule</h3>
+          <ion-row> 
+            <ion-col size="12">
+              <ion-item>
+                <ion-label position="floating">Irrigation On</ion-label>
+                <ion-input type="number" placeholder="On Interval" formControlName="on_interval"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row> 
+            <ion-col size="12">
+              <ion-item>
+                <ion-label position="floating">Irrigation Off</ion-label>
+                <ion-input type="number" placeholder="Off Interval" formControlName="off_interval"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>         
+        </div>
+      </form>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>

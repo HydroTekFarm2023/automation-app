@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Display } from "../dashboard/display";
 
-import * as moment from 'moment';
 import { BehaviorSubject, forkJoin, Observable, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { map } from 'rxjs/operators';
@@ -100,7 +99,7 @@ export class VariableManagementService {
       settings: growRoomForm.sensors,
       brief_info: sensorsArray,
     }
-    return this.http.post("http://localhost:3000/create_grow_room/", data)
+    return this.http.post(this.dbURL + "/create_grow_room/", data)
     .pipe(map((resData: {_id: string}) => {
       this.deviceSettings.push({
         _id: resData._id,
@@ -140,7 +139,7 @@ export class VariableManagementService {
       settings: systemForm.sensors,
       brief_info: sensorsArray
     }
-    return this.http.post("http://localhost:3000/create_system/", data)
+    return this.http.post(this.dbURL + "/create_system/", data)
       .pipe(map((resData: {_id: string}) => {
         // this.deviceSettings.push({
         //   _id: resData._id,
@@ -176,19 +175,22 @@ export class VariableManagementService {
         break;
       // TODO Add error checking
     }
-    return this.http.put("http://localhost:3000/" + endPointURL + "-settings/update/" + deviceID, device)
+    return this.http.put(this.dbURL + "/" + endPointURL + "-settings/update/" + deviceID, device)
       .pipe(map(() => {
         let updatedDeviceValue = deviceSubject.value;
+        console.log(device);
         updatedDeviceValue[deviceIndex] = device;
         deviceSubject.next(updatedDeviceValue);
+        console.log(deviceSubject.value);
       }));
   }
 
   public fetchDevices() {
     let $fertigationSystems = this.http.get<FertigationSystem[]>(this.dbURL + '/fertigation-system-settings/find');
     let $climateControllers = this.http.get<ClimateController[]>(this.dbURL + '/climate-controller-settings/find');
-
+    console.log("inside function");
     return forkJoin([$fertigationSystems, $climateControllers]).pipe(map(settings => {
+      console.log(settings[0]);
       const fertigationSystemsDeserialized = settings[0].map(fertigationSystemJSON => new FertigationSystem().deserialize(fertigationSystemJSON));
       const climateControllerDeserialized = settings[1].map(climateControllerJSON => new ClimateController().deserialize(climateControllerJSON));
 
@@ -210,7 +212,7 @@ export class VariableManagementService {
   }
 
   public getPlants(){
-    return this.http.get<plant[]>("http://localhost:3000/get_plants").pipe(map(plants => {
+    return this.http.get<plant[]>(this.dbURL + "/get_plants").pipe(map(plants => {
       this.plants = plants;
     }));
   }

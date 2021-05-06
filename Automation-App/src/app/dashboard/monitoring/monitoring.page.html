@@ -3,12 +3,24 @@
  
     <div *ngIf="currentDevice != null">
       <div>
-        <h2>Live Sensor Data</h2>
-        <h2>{{ timeStamp }}</h2>
+        <h6>Last Updated: {{ timestamp }}</h6>
       </div>
       <span *ngFor="let sensorSettings of currentDeviceSettings">
         <sensor-display [sensor]="sensorSettings" [allLiveData]="liveData"></sensor-display>
       </span>
+
+      <div>
+        <h2>Power Outlets</h2>
+      </div>
+      <ion-card>
+        <ion-card-content>
+          <ion-list>
+            <div *ngFor="let powerOutlet of currentDevice.power_outlets">
+              <power-outlet [data]="powerOutlet"></power-outlet>
+            </div>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
     </div>
    
     <div *ngIf="noDevices" class="center">

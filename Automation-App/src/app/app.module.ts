@@ -15,10 +15,12 @@ import { ChartsModule } from 'ng2-charts';
 import { VariableManagementService } from './Services/variable-management.service';
 import { IdentifyDevicePage } from './add-device/identify-device/identify-device.page';
 import { IdentifyDevicePageModule } from './add-device/identify-device/identify-device.module';
+import { AddPowerOutletPage } from './add-power-outlet/add-power-outlet.page';
+import { AddPowerOutletPageModule } from './add-power-outlet/add-power-outlet.module';
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [IdentifyDevicePage],
-  imports: [BrowserModule, HttpClientModule, IonicModule.forRoot(), AppRoutingModule, ComponentsModule, FormsModule, ReactiveFormsModule,ChartsModule, IdentifyDevicePageModule],
+  entryComponents: [IdentifyDevicePage, AddPowerOutletPage],
+  imports: [BrowserModule, HttpClientModule, IonicModule.forRoot(), AppRoutingModule, ComponentsModule, FormsModule, ReactiveFormsModule,ChartsModule, IdentifyDevicePageModule, AddPowerOutletPageModule],
   providers: [
     VariableManagementService,
     StatusBar,

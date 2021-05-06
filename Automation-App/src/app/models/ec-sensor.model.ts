@@ -37,4 +37,8 @@ export class EcSensor extends Sensor implements Deserializable {
     deserialize(input: any): this {
         return Object.assign(this, input);
     }
+
+    getDisplayName(): string {
+      return 'EC'
+    }
 }

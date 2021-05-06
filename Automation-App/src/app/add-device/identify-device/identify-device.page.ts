@@ -60,18 +60,18 @@ export class IdentifyDevicePage implements OnInit {
     await alert.present();
   }
 
-  // onWiFiSettingsSubmit() {
-  //   this.http.post("http://" + this.deviceIP + "/setup", JSON.stringify({
-  //     ssid: this.wifiSettingsForm.value.wifi_ssid,
-  //     password: this.wifiSettingsForm.value.wifi_password,
-  //     device_id: "D1000",
-  //     time: "5:50",
-  //     broker_ip: this.mqttInterfaceService.MQTT_CONFIG.host
-  //   })).subscribe(() => {
-  //     console.log("Message Sent");
-  //     this.isWifiSettingsTransferred = true;
-  //   }, err => {console.log(err)});
-  // };
+  onWiFiSettingsSubmit() {
+    this.http.post("http://" + this.deviceIP + "/setup", JSON.stringify({
+      ssid: this.wifiSettingsForm.value.wifi_ssid,
+      password: this.wifiSettingsForm.value.wifi_password,
+      device_id: "D1000",
+      time: "5:50",
+      broker_ip: this.mqttInterfaceService.client.host
+    })).subscribe(() => {
+      console.log("Message Sent");
+      this.isWifiSettingsTransferred = true;
+    }, err => {console.log(err)});
+  };
 
   async presentWiFiConnectionError() {
     const alert = await this.alertController.create({
@@ -83,8 +83,8 @@ export class IdentifyDevicePage implements OnInit {
   }
 
   onWiFiChangeClick() {
-    // this.mqttInterfaceService.connectToBroker();
-    this.mqttInterfaceService.subscribeToTopic("D100" + "/wificonnectstatus");
+    this.mqttInterfaceService.connectToBroker(this.mqttInterfaceService.client);
+    this.mqttInterfaceService.subscribeToTopic("D1000" + "/wificonnectstatus");
     this.mqttInterfaceService.wifiConnectStatus.pipe(take(1)).subscribe(resData => {
       console.log("here");
       if(resData == true) {
