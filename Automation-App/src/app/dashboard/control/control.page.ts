@@ -62,7 +62,9 @@ export class ControlPage implements OnInit {
         this.currentDevice = this.variableManagementService.getCurrentDeviceSettings(this.currentDeviceType, this.currentDeviceIndex);
         this.changeDetector.detectChanges();
         this.settingsForm.patchValue(this.currentDevice.settings);
-        this.growLightArray = this.currentDevice.settings['grow_lights']['power_outlets'];
+        if(this.currentDevice.settings['grow_lights']['power_outlets']) {
+          this.growLightArray = this.currentDevice.settings['grow_lights']['power_outlets'];
+        }
         this.powerOutlets = this.currentDevice.power_outlets
       } else {
         let fertigationSystemCount = this.variableManagementService.fertigationSystemSettings.value.length;

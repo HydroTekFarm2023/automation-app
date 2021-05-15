@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Display } from "../dashboard/display";
 
-import { BehaviorSubject, forkJoin, Observable, Subject } from "rxjs";
+import { BehaviorSubject, forkJoin, Observable, of, Subject } from "rxjs";
 import { HttpClient } from "@angular/common/http";
-import { map } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import * as _ from "lodash";
 import { FertigationSystem } from "../models/fertigation-system.model";
 import { ClimateController } from "../models/climate-controller.model";
+import { IonicStorageService } from "./ionic-storage.service";
 
 @Injectable({
   providedIn: "root",
@@ -14,7 +15,7 @@ import { ClimateController } from "../models/climate-controller.model";
 
 export class VariableManagementService {
 
-  private dbURL = "http://localhost:3000";
+  private dbURL;
 
   public fertigationSystemSettings = new BehaviorSubject<FertigationSystem[]>(null);
   public climateControllerSettings = new BehaviorSubject<ClimateController[]>(null);
@@ -53,7 +54,7 @@ export class VariableManagementService {
 
   public plants: plant[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private storageService: IonicStorageService) { }
 
   // public getSensorData(){
   //   this.sensorsTimeData=[];
@@ -162,35 +163,67 @@ export class VariableManagementService {
   // Update grow room and system settings in backend
   public updateDeviceSettings(device: Devices, deviceType: string, deviceID: string, deviceIndex: number): Observable<any> {
     let endPointURL = "";
+    let localStorageKey = "";
     let deviceSubject: BehaviorSubject<Devices[]>;
     console.log(deviceType);
     switch(deviceType){
       case FertigationSystemString:
+        localStorageKey = "fertigationSystems";
         endPointURL = FertigationSystemString;
         deviceSubject = this.fertigationSystemSettings;
         break;
       case ClimateControllerString:
+        localStorageKey = "climateControllers";
         endPointURL = ClimateControllerString;
         deviceSubject = this.climateControllerSettings;
         break;
       // TODO Add error checking
     }
     return this.http.put(this.dbURL + "/" + endPointURL + "-settings/update/" + deviceID, device)
-      .pipe(map(() => {
-        let updatedDeviceValue = deviceSubject.value;
+      .pipe(switchMap(() => {
+        let updatedDevicesArray = deviceSubject.value;
         console.log(device);
-        updatedDeviceValue[deviceIndex] = device;
-        deviceSubject.next(updatedDeviceValue);
-        console.log(deviceSubject.value);
+        updatedDevicesArray[deviceIndex] = device;
+        return this.storageService.set(localStorageKey, updatedDevicesArray).pipe(tap(() => {
+          deviceSubject.next(updatedDevicesArray);
+          console.log(deviceSubject.value);
+        }))
       }));
   }
 
+  public setRESTServerURL(ip: string) {
+    this.dbURL = "http://" + ip;
+  }
+
   public fetchDevices() {
-    let $fertigationSystems = this.http.get<FertigationSystem[]>(this.dbURL + '/fertigation-system-settings/find');
-    let $climateControllers = this.http.get<ClimateController[]>(this.dbURL + '/climate-controller-settings/find');
+    let $fertigationSystems: Observable<FertigationSystem[]> = this.storageService.get('fertigationSystems');
+    let $climateControllers: Observable<ClimateController[]> = this.storageService.get('climateControllers');
+
     console.log("inside function");
-    return forkJoin([$fertigationSystems, $climateControllers]).pipe(map(settings => {
-      console.log(settings[0]);
+    return forkJoin([$fertigationSystems, $climateControllers]).pipe(switchMap(settings => {
+      let settingsObservables: [Observable<FertigationSystem[]>, Observable<ClimateController[]>] = [null, null];
+      
+      if(settings[0]) {
+        settingsObservables[0] = of(settings[0]);
+      } else {
+        settingsObservables[0] = this.http.get<FertigationSystem[]>(this.dbURL + '/fertigation-system-settings/find').pipe(tap(data => {
+          console.log(data);
+          this.storageService.set('fertigationSystems', data);
+        }));
+      }
+
+      if(settings[1]) {
+        settingsObservables[1] = of(settings[1]);
+      } else {
+        settingsObservables[1] = this.http.get<ClimateController[]>(this.dbURL + '/climate-controller-settings/find').pipe(tap(data => {
+          this.storageService.set('climateControllers', data);
+        }));
+      }
+
+      return forkJoin(settingsObservables);
+    }),
+    tap(settings => {      
+      console.log(settings);
       const fertigationSystemsDeserialized = settings[0].map(fertigationSystemJSON => new FertigationSystem().deserialize(fertigationSystemJSON));
       const climateControllerDeserialized = settings[1].map(climateControllerJSON => new ClimateController().deserialize(climateControllerJSON));
 

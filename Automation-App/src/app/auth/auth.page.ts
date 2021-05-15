@@ -8,6 +8,8 @@ import { PasswordStrengthValidator } from './password';
 import { Observable } from 'rxjs';
 import { VariableManagementService, Devices } from '../Services/variable-management.service';
 import { MqttInterfaceService } from '../Services/mqtt-interface.service';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { IonicStorageService } from '../Services/ionic-storage.service';
 
 @Component({
   selector: 'app-auth',
@@ -22,7 +24,7 @@ export class AuthPage implements OnInit {
   isLogin = true; //set to true as a default.
   //Parameters injected to trigger the necessary methods.
   constructor(private authService: AuthService, private mqttService: MqttInterfaceService, private router : Router, private loadingCtrl: LoadingController,
-    public formbuilder: FormBuilder, private alertCtrl: AlertController, private variableManagementService: VariableManagementService) {  
+    public formbuilder: FormBuilder, private alertCtrl: AlertController, private variableManagementService: VariableManagementService, private fireStore: AngularFirestore, private storageService: IonicStorageService) {  
     this.formgroup = this.formbuilder.group(
       {
         email: new FormControl('', Validators.compose([Validators.required, Validators.email])), 
@@ -42,6 +44,7 @@ export class AuthPage implements OnInit {
     const password = this.formgroup.value['password'];
     this.onLogin(email, password);
   }
+
   onLogin(email: string, password: string) {
     this.isLoading = true;
     this.loadingCtrl
@@ -54,18 +57,15 @@ export class AuthPage implements OnInit {
           authObs = this.authService.login(email, password);
         }
         //Data is fetched when subscriber function is executed.
-        authObs.subscribe(resData => {
-            console.log(resData);
+        authObs.subscribe(authResData => {
             this.isLoading = false;
             loadingEl.dismiss();
             console.log('Logged in!');
-            this.variableManagementService.fetchDevices().subscribe(() => {
-              let mqttHost = "broker.hivemq.com";
-              let topics: string[] = [];
-              this.mqttService.createClient(topics, { host: mqttHost, port: 8000 });
-              this.router.navigateByUrl('/dashboard/monitoring');
-            }, (error: any) => {
-              console.log(error);
+            this.authService.fetchServerIPs(authResData.localId).subscribe(resData => {
+              console.log(resData)
+              if(resData) {
+                this.router.navigateByUrl('/dashboard/monitoring');
+              }
             });
           },
           //In case of errors while logging in, custom error messages are displayed.

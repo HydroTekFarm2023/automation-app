@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { VariableManagementService } from '../Services/variable-management.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,9 +9,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class DashboardPage implements OnInit {
 
-   constructor(private router: Router){}
+  constructor(private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   navigateToMonitoringTab() {
     this.router.navigate(['/dashboard/monitoring'], { queryParamsHandling: "preserve" });
