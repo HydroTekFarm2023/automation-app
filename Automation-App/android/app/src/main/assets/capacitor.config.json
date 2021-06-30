@@ -1,6 +1,6 @@
 {
-  "appId": "kansastek.hydrotek",
-  "appName": "Automation-App",
+  "appId": "com.hydrotekfarm",
+  "appName": "Hydrotek Farm",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www"

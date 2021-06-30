@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Automation-App</string>
-    <string name="title_activity_main">Automation-App</string>
-    <string name="package_name">kansastek.hydrotek</string>
-    <string name="custom_url_scheme">kansastek.hydrotek</string>
+    <string name="app_name">Hydrotek Farm</string>
+    <string name="title_activity_main">Hydrotek Farm</string>
+    <string name="package_name">com.hydrotekfarm</string>
+    <string name="custom_url_scheme">com.hydrotekfarm</string>
 </resources>

@@ -1,4 +1,4 @@
-package kansastek.hydrotek;
+package com.hydrotekfarm;
 
 import android.os.Bundle;
 
