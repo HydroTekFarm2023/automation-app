@@ -1,0 +1,42 @@
+ion-content {
+    --background:linear-gradient(#2679B9 0%, #196097 15%, #003157 100%) !important;
+}
+
+h2 {
+    color: white;
+    margin-left: 10px;
+    display: inline;
+}
+
+.content {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;;
+}
+
+ion-card-content {
+    padding: 0px;
+}
+
+ion-label {
+    font-size: 14px;
+    color: black;
+    font-weight: 400;
+    margin: 10px;
+}
+
+ion-col, ion-grid {
+    padding-bottom: 0px;
+}
+
+.general_settings {
+    display: inline-block;
+}
+
+.add_button {
+    display: inline-block;
+}
+
+.button_col {
+    padding-top: 14px;
+}

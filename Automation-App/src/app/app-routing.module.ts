@@ -28,11 +28,6 @@ const routes: Routes = [
     canLoad: [AuthGuard]
   },
   {
-    path: 'add-sensor',
-    loadChildren: () => import('./add-sensor/add-sensor.module').then( m => m.AddSensorPageModule),
-    canLoad: [AuthGuard]
-  },
-  {
     path: 'add-power-outlet',
     loadChildren: () => import('./add-power-outlet/add-power-outlet.module').then( m => m.AddPowerOutletPageModule),
     canLoad: [AuthGuard]

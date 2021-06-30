@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 import { PowerOutlet } from 'src/app/models/power-outlet.model';
 import { MqttInterfaceService } from 'src/app/Services/mqtt-interface.service';
-import { manualRfControl } from 'src/app/Services/topicKeys';
+import { manualRfControlTopic } from 'src/app/Services/topicKeys';
 
 @Component({
   selector: 'power-outlet',
@@ -11,8 +12,9 @@ import { manualRfControl } from 'src/app/Services/topicKeys';
 export class PowerOutletComponent implements OnInit {
 
   @Input() data: PowerOutlet;
+  @Input() topicID: string;
 
-  constructor(private mqttService: MqttInterfaceService) { }
+  constructor(private mqttService: MqttInterfaceService, private alertController: AlertController) { }
 
   ngOnInit() {}
 
@@ -22,7 +24,25 @@ export class PowerOutletComponent implements OnInit {
     }
 
     let outletJsonString = JSON.stringify(outletObj);
-    // TODO change to variable Topic ID
-    this.mqttService.publishMessage(manualRfControl + "/a23b5", outletJsonString, 1, false);
+    
+    this.mqttService.publishMessage(manualRfControlTopic + "/" + this.topicID, outletJsonString, 1, false).catch((error) => {
+      console.log(error);
+      this.presentPowerOutletToggleError(this.data.currentValue, this.data.name);
+      this.data.currentValue = !this.data.currentValue; 
+    });
+  }
+
+  async presentPowerOutletToggleError(state: boolean, outletName: string) {
+    let outletState = 'off';
+    if(state) {
+      outletState = 'on';
+    } 
+
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'Unable to turn ' + outletState + ' ' + outletName,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }

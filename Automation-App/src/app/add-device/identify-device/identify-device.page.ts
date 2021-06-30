@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
 import { take } from 'rxjs/operators';
 import { MqttInterfaceService } from 'src/app/Services/mqtt-interface.service';
-import { wifiConnectStatus } from 'src/app/Services/topicKeys';
+import { wifiConnectStatusTopic } from 'src/app/Services/topicKeys';
 import { VariableManagementService } from 'src/app/Services/variable-management.service';
 
 @Component({
@@ -16,6 +16,7 @@ import { VariableManagementService } from 'src/app/Services/variable-management.
 export class IdentifyDevicePage implements OnInit {
 
   private readonly deviceIP: string = "192.168.4.1";
+
   private readonly deviceIDLength = 5;
   private readonly charCombinations: string = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -91,20 +92,22 @@ export class IdentifyDevicePage implements OnInit {
   }
 
   onWiFiChangeClick() {
-    this.mqttInterfaceService.connectToBroker([wifiConnectStatus + "/" + this.uniqueDeviceId]);
+    console.log("change wifi");
+    this.mqttInterfaceService.subscribeToTopic(wifiConnectStatusTopic + "/" + this.uniqueDeviceId);
     this.mqttInterfaceService.wifiConnectStatus.pipe(take(1)).subscribe(resData => {
-      console.log("here");
+      console.log("asdddddddddddd");
       if(resData == true) {
-        console.log("true");
         switch(this.deviceType) {
           case "Hydrotek Fertigation System":
+            console.log("Fertigation System Identified");
             this.modalController.dismiss({ type: "fertigation-system", topicId: this.uniqueDeviceId });
             break;
           case "Hydrotek Climate Controller":
+            console.log("climate controller identified");
             this.modalController.dismiss({ type: "climate-controller", topicId: this.uniqueDeviceId });
             break;
           default:
-            console.log("Unknown Name");
+            console.warn("Unknown Device Type: " + this.deviceType);
             this.modalController.dismiss();
         }
       } else {
@@ -112,7 +115,7 @@ export class IdentifyDevicePage implements OnInit {
       }
     });
     setTimeout(() => { 
-      this.mqttInterfaceService.unsubscribeToTopic(wifiConnectStatus + "/" + this.uniqueDeviceId);
+      this.mqttInterfaceService.unsubscribeToTopic(wifiConnectStatusTopic + "/" + this.uniqueDeviceId);
       this.mqttInterfaceService.wifiConnectStatus.next(false);
     }, 180000);
   }

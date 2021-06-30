@@ -17,14 +17,15 @@
         <div *ngIf="currentDeviceType == FertigationSystemString">  
           <ph *ngIf="ph" [parentForm]="settingsForm"></ph>
           <ec *ngIf="ec" [parentForm]="settingsForm"></ec>
-          <water-temp *ngIf="waterTemperature" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)"></water-temp>
-          <grow-lights *ngIf="growLights" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)" [powerOutletArray]="growLightArray"></grow-lights>
-          <irrigation *ngIf="irrigation" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)"></irrigation>
-          <reservoir *ngIf="reservoir" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)"></reservoir>
+          <water-temp *ngIf="waterTemperature" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></water-temp>
+          <grow-lights *ngIf="growLights" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)" [powerOutletArray]="growLightArray"></grow-lights>
+          <irrigation *ngIf="irrigation" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></irrigation>
+          <reservoir *ngIf="reservoir" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></reservoir>
         </div>
         <div *ngIf="currentDeviceType == ClimateControllerString">
-          <air-temperature *ngIf="air_temperature" [parentForm]="settingsForm"></air-temperature>
-          <humidity *ngIf="humidity" [parentForm]="settingsForm"></humidity>
+          <air-temperature *ngIf="airTemperature" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></air-temperature>
+          <humidity *ngIf="humidity" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></humidity>
+          <co2 *ngIf="co2" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></co2>
         </div>
       </form>
     </div>

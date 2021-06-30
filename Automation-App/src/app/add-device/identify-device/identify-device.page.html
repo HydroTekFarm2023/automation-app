@@ -35,6 +35,7 @@
       </ion-grid>
     </ion-card-content>
   </ion-card>
+  
   <ion-card *ngIf="isConnected">
     <ion-card-content>
       <form [formGroup]="wifiSettingsForm" (ngSubmit)="onWiFiSettingsSubmit()">

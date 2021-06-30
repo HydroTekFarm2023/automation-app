@@ -1,48 +1,47 @@
 import { AtLeastOneEnableValidator } from './../../validators/atleastoneenable.validator';
 import { DayNightTargetValidator } from 'src/app/validators/daynighttarget.validator';
 import { TwoValCompareValidator } from './../../validators/twovalcompare.validator';
-import { Component, OnInit, Input, OnDestroy, EventEmitter, Output, OnChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { AddPowerOutletPage } from 'src/app/add-power-outlet/add-power-outlet.page';
 import { PowerOutlet } from 'src/app/models/power-outlet.model';
 
 @Component({
-  selector: 'humidity',
-  templateUrl: './humidity.component.html',
-  styleUrls: ['./humidity.component.scss'],
+  selector: 'co2',
+  templateUrl: './co2.component.html',
+  styleUrls: ['./co2.component.scss'],
 })
-export class HumidityComponent implements OnInit, OnDestroy {
+export class Co2Component implements OnInit, OnDestroy {
   isOpen: boolean = false;
 
   @Input() powerOutlets: PowerOutlet[];
   @Input() parentForm: FormGroup;
   @Input() topicID: string;
-
+  
   @Output() newPowerOutletEvent = new EventEmitter<PowerOutlet>();
   
-  humidityForm: FormGroup;
+  co2Form: FormGroup;
   controlForm: FormGroup;
   
-  constructor(private fb: FormBuilder, private modalController: ModalController, private changeDetectorRef: ChangeDetectorRef,
+  constructor(private fb: FormBuilder, private modalController: ModalController,
     private twoValCompareValidator : TwoValCompareValidator,
     private atLeastOneEnableValidator: AtLeastOneEnableValidator) { }
 
   ngOnInit() {
     this.controlForm = this.fb.group({
-      'tgt': this.fb.control(null, [Validators.min(0), Validators.max(100)]),
-      'up_ctrl': this.fb.control(false),
-      'down_ctrl': this.fb.control(false)
+      'tgt': this.fb.control(null, [Validators.min(0), Validators.max(10000)]),
+      'up_ctrl': this.fb.control(false)
     });
 
-    this.humidityForm = this.fb.group({
+    this.co2Form = this.fb.group({
       'monit_only': this.fb.control(false),
       'control': this.controlForm,
-      'alarm_min': this.fb.control(null, [Validators.required, Validators.min(0), Validators.max(99)]),
-      'alarm_max': this.fb.control(null, [Validators.required, Validators.min(1), Validators.max(100)])
+      'alarm_min': this.fb.control(null, [Validators.required, Validators.min(0), Validators.max(9999)]),
+      'alarm_max': this.fb.control(null, [Validators.required, Validators.min(1), Validators.max(10000)])
     }, {validators: [this.twoValCompareValidator.twoValCompare('alarm_min','alarm_max')]});
 
-    this.parentForm.addControl('humidity', this.humidityForm);
+    this.parentForm.addControl('co2', this.co2Form);
     this.manualCheckValidity();
   }
 
@@ -52,7 +51,7 @@ export class HumidityComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.parentForm.removeControl('humidity');
+    this.parentForm.removeControl('co2');
   }
 
   isPowerOutletSetup(name: string): boolean {
@@ -80,8 +79,8 @@ export class HumidityComponent implements OnInit, OnDestroy {
     for (let key in this.controlForm.controls) {
       this.controlForm.controls[key].updateValueAndValidity();
     }
-    for (let key in this.humidityForm.controls) {
-      this.humidityForm.controls[key].updateValueAndValidity();
+    for (let key in this.co2Form.controls) {
+      this.co2Form.controls[key].updateValueAndValidity();
     }
   }
 
@@ -107,4 +106,3 @@ export class HumidityComponent implements OnInit, OnDestroy {
     return await modal.present();
   }
 }
-

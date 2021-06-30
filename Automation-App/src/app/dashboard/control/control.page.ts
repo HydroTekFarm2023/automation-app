@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Devices, FertigationSystemString, ClimateControllerString, VariableManagementService } from 'src/app/Services/variable-management.service';
 import { FormGroup } from '@angular/forms';
 import { debounceTime, filter } from 'rxjs/operators';
-import { ModalController, AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import * as _ from "lodash";
 import { MqttInterfaceService } from 'src/app/Services/mqtt-interface.service';
@@ -11,6 +11,7 @@ import { FertigationSystem } from 'src/app/models/fertigation-system.model';
 import { ClimateController } from 'src/app/models/climate-controller.model';
 import { PowerOutlet } from 'src/app/models/power-outlet.model';
 import { deviceSettingsTopic, deviceStatusTopic } from 'src/app/Services/topicKeys';
+import { AlertLoadingService } from 'src/app/Services/alert-loading.service';
 
 @Component({
   selector: 'app-control',
@@ -32,7 +33,6 @@ export class ControlPage implements OnInit {
   currentDeviceIndex: number;
 
   settingsForm: FormGroup = new FormGroup({});
-  powerOutlets: PowerOutlet[] = [];
   growLightArray = [];
 
   ph: boolean = true;
@@ -43,15 +43,16 @@ export class ControlPage implements OnInit {
   irrigation: boolean = true;
 
   humidity: boolean = true;
-  air_temperature: boolean = true;
+  airTemperature: boolean = true;
+  co2: boolean = true;
 
   formValue$: Observable<any>;
   isDirty: boolean = false;
 
   constructor(public variableManagementService: VariableManagementService, 
+    public mqttService: MqttInterfaceService, 
+    private alertLoadingService: AlertLoadingService,
     private changeDetector: ChangeDetectorRef, 
-    private modalController: ModalController, 
-    private mqttService: MqttInterfaceService, 
     private route: ActivatedRoute,
     private alertController: AlertController) { 
     this.mqttService.mqttStatus.subscribe((status) => {
@@ -68,10 +69,11 @@ export class ControlPage implements OnInit {
         this.currentDevice = this.variableManagementService.getCurrentDeviceSettings(this.currentDeviceType, this.currentDeviceIndex);
         this.changeDetector.detectChanges();
         this.settingsForm.patchValue(this.currentDevice.settings);
-        if(this.currentDevice.settings['grow_lights']['power_outlets']) {
-          this.growLightArray = this.currentDevice.settings['grow_lights']['power_outlets'];
+        if(this.currentDeviceType == FertigationSystemString) {
+          if(this.currentDevice.settings['grow_lights']['power_outlets']) {
+            this.growLightArray = this.currentDevice.settings['grow_lights']['power_outlets'];
+          }
         }
-        this.powerOutlets = this.currentDevice.power_outlets;
       } else {
         let fertigationSystemCount = this.variableManagementService.fertigationSystemSettings.value.length;
         let climateControllerCount = this.variableManagementService.climateControllerSettings.value.length;
@@ -95,55 +97,97 @@ export class ControlPage implements OnInit {
   }
 
   onBootButtonClick() {
-    this.currentDevice.device_started = !this.currentDevice.device_started;
-    this.mqttService.publishMessage(deviceStatusTopic + "/" + this.currentDevice.topicID, this.currentDevice.device_started? "1" : "0");
-    this.onSettingsFormSubmit();    
+    let outletState = "off";
+    let isDeviceStarted = !this.currentDevice.device_started;
+    if(isDeviceStarted) outletState = "on";
+    this.alertLoadingService.presentLoadingScreen("Turning " + this.currentDevice.name + " " + outletState);
+
+    this.mqttService.publishMessage(deviceStatusTopic + "/" + this.currentDevice.topicID, isDeviceStarted? "1" : "0").then(() => {
+      this.alertLoadingService.dismissLoadingScreen();
+      this.variableManagementService.updateDeviceStartedStatus(isDeviceStarted, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex).subscribe(() => {
+        this.presentDeviceToggledDialog(isDeviceStarted, this.currentDevice.name);
+        console.log("Published Device Status");
+      }, (error) => {
+        console.warn(error);
+        this.alertLoadingService.dismissLoadingScreen();
+        this.presentDeviceStartedError(isDeviceStarted);
+      });
+    }).catch(error => {
+      console.warn("asddddddddd", error);
+      this.alertLoadingService.dismissLoadingScreen();
+      this.presentDeviceStartedError(isDeviceStarted);
+    });
   }
    
   // update data in backend
   onSettingsFormSubmit() {
-    console.warn(this.settingsForm);
+    console.log(this.settingsForm);
     if(!this.settingsForm.valid){
       console.warn("onSubmit with errors");
       this.presentInvalidSubmitDialog();
       return;
     }
-    console.warn("onSubmit valid");
-    this.presentValidSubmitDialog();
     
-     var changedData = [];
-     for(var key in this.settingsForm.value){
-       if(!_.isMatch(this.settingsForm.value[key], this.currentDevice.settings[key])) {
-        changedData.push({ [key]: this.settingsForm.value[key] });
+    var changedData = [];
+    for(var key in this.settingsForm.value) {
+      console.log(key);
+      console.log(this.settingsForm.value[key]);
+      let a = JSON.parse(JSON.stringify(this.settingsForm.value[key]));
+      let b = JSON.parse(JSON.stringify(this.currentDevice.settings[key]));
+      let isDirty = (_.isEqual(a, b) == false);
+      if(isDirty) {
+        console.log(key);
+        changedData.push({
+          topic: deviceSettingsTopic + "/" + this.currentDevice.topicID,
+          payload: JSON.stringify({ [key]: this.settingsForm.value[key] }),
+          qos: 1,
+          retained: false
+        });
       }
     }
 
     if(changedData.length <= 0) {
+      console.warn("Attempted to save with even though no data changed");
       return;
     }
+
+    this.alertLoadingService.presentLoadingScreen("Saving Data");
     
     console.log(changedData);
-    this.mqttService.publishMessage(deviceSettingsTopic + "/" + this.currentDevice.topicID, JSON.stringify({ data: changedData}), 1, false).then(() => {
-      let device;
-      device = { ...this.currentDevice };
-      device.settings = this.settingsForm.value;
-      
+    this.mqttService.publishMultipleMessages(changedData).then(() => {
+      let tempDevice;
+      let device: Devices;
+      tempDevice = { ...this.currentDevice };
+      tempDevice.settings = this.settingsForm.value;
       if(this.currentDeviceType == FertigationSystemString) {
-        device = new FertigationSystem().deserialize(device);
+        device = new FertigationSystem().deserialize(tempDevice);
+        console.log(device);
       } 
       else if(this.currentDeviceType == ClimateControllerString) {
-        device = new ClimateController().deserialize(device);
+        console.log(tempDevice);
+        device = new ClimateController().deserialize(tempDevice);
+        console.log(device);
+      } else {
+        console.warn("Unable to Save to Cloud: Unkown Device Type");
+        return;
       }
-
       this.variableManagementService
         .updateDeviceSettings(device, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex)
           .subscribe(() => {
             this.currentDevice = device;
             this.isDirty = false;
-          }, (error) => {console.log(error)});
+            this.alertLoadingService.dismissLoadingScreen();
+            this.presentValidSubmitDialog();
+          }, (error) => {
+            this.alertLoadingService.dismissLoadingScreen();
+            this.alertLoadingService.presentMongoPushError();
+            console.warn(error);
+          });
     },
     (error) => {
-      console.log(error);
+      this.alertLoadingService.dismissLoadingScreen();
+      this.alertLoadingService.presentPushSettingsToDeviceError();
+      console.warn(error);
     });
   }
 
@@ -160,6 +204,33 @@ export class ControlPage implements OnInit {
     const alert = await this.alertController.create({
       header: "Successfully Saved",
       message: "The information has been successfully saved.",
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  async presentDeviceToggledDialog(state: boolean, name: string){
+    let outletState = 'off';
+    if(state) {
+      outletState = 'on';
+    } 
+    const alert = await this.alertController.create({
+      header: "Saved",
+      message: name + " was turned " + outletState,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  async presentDeviceStartedError(state: boolean) {
+    let outletState = 'off';
+    if(state) {
+      outletState = 'on';
+    } 
+
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'Unable to turn ' + outletState + ' device',
       buttons: ['OK']
     });
     await alert.present();

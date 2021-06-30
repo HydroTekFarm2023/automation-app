@@ -1,0 +1,79 @@
+<ion-card class="dashboard-card">
+  <ion-card-content class="top_bottom_padding">
+    <ion-grid>
+
+      <ion-row>
+        <ion-item tappable (click)="toggleAccordion()" lines="none">
+          <ion-icon slot="start" name="chevron-forward-outline" *ngIf="!isOpen"></ion-icon>
+          <ion-icon slot="start" name="chevron-down-outline" *ngIf="isOpen"></ion-icon>
+          <ion-icon slot="start" name="alert-circle-outline"  class="warning-icon" color="danger" *ngIf="!co2Form.valid"></ion-icon>
+          <h3 fill="clear" class="color h3_sensor_title">CO2</h3>
+        </ion-item>
+      </ion-row>
+
+      <form [formGroup]="co2Form">
+        <div *ngIf="isOpen">
+          <hr color="grey" />
+          <div class="group">
+            <ion-row>
+              <ion-col class="no_padding" size="12">
+                <ion-item lines="none">
+                  <ion-checkbox formControlName="monit_only" mode="md"></ion-checkbox>
+                  <ion-label class="sensor_black_label">Monitoring Only</ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </div>
+
+          <div *ngIf="!co2Form.get('monit_only').value" [formGroup]="controlForm"> 
+            <h3 class="h3_sensor_title">Desired Value</h3>
+            <ion-row>
+              <ion-col class="no_padding" size="12">
+                <ion-item>
+                  <ion-label class="sensor_black_label" position="floating">Target Value</ion-label>
+                  <ion-input formControlName="tgt" type="number" class="co2_unit"></ion-input>
+                </ion-item>
+                <p *ngIf="controlForm.get('tgt').errors?.incorrect" class="error_msg">This is a required value.</p>
+                <p *ngIf="controlForm.get('tgt').errors?.min" class="error_msg">This value must be at least {{controlForm.get('tgt').errors.min.min}}.</p>
+                <p *ngIf="controlForm.get('tgt').errors?.max" class="error_msg">This value must be at most {{controlForm.get('tgt').errors.max.max}}.</p>              
+              </ion-col>
+            </ion-row>
+
+            <h3 class="h3_sensor_title">Power Outlets</h3>
+            <ion-list>
+              <ion-item lines="none">
+                <ion-toggle slot="start" formControlName="up_ctrl" (click)="onOutletToggleChange('CO2 Injector', 'up_ctrl')"></ion-toggle>
+                <ion-icon name="cloud-outline"></ion-icon>
+                <ion-label class="sensor_black_label sw-prevent-invalid">CO2 Injector</ion-label>
+                <ion-button slot="end" (click)="presentAddPowerOutletModal('CO2 Injector', 'up_ctrl')">{{ isPowerOutletSetup('CO2 Injector')? "Edit": "Setup"}}</ion-button>
+              </ion-item>
+            </ion-list>
+            <p *ngIf="co2Form.errors?.noneEnabled" class="error_msg">If not monitoring, at least one control must be enabled.</p>
+          </div>
+
+          <h3 class="h3_sensor_title">Alarm Settings</h3>
+          <ion-list>
+              <ion-item>
+                <ion-label class="sensor_black_label" position="floating">Min</ion-label>
+                <ion-input formControlName="alarm_min" type="number" class="co2_unit"></ion-input>
+              </ion-item>
+              <p *ngIf="co2Form.get('alarm_min').errors?.required" class="error_msg">This is a required value.</p>
+              <p *ngIf="co2Form.get('alarm_min').errors?.min" class="error_msg">This value must be at least {{co2Form.get('alarm_min').errors.min.min}}.</p>
+              <p *ngIf="co2Form.get('alarm_min').errors?.max" class="error_msg">This value must be at most {{co2Form.get('alarm_min').errors.max.max}}.</p>
+
+              <ion-item>
+                <ion-label class="sensor_black_label" position="floating">Max</ion-label>
+                <ion-input formControlName="alarm_max" type="number" class="co2_unit"></ion-input>
+              </ion-item>
+              <p *ngIf="co2Form.get('alarm_max').errors?.required" class="error_msg">This is a required value.</p>
+              <p *ngIf="co2Form.get('alarm_max').errors?.min" class="error_msg">This value must be at least {{co2Form.get('alarm_max').errors.min.min}}.</p>
+              <p *ngIf="co2Form.get('alarm_max').errors?.max" class="error_msg">This value must be at most {{co2Form.get('alarm_max').errors.max.max}}.</p>
+
+          </ion-list>
+          <p *ngIf="co2Form.errors?.compareError" class="error_msg">Alarm min must be lower than Alarm max.</p>
+
+        </div>
+      </form>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>

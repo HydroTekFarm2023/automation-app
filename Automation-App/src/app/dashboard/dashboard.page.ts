@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
-import { VariableManagementService } from '../Services/variable-management.service';
+import { Router } from '@angular/router';
+import { MqttInterfaceService } from '../Services/mqtt-interface.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,7 +9,7 @@ import { VariableManagementService } from '../Services/variable-management.servi
 })
 export class DashboardPage implements OnInit {
   title: String;
-  constructor(private router: Router, private activeRoute : ActivatedRoute) { }
+  constructor(private router: Router, public mqttService: MqttInterfaceService) { }
 
   ngOnInit() { //initial name
     let tempRoute = this.router.url.substr(11);

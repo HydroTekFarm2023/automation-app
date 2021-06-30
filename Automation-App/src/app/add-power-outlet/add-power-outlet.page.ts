@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { PowerOutlet } from '../models/power-outlet.model';
 import { MqttInterfaceService } from '../Services/mqtt-interface.service';
-import { manualRfControl } from '../Services/topicKeys';
+import { manualRfControlTopic } from '../Services/topicKeys';
 
 @Component({
   selector: 'app-add-power-outlet',
@@ -12,20 +12,29 @@ import { manualRfControl } from '../Services/topicKeys';
 export class AddPowerOutletPage implements OnInit {
 
   @Input() powerOutletName: string;
+  @Input() topicID: string;
 
   powerOutletIndex = -1;
   outletToggleVal = false;
 
   powerOutletStructure: PowerOutlet[] = 
   [
+      // Fertigation System Power Outlets
       new PowerOutlet("0", "Water Cooler", "snow-outline"),
       new PowerOutlet("1", "Water Heater", "flame-outline"),
       new PowerOutlet("2", "Irrigation", "water-outline"),
       new PowerOutlet("3", "Reservoir Water In", "return-down-back-outline"),
       new PowerOutlet("4", "Reservoir Water Out", "return-down-forward-outline"),
+      
+      // Climate Controller Power Outlets
+      new PowerOutlet("0", "CO2 Injector", "cloud-outline"),
+      new PowerOutlet("1", "Air Heater", "flame-outline"),
+      new PowerOutlet("2", "Air Cooler", "snow-outline"),
+      new PowerOutlet("3", "Humidifier", "water-outline"),
+      new PowerOutlet("4", "Dehumidifier", "umbrella-outline")
   ]
 
-  constructor(public modalController: ModalController, private mqttService: MqttInterfaceService) { 
+  constructor(public modalController: ModalController, private mqttService: MqttInterfaceService, private alertController: AlertController) { 
     for(var i = 1; i < 11; i++) {
       this.powerOutletStructure.push(new PowerOutlet((i + 4).toString(), "Grow Light " + i, "sunny-outline"));
     }
@@ -46,10 +55,14 @@ export class AddPowerOutletPage implements OnInit {
         [this.powerOutletStructure[this.powerOutletIndex].id]: this.outletToggleVal
       }
       let outletJsonString = JSON.stringify(outletObj);
-      // TODO: change to variable topicID
-      this.mqttService.publishMessage(manualRfControl + "/a23b5", outletJsonString, 1, false);
+      console.log(this.topicID);
+      this.mqttService.publishMessage(manualRfControlTopic + "/" + this.topicID, outletJsonString, 1, false).catch((error) => {
+        console.log(error);
+        this.presentPowerOutletToggleError(this.outletToggleVal, this.powerOutletName);
+        this.outletToggleVal = !this.outletToggleVal; 
+      });
     } else {
-      console.log("Power Outlet Name Not Found. Current Index: " + this.powerOutletIndex);
+      console.warn("Power Outlet Name Not Found. Current Index: " + this.powerOutletIndex);
     }
 
   }
@@ -58,4 +71,17 @@ export class AddPowerOutletPage implements OnInit {
     this.modalController.dismiss(this.powerOutletStructure[this.powerOutletIndex]);
   }
 
+  async presentPowerOutletToggleError(state: boolean, outletName: string) {
+    let outletState = 'off';
+    if(state) {
+      outletState = 'on';
+    } 
+
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'Unable to turn ' + outletState + ' ' + outletName,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 }

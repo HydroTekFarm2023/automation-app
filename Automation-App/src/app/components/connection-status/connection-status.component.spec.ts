@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { AddSensorPage } from './add-sensor.page';
+import { ConnectionStatusComponent } from './connection-status.component';
 
-describe('AddSensorPage', () => {
-  let component: AddSensorPage;
-  let fixture: ComponentFixture<AddSensorPage>;
+describe('ConnectionStatusComponent', () => {
+  let component: ConnectionStatusComponent;
+  let fixture: ComponentFixture<ConnectionStatusComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddSensorPage ],
+      declarations: [ ConnectionStatusComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddSensorPage);
+    fixture = TestBed.createComponent(ConnectionStatusComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

@@ -26,7 +26,6 @@ export class FertigationSystem extends Device implements Deserializable {
 
     deserialize(input: any): this {
         Object.assign(this, input);
-        console.log(input);
         
         if(input.settings.ph !== undefined) {
             this.settings.ph = new PhSensor().deserialize(input.settings.ph);
@@ -54,18 +53,14 @@ export class FertigationSystem extends Device implements Deserializable {
 
         if(input.power_outlets !== undefined) {
             this.power_outlets = [];
-            console.log(input.power_outlets);
             for(let powerOutlet of input.power_outlets) {
-                console.log(powerOutlet);
                 this.power_outlets.push(new PowerOutlet().deserialize(powerOutlet));
             }
         }
 
         if(input.cameras !== undefined) {
             this.cameras = [];
-            //console.log(input.cameras);
             for(let camera of input.cameras) {
-                //console.log(camera);
                 this.cameras.push(new Camera().deserialize(camera));
             }
         }

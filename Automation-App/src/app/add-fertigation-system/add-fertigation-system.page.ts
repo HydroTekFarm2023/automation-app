@@ -40,7 +40,7 @@ export class AddFertigationSystemPage implements OnInit {
 
   isLoading: boolean = false;
 
-  constructor(private router: Router, public variableManagementService: VariableManagementService, private fb: FormBuilder, private mqttService: MqttInterfaceService, private modalController: ModalController, private alertController: AlertController) { 
+  constructor(public variableManagementService: VariableManagementService, private fb: FormBuilder, private mqttService: MqttInterfaceService, private modalController: ModalController, private alertController: AlertController) { 
     if(this.variableManagementService.plants.length == 0){
       this.isLoading = true;
       this.variableManagementService.getPlants().subscribe(() => {
@@ -86,7 +86,7 @@ export class AddFertigationSystemPage implements OnInit {
         this.variableManagementService.createFertigationSystem(new FertigationSystem().deserialize(fertigationSystem)).subscribe(() => {
           this.dismiss();
         }, error => {
-          console.log(error);
+          console.warn(error);
           this.presentMongoPushError();
         });
 
@@ -95,7 +95,7 @@ export class AddFertigationSystemPage implements OnInit {
         this.presentDevicePushError();
       }
     }).catch((error) => {
-      console.log(error);
+      console.warn(error);
       this.presentDevicePushError();
     });
   }

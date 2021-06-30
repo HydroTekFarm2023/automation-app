@@ -2,57 +2,46 @@
   <ion-toolbar color="primary">
     <ion-title>Setup Climate Controller</ion-title>
     <ion-buttons slot="end">
-      <ion-button  (click)="dismiss()"><ion-icon name="back"></ion-icon></ion-button>
+      <ion-button  (click)="dismiss()"><ion-icon name="close-outline"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="gradient_background">
-  <div class="content" *ngIf="!isLoading">
+<ion-content>
+  <div class="content" class="gradient_background">
     <form [formGroup]="climateControllerForm" (ngSubmit)="onSubmit()">
       <ion-grid>
         <ion-row>
-          <ion-col class="no_padding_bottom" size="7">
-            <h2 class="h2_title general_settings">General Settings</h2>
+          <ion-col size="8">
+            <h2 class="general_settings">General Settings</h2>
           </ion-col>
-          <ion-col size="5" class="button_col no_padding_bottom">
+          <ion-col size="4" class="button_col">
             <ion-button class="add_button" type="submit">Create</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
-      <hr color="white">
       <ion-card>
-        <ion-card-content class="no_padding_bottom">
+        <ion-card-content>
           <ion-list>
             <ion-item>
-              <ion-label position="floating">Climate Controller Name</ion-label>
-              <ion-input formControlName="grow_room_name"></ion-input>
+              <ion-label position="floating">Device Name</ion-label>
+              <ion-input formControlName="name"></ion-input>
             </ion-item>
-            <ion-item>
-              <ion-label class="sensor_black_label">Select a Cluster</ion-label>
-              <ion-select formControlName="cluster_name" placeholder="Cluster">
-                <ion-select-option *ngFor="let cluster of variableManagementService.clusterNames" [value]="cluster">
-                  {{ cluster }}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-item>
-              <ion-label class="sensor_black_label">Select a Plant</ion-label>
+            <!-- <ion-item>
+              <ion-label>Select a Plant</ion-label>
               <ion-select #plantSelect placeholder="Plant" formControlName="plant_name" [interfaceOptions]="plantAlertOptions" [(ngModel)]="plantName" (ionChange)="addRecommendedSettings(plantSelect.value)">
                 <ion-select-option *ngFor="let plant of variableManagementService.plants" [value]="plant">
                   {{ plant.name }}
                 </ion-select-option>
               </ion-select>
-            </ion-item>
+            </ion-item> -->
           </ion-list>
         </ion-card-content>
       </ion-card>
-      <h2 class="h2_title">Sensor List</h2>
-      <air-temperature *ngIf="air_temperature" [parentForm]="sensorsForm"></air-temperature>
-      <humidity *ngIf="humidity" [parentForm]="sensorsForm"></humidity>
+      <h2>Sensor List</h2>
+      <air-temperature *ngIf="airTemperature" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)"></air-temperature>
+      <humidity *ngIf="humidity" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)"></humidity>
+      <co2 *ngIf="co2" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)"></co2>
     </form>
-  </div>
-  <div *ngIf="isLoading">
-    <ion-spinner color="primary"></ion-spinner>
   </div>
 </ion-content>

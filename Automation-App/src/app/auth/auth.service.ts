@@ -8,6 +8,7 @@ import { IonicStorageService } from '../Services/ionic-storage.service';
 import { VariableManagementService } from '../Services/variable-management.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MqttInterfaceService } from '../Services/mqtt-interface.service';
+import { AlertController } from '@ionic/angular';
 
 export interface AuthResponseData {
   kind: string;
@@ -46,7 +47,7 @@ export class AuthService {
     else return null;}));
   }
 
-  constructor(private http: HttpClient, private storageService: IonicStorageService, private variableManagementService: VariableManagementService, private fireStore: AngularFirestore, private mqttService: MqttInterfaceService) { }
+  constructor(private http: HttpClient, private storageService: IonicStorageService, private variableManagementService: VariableManagementService, private fireStore: AngularFirestore, private mqttService: MqttInterfaceService, private alertController: AlertController) { }
 
   signup( email: string, password: string, confirmpassword: string){
     return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseConfig.apiKey}`,
@@ -73,7 +74,8 @@ export class AuthService {
           console.log(error);
         }));
       } else {
-        console.log("This account does not have backend servers setup");
+        this.presentNoBackendSetupError();
+        console.warn("This account does not have backend servers setup");
         return of(false);
       }
     })); 
@@ -161,5 +163,14 @@ logout(){
 
   private storeAuthData(localId: string, idToken: string, email: string, tokenExpirationDate: string) {
     this.storageService.set('authData', { localId: localId, idToken: idToken, email: email, tokenExpirationDate: tokenExpirationDate });
+  }
+
+  async presentNoBackendSetupError() {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'Unable to find any Hydrotek devices registered to this account.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }

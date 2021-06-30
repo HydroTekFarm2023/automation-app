@@ -1,0 +1,8 @@
+.humidity_unit::after{
+    color: gray;
+    content: "%RH";
+}
+
+.sw-prevent-invalid {
+    color: black !important;
+}

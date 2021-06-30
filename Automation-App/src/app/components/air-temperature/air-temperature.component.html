@@ -1,15 +1,16 @@
 <ion-card class="dashboard-card">
   <ion-card-content class="top_bottom_padding">
     <ion-grid>
-      <!--Card Header-->
+
       <ion-row>
         <ion-item tappable (click)="toggleAccordion()" lines="none">
           <ion-icon slot="start" name="chevron-forward-outline" *ngIf="!isOpen"></ion-icon>
           <ion-icon slot="start" name="chevron-down-outline" *ngIf="isOpen"></ion-icon>
+          <ion-icon slot="start" name="alert-circle-outline"  class="warning-icon" color="danger" *ngIf="!airTemperatureForm.valid"></ion-icon>
           <h3 fill="clear" class="color h3_sensor_title">Air Temperature</h3>
         </ion-item>
       </ion-row>
-      <!--Card Content-->
+
       <form [formGroup]="airTemperatureForm">
         <div *ngIf="isOpen">
           <hr color="grey" />
@@ -23,66 +24,60 @@
               </ion-col>
             </ion-row>
           </div>
-  
+
           <div *ngIf="!airTemperatureForm.get('monit_only').value" [formGroup]="controlForm"> 
             <h3 class="h3_sensor_title">Desired Value</h3>
             <ion-row>
-              <ion-item lines="none">
-                <ion-checkbox formControlName="d_n_enabled" mode="md"></ion-checkbox>
-                <ion-label class="sensor_black_label">Different Targets for Day and Night</ion-label>
-              </ion-item>
-            </ion-row>
-            <ion-row *ngIf="controlForm.get('d_n_enabled').value">
-              <ion-col class="no_padding" size="6">
-                <ion-item>
-                  <ion-label  class="sensor_black_label" position="floating">Day Target Value</ion-label>
-                  <ion-input formControlName="day_tgt" type="number"></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col class="no_padding" size="6">
-                <ion-item>
-                  <ion-label  class="sensor_black_label" position="floating">Night Target Value</ion-label>
-                  <ion-input formControlName="night_tgt" type="number"></ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-            <ion-row *ngIf="!controlForm.get('d_n_enabled').value">
               <ion-col class="no_padding" size="12">
                 <ion-item>
-                  <ion-label  class="sensor_black_label" position="floating">Target Value</ion-label>
-                  <ion-input formControlName="tgt" type="number"></ion-input>
+                  <ion-label class="sensor_black_label" position="floating">Target Value</ion-label>
+                  <ion-input formControlName="tgt" type="number" class="airTemperature_unit"></ion-input>
                 </ion-item>
+                <p *ngIf="controlForm.get('tgt').errors?.incorrect" class="error_msg">This is a required value.</p>
+                <p *ngIf="controlForm.get('tgt').errors?.min" class="error_msg">This value must be at least {{controlForm.get('tgt').errors.min.min}}.</p>
+                <p *ngIf="controlForm.get('tgt').errors?.max" class="error_msg">This value must be at most {{controlForm.get('tgt').errors.max.max}}.</p>              
               </ion-col>
             </ion-row>
+
             <h3 class="h3_sensor_title">Power Outlets</h3>
-            <ion-row>
-              <ion-list>
-                <ion-item>
-                  <ion-toggle slot="start" formControlName="up_ctrl"></ion-toggle>
-                  <ion-label class="sensor_black_label">Heater</ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-toggle slot="start" formControlName="down_ctrl"></ion-toggle>
-                  <ion-label class="sensor_black_label">Cooler</ion-label>
-                </ion-item>
-              </ion-list>
-            </ion-row>
+            <ion-list>
+              <ion-item lines="none">
+                <ion-toggle slot="start" formControlName="up_ctrl" (click)="onOutletToggleChange('Air Heater', 'up_ctrl')"></ion-toggle>
+                <ion-icon name="cloud-outline"></ion-icon>
+                <ion-label class="sensor_black_label sw-prevent-invalid">Heater</ion-label>
+                <ion-button slot="end" (click)="presentAddPowerOutletModal('Air Heater', 'up_ctrl')">{{ isPowerOutletSetup('Air Heater')? "Edit": "Setup"}}</ion-button>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-toggle slot="start" formControlName="down_ctrl" (click)="onOutletToggleChange('Air Cooler', 'down_ctrl')"></ion-toggle>
+                <ion-icon name="snow-outline"></ion-icon>
+                <ion-label class="sensor_black_label sw-prevent-invalid">Cooler</ion-label>
+                <ion-button slot="end" (click)="presentAddPowerOutletModal('Air Cooler', 'down_ctrl')">{{ isPowerOutletSetup('Air Cooler')? "Edit": "Setup"}}</ion-button>
+              </ion-item>
+            </ion-list>
+            <p *ngIf="airTemperatureForm.errors?.noneEnabled" class="error_msg">If not monitoring, at least one control must be enabled.</p>
           </div>
+
           <h3 class="h3_sensor_title">Alarm Settings</h3>
-          <ion-row>
-            <ion-col class="no_padding" size="5">
+          <ion-list>
               <ion-item>
-                <ion-label  class="sensor_black_label" position="floating">Min</ion-label>
-                <ion-input formControlName="alarm_min" type="number"></ion-input>
+                <ion-label class="sensor_black_label" position="floating">Min</ion-label>
+                <ion-input formControlName="alarm_min" type="number" class="airTemperature_unit"></ion-input>
               </ion-item>
-            </ion-col>
-            <ion-col class="no_padding" offset="1" size="5">
+              <p *ngIf="airTemperatureForm.get('alarm_min').errors?.required" class="error_msg">This is a required value.</p>
+              <p *ngIf="airTemperatureForm.get('alarm_min').errors?.min" class="error_msg">This value must be at least {{airTemperatureForm.get('alarm_min').errors.min.min}}.</p>
+              <p *ngIf="airTemperatureForm.get('alarm_min').errors?.max" class="error_msg">This value must be at most {{airTemperatureForm.get('alarm_min').errors.max.max}}.</p>
+
               <ion-item>
-                <ion-label  class="sensor_black_label" position="floating">Max</ion-label>
-                <ion-input formControlName="alarm_max" type="number"></ion-input>
+                <ion-label class="sensor_black_label" position="floating">Max</ion-label>
+                <ion-input formControlName="alarm_max" type="number" class="airTemperature_unit"></ion-input>
               </ion-item>
-            </ion-col>
-          </ion-row>
+              <p *ngIf="airTemperatureForm.get('alarm_max').errors?.required" class="error_msg">This is a required value.</p>
+              <p *ngIf="airTemperatureForm.get('alarm_max').errors?.min" class="error_msg">This value must be at least {{airTemperatureForm.get('alarm_max').errors.min.min}}.</p>
+              <p *ngIf="airTemperatureForm.get('alarm_max').errors?.max" class="error_msg">This value must be at most {{airTemperatureForm.get('alarm_max').errors.max.max}}.</p>
+
+          </ion-list>
+          <p *ngIf="airTemperatureForm.errors?.compareError" class="error_msg">Alarm min must be lower than Alarm max.</p>
+
         </div>
       </form>
     </ion-grid>

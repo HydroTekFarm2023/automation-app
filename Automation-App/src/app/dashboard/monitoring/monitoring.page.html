@@ -14,11 +14,15 @@
       </div>
       <ion-card>
         <ion-card-content>
-          <ion-list>
+          <ion-list *ngIf="currentDevice.power_outlets.length > 0">
             <div *ngFor="let powerOutlet of currentDevice.power_outlets">
-              <power-outlet [data]="powerOutlet"></power-outlet>
+              <power-outlet [data]="powerOutlet" [topicID]="this.currentDevice.topicID"></power-outlet>
             </div>
           </ion-list>
+          <div *ngIf="currentDevice.power_outlets.length <= 0">
+            <h3 class="text_center gray-text">No Power Outlets in this Device</h3>
+            <h3 class="text_center gray-text">Setup Power Outlet in Control Page</h3>
+          </div>
         </ion-card-content>
       </ion-card>
     </div>

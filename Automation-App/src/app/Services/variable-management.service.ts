@@ -142,6 +142,17 @@ export class VariableManagementService {
       }));
   } 
 
+  public createClimateController(climateController: ClimateController): Observable<any> {
+    return this.http.post(this.dbURL + "/climmate-controller-settings/create", climateController)
+      .pipe(map((resData: {_id: string}) => {
+        console.log(resData);
+        climateController._id = resData._id;
+        let climateControllerDevicesArray: ClimateController[] = this.climateControllerSettings.value;
+        climateControllerDevicesArray.push(climateController);
+        this.climateControllerSettings.next(climateControllerDevicesArray);
+      }));
+  } 
+
   // Update grow room and system settings in backend
   public updateDeviceSettings(device: Devices, deviceType: string, deviceID: string, deviceIndex: number): Observable<any> {
     let endPointURL = "";
@@ -159,13 +170,45 @@ export class VariableManagementService {
         endPointURL = ClimateControllerString;
         deviceSubject = this.climateControllerSettings;
         break;
-      // TODO Add error checking
+      default:
+        console.warn("Device type of " + deviceType + " does not exist");
+        return;
     }
     return this.http.put(this.dbURL + "/" + endPointURL + "-settings/update/" + deviceID, device)
       .pipe(switchMap(() => {
         let updatedDevicesArray = deviceSubject.value;
         console.log(device);
         updatedDevicesArray[deviceIndex] = device;
+        return this.storageService.set(localStorageKey, updatedDevicesArray).pipe(tap(() => {
+          deviceSubject.next(updatedDevicesArray);
+          console.log(deviceSubject.value);
+        }))
+      }));
+  }
+
+  public updateDeviceStartedStatus(deviceStatus: boolean, deviceType: string, deviceID: string, deviceIndex: number) {
+    let endPointURL = "";
+    let localStorageKey = "";
+    let deviceSubject: BehaviorSubject<Devices[]>;
+    switch(deviceType){
+      case FertigationSystemString:
+        localStorageKey = "fertigationSystems";
+        endPointURL = FertigationSystemString;
+        deviceSubject = this.fertigationSystemSettings;
+        break;
+      case ClimateControllerString:
+        localStorageKey = "climateControllers";
+        endPointURL = ClimateControllerString;
+        deviceSubject = this.climateControllerSettings;
+        break;
+      default:
+        console.warn("Device type of " + deviceType + " does not exist");
+        return;
+    }
+    return this.http.put(this.dbURL + "/" + endPointURL + "-settings/device-started/" + deviceID, deviceStatus)
+      .pipe(switchMap(() => {
+        let updatedDevicesArray = deviceSubject.value;
+        updatedDevicesArray[deviceIndex].device_started = deviceStatus;
         return this.storageService.set(localStorageKey, updatedDevicesArray).pipe(tap(() => {
           deviceSubject.next(updatedDevicesArray);
           console.log(deviceSubject.value);

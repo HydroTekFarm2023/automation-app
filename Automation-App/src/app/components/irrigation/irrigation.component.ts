@@ -13,6 +13,8 @@ export class IrrigationComponent implements OnInit {
   isOpen: boolean = false;
   @Input() parentForm: FormGroup;
   @Input() powerOutlets: PowerOutlet[];
+  @Input() topicID: string;
+
   @Output() newPowerOutletEvent = new EventEmitter<PowerOutlet>();
   
   irrigationForm: FormGroup;
@@ -69,7 +71,8 @@ export class IrrigationComponent implements OnInit {
     const modal = await this.modalController.create({
       component: AddPowerOutletPage,
       componentProps: {
-        'powerOutletName': powerOutletName
+        'powerOutletName': powerOutletName,
+        'topicID': this.topicID
       }
     });
 

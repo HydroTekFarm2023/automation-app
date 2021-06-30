@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="content" class="gradient_background">
+  <div class="content gradient_background">
     <form [formGroup]="fertigationSystemForm" (ngSubmit)="onSubmit()">
       <ion-grid>
         <ion-row>
@@ -41,10 +41,10 @@
       <h2>Sensor List</h2>
       <ph *ngIf="ph" [parentForm]="settingsForm"></ph>
       <ec *ngIf="ec" [parentForm]="settingsForm"></ec>
-      <water-temp *ngIf="waterTemperature" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)"></water-temp>
-      <grow-lights *ngIf="growLights" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)" [powerOutletArray]="growLightArray"></grow-lights>
-      <irrigation *ngIf="irrigation" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)"></irrigation>
-      <reservoir *ngIf="reservoir" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" (newPowerOutletEvent)="onAddPowerOutlet($event)"></reservoir>
+      <water-temp *ngIf="waterTemperature" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)"></water-temp>
+      <grow-lights *ngIf="growLights" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)" [powerOutletArray]="growLightArray"></grow-lights>
+      <irrigation *ngIf="irrigation" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)"></irrigation>
+      <reservoir *ngIf="reservoir" [parentForm]="settingsForm" [powerOutlets]="powerOutlets" [topicID]="this.topicId" (newPowerOutletEvent)="onAddPowerOutlet($event)"></reservoir>
     </form>
   </div>
 </ion-content>

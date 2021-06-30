@@ -1,4 +1,4 @@
-export class Sensor{
+export class Sensor {
     name: string;
     monit_only: boolean;
     alarm_min: number;

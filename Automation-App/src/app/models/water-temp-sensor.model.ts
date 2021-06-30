@@ -1,7 +1,8 @@
 import { Deserializable } from "./deserializable";
+import { SensorDisplay } from "./sensor-display";
 import { Sensor } from "./sensor.model";
 
-export class WaterTempSensor extends Sensor implements Deserializable {
+export class WaterTempSensor extends Sensor implements Deserializable, SensorDisplay {
 
     control: {
         d_n_enabled: boolean;
@@ -18,5 +19,9 @@ export class WaterTempSensor extends Sensor implements Deserializable {
 
     getDisplayName(): string {
         return 'Water Temp'
+    }
+
+    getSensorUnit(): string {
+        return '°C';
     }
 }

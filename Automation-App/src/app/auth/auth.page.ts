@@ -6,10 +6,6 @@ import { LoadingController, AlertController } from '@ionic/angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms'; 
 import { PasswordStrengthValidator } from './password';
 import { Observable } from 'rxjs';
-import { VariableManagementService, Devices } from '../Services/variable-management.service';
-import { MqttInterfaceService } from '../Services/mqtt-interface.service';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { IonicStorageService } from '../Services/ionic-storage.service';
 
 @Component({
   selector: 'app-auth',
@@ -23,8 +19,7 @@ export class AuthPage implements OnInit {
   isLoading = false; //set to false as a default.
   isLogin = true; //set to true as a default.
   //Parameters injected to trigger the necessary methods.
-  constructor(private authService: AuthService, private mqttService: MqttInterfaceService, private router : Router, private loadingCtrl: LoadingController,
-    public formbuilder: FormBuilder, private alertCtrl: AlertController, private variableManagementService: VariableManagementService, private fireStore: AngularFirestore, private storageService: IonicStorageService) {  
+  constructor(private authService: AuthService, private router : Router, private loadingCtrl: LoadingController, public formbuilder: FormBuilder, private alertCtrl: AlertController) {  
     this.formgroup = this.formbuilder.group(
       {
         email: new FormControl('', Validators.compose([Validators.required, Validators.email])), 
