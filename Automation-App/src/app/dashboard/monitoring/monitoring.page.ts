@@ -1,9 +1,8 @@
-import { Component, OnInit } from "@angular/core";
-import { filter, map, skip } from "rxjs/operators";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { filter } from "rxjs/operators";
 import { ConnectionStatus, MqttInterfaceService } from "src/app/Services/mqtt-interface.service";
 import { ClimateControllerString, FertigationSystemString, VariableManagementService } from 'src/app/Services/variable-management.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActionSheetController, ModalController } from '@ionic/angular';
 import { Devices } from 'src/app/Services/variable-management.service';
 import { SensorMonitoringWidget } from 'src/app/components/sensor-display/sensor-display.component';
 import { EquipmentStatus } from "src/app/models/equipment-status";
@@ -21,14 +20,15 @@ export class MonitoringPage implements OnInit {
   liveData: string[];
 
   deviceName: string;
-  timestamp: string;
+  timestamp: string = "N/A";
   noDevices: boolean;
 
   equipmentStatus: EquipmentStatus;
 
-  constructor(public mqttService: MqttInterfaceService, public variableManagementService: VariableManagementService, public route: ActivatedRoute, private actionSheetController: ActionSheetController, private modalController: ModalController, private router: Router) { }
+  constructor(public mqttService: MqttInterfaceService, public variableManagementService: VariableManagementService, public route: ActivatedRoute, private router: Router) { }
  
   ngOnInit() {
+    console.log("loaded");
     this.variableManagementService.fertigationSystemSettings.subscribe(resData =>{
       console.log(resData);
     });
@@ -115,9 +115,10 @@ export class MonitoringPage implements OnInit {
       
       switch(status) {
         case ConnectionStatus.CONNECTED: {
-          this.mqttService.unsubscribeToTopic(liveDataTopic + '/#');
+          this.mqttService.unsubscribeToTopic(liveDataTopic + '/#');  // TODO: Unsubcribing to entire Wildcard does not work
           this.mqttService.unsubscribeToTopic(equipmentStatusTopic + '/#');
-          this.mqttService.subscribeToTopic(liveDataTopic + '/' + this.currentDevice.topicID + '/#');
+          console.log(this.currentDevice.topicID);
+          this.mqttService.subscribeToTopic(liveDataTopic + '/' + this.currentDevice.topicID);
           this.mqttService.subscribeToTopic(equipmentStatusTopic + '/' + this.currentDevice.topicID);
           break;
         }

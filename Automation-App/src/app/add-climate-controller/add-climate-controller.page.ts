@@ -6,7 +6,7 @@ import { ClimateController } from '../models/climate-controller.model';
 import { PowerOutlet } from '../models/power-outlet.model';
 import { MqttInterfaceService } from '../Services/mqtt-interface.service';
 import { deviceSettingsTopic } from '../Services/topicKeys';
-import { VariableManagementService, plant } from '../Services/variable-management.service';
+import { VariableManagementService } from '../Services/variable-management.service';
 
 @Component({
   selector: 'climate-controller',

@@ -1,15 +1,16 @@
 <ion-content class="gradient_background">
   <div class="content">
  
-    <div *ngIf="currentDevice != null">
-      <div>
+    <div *ngIf="!noDevices">
+      <h2 class="h2_title">{{ this.currentDevice.name }}</h2>
+      <div class="timestamp-div">
         <h6>Last Updated: {{ timestamp }}</h6>
       </div>
       <span *ngFor="let sensorSettings of currentDeviceSettings">
         <sensor-display [sensor]="sensorSettings" [allLiveData]="liveData"></sensor-display>
       </span>
 
-      <div>
+      <div class="margin-top">
          <h2 class="h2_title">Power Outlets</h2>
       </div>
       <ion-card>

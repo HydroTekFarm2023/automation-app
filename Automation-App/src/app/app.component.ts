@@ -10,6 +10,7 @@ import { IdentifyDevicePage } from './add-device/identify-device/identify-device
 import { Subscription } from 'rxjs';
 import { AddFertigationSystemPage } from './add-fertigation-system/add-fertigation-system.page';
 import { AddClimateControllerPage } from './add-climate-controller/add-climate-controller.page';
+import { MqttInterfaceService } from './Services/mqtt-interface.service';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private menuController: MenuController,
     private modalController: ModalController,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private mqttService: MqttInterfaceService
   ) {
     this.initializeApp();
   }
@@ -56,6 +58,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   logout() {
+    this.mqttService.resetMqttService();
     this.authService.logout();
   }
 
@@ -114,25 +117,6 @@ export class AppComponent implements OnInit, OnDestroy {
     });
     return await modal.present();
   }
-
-
-
-  
-  // async presentAddPowerOutletModal(powerOutletName: string) {
-  //   const modal = await this.modalController.create({
-  //     component: AddPowerOutletPage,
-  //     componentProps: {
-  //       'powerOutletName': powerOutletName
-  //     }
-  //   });
-
-  //   modal.onWillDismiss().then((returnValue) => {
-  //     if(returnValue.data && !this.isPowerOutletSetup(powerOutletName)) {
-  //       this.newPowerOutletEvent.emit(returnValue.data);
-  //     }
-  //   });
-  //   return await modal.present();
-  // }
 
   initializeApp() {
     this.platform.ready().then(() => {

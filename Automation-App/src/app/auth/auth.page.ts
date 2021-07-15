@@ -59,7 +59,8 @@ export class AuthPage implements OnInit {
             this.authService.fetchServerIPs(authResData.localId).subscribe(resData => {
               console.log(resData)
               if(resData) {
-                this.router.navigateByUrl('/dashboard/monitoring');
+                // Load the monitoring page and reset the state of the app to get rid of data from previous login
+                window.location.href = window.location.protocol + '//' + window.location.host + '/dashboard/monitoring';
               }
             });
           },

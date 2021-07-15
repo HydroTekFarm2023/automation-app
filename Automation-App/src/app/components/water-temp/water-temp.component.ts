@@ -32,7 +32,7 @@ export class WaterTempComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.controlForm = this.fb.group({
-      'd_n_enabled': this.fb.control(true),
+      'd_n_enabled': this.fb.control(false),
       'day_tgt': this.fb.control(null, [Validators.min(0), Validators.max(50)]),
       'night_tgt': this.fb.control(null, [Validators.min(0), Validators.max(50)]),
       'tgt': this.fb.control(null, [Validators.min(0), Validators.max(50)]),

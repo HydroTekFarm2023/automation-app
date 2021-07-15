@@ -30,14 +30,22 @@
 
           </ion-col>
         </ion-row>
+        <ion-row> 
+          <ion-col class="no_padding" size="12">
+            <ion-item>
+              <ion-label class="sensor_black_label" position="floating">Next Replacement Date</ion-label>
+              <ion-datetime displayFormat="MMM DD, h:mm a" placeholder="Select Time" formControlName="replace_date"></ion-datetime>
+            </ion-item>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col class="no_padding" size="12">
             <ion-item>
               <ion-label class="sensor_black_label" position="floating">Replacement Interval</ion-label>
-              <ion-input formControlName="water_replacement_interval" type="number" class="day_unit"></ion-input>
+              <ion-input formControlName="replace_interv" type="number" class="day_unit"></ion-input>
             </ion-item>
-            <p *ngIf="reservoirForm.get('water_replacement_interval').errors?.min" class="error_msg">This value must be at least {{reservoirForm.get('water_replacement_interval').errors.min.min}}.</p>
-            <p *ngIf="reservoirForm.get('water_replacement_interval').errors?.max" class="error_msg">This value must be at most {{reservoirForm.get('water_replacement_interval').errors.max.max}}.</p>
+            <p *ngIf="reservoirForm.get('replace_interv').errors?.min" class="error_msg">This value must be at least {{reservoirForm.get('replace_interv').errors.min.min}}.</p>
+            <p *ngIf="reservoirForm.get('replace_interv').errors?.max" class="error_msg">This value must be at most {{reservoirForm.get('replace_interv').errors.max.max}}.</p>
           </ion-col>
         </ion-row>
         <h3 class="h3_sensor_title">Power Outlets</h3>

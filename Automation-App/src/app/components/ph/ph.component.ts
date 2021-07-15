@@ -28,7 +28,7 @@ export class PhComponent implements OnInit, OnDestroy {
     this.controlForm = this.fb.group({
       'dose_time': this.fb.control(null, [Validators.required, Validators.min(1), Validators.max(7200)]),
       'dose_interv': this.fb.control(null, [Validators.required, Validators.min(1), Validators.max(14400)]),
-      'd_n_enabled': this.fb.control(true),
+      'd_n_enabled': this.fb.control(false),
       'day_tgt': this.fb.control(null, [Validators.min(0), Validators.max(14)]),
       'night_tgt': this.fb.control(null, [Validators.min(0), Validators.max(14)]),
       'tgt': this.fb.control(null, [Validators.min(0), Validators.max(14)]),

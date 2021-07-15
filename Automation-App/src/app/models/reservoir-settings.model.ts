@@ -4,7 +4,8 @@ export class ReservoirSettings implements Deserializable {
 
     reservoir_size: number;
     is_control: boolean;
-    water_replacement_interval: number;
+    replace_interv: number;
+    replace_date: string;
 
     deserialize(input: any): this {
         return Object.assign(this, input);

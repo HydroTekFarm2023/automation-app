@@ -22,7 +22,20 @@
                 </ion-item>
               </ion-col>
             </ion-row>
+            <ion-row>
+              <ion-col class="no_padding" size="12">
+                <ion-item>
+                    <ion-label>Recommended Settings</ion-label>
+                    <ion-select #plantSelect placeholder="Plant" formControlName="plant_name" [interfaceOptions]="plantAlertOptions" (ionChange)="addRecommendedSettings(plantSelect.value)">
+                      <ion-select-option *ngFor="let plant of plants" [value]="plant">
+                        {{ plant.name }}
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+              </ion-col>
+            </ion-row>
           </div>
+
         </div>
       </form>
     </ion-grid>

@@ -8,6 +8,7 @@ import * as _ from "lodash";
 import { FertigationSystem } from "../models/fertigation-system.model";
 import { ClimateController } from "../models/climate-controller.model";
 import { IonicStorageService } from "./ionic-storage.service";
+import { Plant } from "../models/plant";
 
 @Injectable({
   providedIn: "root",
@@ -52,7 +53,7 @@ export class VariableManagementService {
   public noClusters: boolean = true;
   public noDevices: boolean = true;
 
-  public plants: plant[] = [];
+  public plants: Plant[] = [];
 
   constructor(private http: HttpClient, private storageService: IonicStorageService) {
     this.fertigationSystemSettings.subscribe(fertigationSystemArray => {
@@ -89,47 +90,7 @@ export class VariableManagementService {
   //     return [this.sensorsValueData,this.sensorsTimeData];
   //     //console.log(this.sensorsValueData);
   // }
- 
-  // Post grow room and system settings to backend
-  public createGrowRoom(growRoomForm: any): Observable<any> {
-    var sensorsArray = [];
-    for(var key in growRoomForm.sensors){
-        sensorsArray.push({
-            name: key,
-            monitoring_only: growRoomForm.sensors[key].monitoring_only,
-            day_and_night: growRoomForm.sensors[key].monitoring_only? null: growRoomForm.sensors[key].control.day_and_night,
-            target_value: growRoomForm.sensors[key].monitoring_only? null: growRoomForm.sensors[key].control.target_value,
-            day_target_value: growRoomForm.sensors[key].monitoring_only? null: growRoomForm.sensors[key].control.day_and_night? growRoomForm.sensors[key].control.day_target_value: null,
-            night_target_value: growRoomForm.sensors[key].monitoring_only? null: growRoomForm.sensors[key].control.day_and_night? growRoomForm.sensors[key].control.night_target_value: null,
-            desired_range_low:  growRoomForm.sensors[key].alarm_min,
-            desired_range_high: growRoomForm.sensors[key].alarm_max
-        });
-    }
-    var data = {
-      name: growRoomForm.grow_room_name,
-      cluster_name: growRoomForm.cluster_name,
-      settings: growRoomForm.sensors,
-      brief_info: sensorsArray,
-    }
-    return this.http.post(this.dbURL + "/create_grow_room/", data)
-    .pipe(map((resData: {_id: string}) => {
-      this.deviceSettings.push({
-        _id: resData._id,
-        name: data.name,
-        type: "growroom",
-        clusterName: data.cluster_name,
-        settings: data.settings
-      });
-      this.noDevices = false;
-      // const clusterIndex = this.clusters.findIndex(({name}) => name === data.cluster_name);
-      // this.clusters[clusterIndex].growRoom = {
-      //   name: data.name,
-      //   growRoomVariables: data.brief_info
-      // };
-      // this.devices.push(data.name);
-      // this.updateCurrentCluster(data.cluster_name, data.name);
-    }));
-  }
+
 
   public createFertigationSystem(fertigationSystem: FertigationSystem): Observable<any> {
     return this.http.post(this.dbURL + "/fertigation-system-settings/create", fertigationSystem)
@@ -216,8 +177,8 @@ export class VariableManagementService {
       }));
   }
 
-  public setRESTServerURL(ip: string) {
-    this.dbURL = "http://" + ip;
+  public setRESTServerURL(domain: string) {
+    this.dbURL = domain;
   }
 
   public fetchDevices() {
@@ -281,8 +242,12 @@ export class VariableManagementService {
   }
 
   public getPlants(){
-    return this.http.get<plant[]>(this.dbURL + "/get_plants").pipe(map(plants => {
-      this.plants = plants;
+    return this.http.get<Plant[]>(this.dbURL + "/plants").pipe(switchMap(plants => {
+      this.plants = [];
+      plants.forEach((plant) => {
+        this.plants.push(new Plant().deserialize(plant));
+      });
+      return of(this.plants);
     }));
   }
 }
@@ -311,18 +276,6 @@ interface plant_settings {
   day_and_night: Boolean,
   day_target_value: Number,
   night_target_value: Number 
-}
-
-export interface plant {
-  _id: string;
-  name: string;
-  settings: {
-    air_temperature: plant_settings,
-    humidity: plant_settings,
-    ec: plant_settings,
-    ph: plant_settings,
-    water_temperature: plant_settings
-  }
 }
 
 interface sensor_info{

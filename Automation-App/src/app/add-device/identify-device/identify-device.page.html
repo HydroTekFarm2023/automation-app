@@ -13,30 +13,22 @@
       <h1>Follow these steps to connect to your Hydrotek Device</h1>
       <ul>
         <li>Disconnect from your current WiFi Connection</li>
-        <li>Search for Hydrotek Device Network in your WiFi Manager</li>
-        <li>Connect to Hydrotek Device and once connection is successful click the connect button</li>
+        <li>Connect to your Hydrotek Device's WiFi Netowrk</li>
+        <li>Hit the Next button to proceed to the next step</li>
       </ul>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="4" offset="4">
-            <ion-label color="danger">{{ status }}</ion-label>
-          </ion-col>
-        </ion-row>
-        <ion-row *ngIf="isLoading">
-          <ion-col size="2" offset="5">
-            <ion-spinner></ion-spinner>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="4" offset="4">
-            <ion-button class="button" (click)="pingDevice()" style="float: right;">Connect</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <div class="text_center">
+        <ion-spinner *ngIf="isLoading"></ion-spinner>
+      </div>
+      <div class="text_center" style="text-align: center;">
+        <ion-button class="button" (click)="pingDevice()">Next</ion-button>
+      </div>
+      <div class="text_center" style="text-align: center;">
+        <ion-label color="danger">{{ status }}</ion-label>
+      </div>
     </ion-card-content>
   </ion-card>
   
-  <ion-card *ngIf="isConnected">
+  <ion-card *ngIf="isConnected && !isWifiSettingsTransferred">
     <ion-card-content>
       <form [formGroup]="wifiSettingsForm" (ngSubmit)="onWiFiSettingsSubmit()">
         <h2>Enter your Router WiFi SSID and Password</h2>
@@ -49,7 +41,15 @@
             <ion-label position="floating">WiFi Password</ion-label>
             <ion-input type="password" formControlName="wifi_password"></ion-input>
           </ion-item>
-          <ion-button type="submit" style="float: right;">Setup</ion-button>
+          <div class="text_center">
+            <ion-spinner *ngIf="isLoading"></ion-spinner>
+          </div>
+          <div class="text_center">
+            <ion-button class="button" type="submit" [disabled]="wifiSettingsForm.invalid">Setup</ion-button>
+          </div>
+          <div class="text_center" style="text-align: center;">
+            <ion-label color="danger">{{ status }}</ion-label>
+          </div>
         </ion-list>
       </form>
     </ion-card-content>
@@ -57,15 +57,17 @@
 
   <ion-card>
     <ion-card-content *ngIf="isWifiSettingsTransferred">
-      <h1>WiFi Settings have been transferred</h1>
-      <h1>Connect back to your original WiFi Network and press the next button</h1>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="4" offset="4">
-            <ion-button class="button" (click)="onWiFiChangeClick()" style="float: right;">Next</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <h2>Your device successfully connected to {{ wifiSettingsForm.get("wifi_ssid").value }}</h2>
+      <h2>Connect back to your original WiFi Network and press the next button</h2>
+      <div class="text_center">
+        <ion-spinner *ngIf="isLoading"></ion-spinner>
+      </div>
+      <div class="text_center">
+        <ion-button class="button" (click)="onWiFiChangeClick()">Next</ion-button>
+      </div>
+      <div class="text_center">
+        <ion-label color="danger">{{ status }}</ion-label>
+      </div>
     </ion-card-content>
   </ion-card>
 </ion-content>

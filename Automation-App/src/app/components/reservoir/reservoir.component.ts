@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { AddPowerOutletPage } from 'src/app/add-power-outlet/add-power-outlet.page';
@@ -19,15 +19,20 @@ export class ReservoirComponent implements OnInit {
   
   reservoirForm: FormGroup;
   
-  constructor(private fb: FormBuilder, private modalController: ModalController) { }
+  constructor(private fb: FormBuilder, private modalController: ModalController, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.reservoirForm = this.fb.group({
       'reservoir_size': this.fb.control(null, [Validators.required, Validators.min(0), Validators.max(10000)]),
       'is_control': this.fb.control(false),
-      'water_replacement_interval': this.fb.control(null, [Validators.min(0.5), Validators.max(1000)]) //TODO conditional
+      'replace_date': this.fb.control(null),
+      'replace_interv': this.fb.control(null, [Validators.min(0.5), Validators.max(1000)]) //TODO conditional
     });
+    console.log(this.reservoirForm.get("replace_date").value);
+    console.log(this.reservoirForm);
+    this.cd.detectChanges();
     this.parentForm.addControl('reservoir', this.reservoirForm);
+    this.reservoirForm.valueChanges.subscribe(data => {console.log(data);})
     this.manualCheckValidity();
   }
 
@@ -47,18 +52,6 @@ export class ReservoirComponent implements OnInit {
       }
     }
     return false;
-  }
-
-  onOutletToggleChange(name: string) {
-    let isPowerOutletConfigured;
-    this.powerOutlets.forEach(powerOutlet => {
-      if(powerOutlet.name == name) {
-        isPowerOutletConfigured = true;
-      }
-    });
-    if(!isPowerOutletConfigured) {
-      this.presentAddPowerOutletModal(name);
-    }
   }
 
   manualCheckValidity(){

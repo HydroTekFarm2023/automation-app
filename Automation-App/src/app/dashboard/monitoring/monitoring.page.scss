@@ -44,6 +44,8 @@ h1 {
 }
 
 h6 {
+    align-self: right;
+    font-size: 90%;
     color: white;
     margin-left: 10px;
     display: inline;
@@ -68,3 +70,12 @@ ion-card-header {
 .check-icon {
     color: green;
 }
+
+.timestamp-div {
+    margin-top: 5px;
+}
+
+.margin-top {
+    margin-top: 20px;
+}
+
