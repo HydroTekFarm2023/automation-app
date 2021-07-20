@@ -99,20 +99,18 @@ export class IdentifyDevicePage implements OnInit {
     console.log("change wifi");
     this.isLoading = true;
     setTimeout(() => { 
-      this.mqttInterfaceService.unsubscribeToTopic(wifiConnectStatusTopic + "/" + this.uniqueDeviceId);
+      this.mqttInterfaceService.unsubscribeFromTopic(wifiConnectStatusTopic + "/" + this.uniqueDeviceId);
       this.mqttInterfaceService.wifiConnectStatus.next(false);
       this.isLoading = false;
       this.status = "Unable to Connect to the Hydrotek Server";
       console.log("timeout");
       return;
     }, 90000); 
-    console.log("hereee");
     this.mqttInterfaceService.mqttStatus.pipe(filter((status) => { console.log(status); return status == ConnectionStatus.CONNECTED }), take(1)).subscribe(() => {
       console.log("inside");
       this.mqttInterfaceService.subscribeToTopic(wifiConnectStatusTopic + "/" + this.uniqueDeviceId);
       this.mqttInterfaceService.wifiConnectStatus.pipe(take(1)).subscribe(resData => {
         this.isLoading = false;
-        console.log("asdddddddddddd");
         if(resData == true) {
           switch(this.deviceType) {
             case "Hydrotek Fertigation System":

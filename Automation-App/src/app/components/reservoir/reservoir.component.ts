@@ -32,7 +32,6 @@ export class ReservoirComponent implements OnInit {
     console.log(this.reservoirForm);
     this.cd.detectChanges();
     this.parentForm.addControl('reservoir', this.reservoirForm);
-    this.reservoirForm.valueChanges.subscribe(data => {console.log(data);})
     this.manualCheckValidity();
   }
 

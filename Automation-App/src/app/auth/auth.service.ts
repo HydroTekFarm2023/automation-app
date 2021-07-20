@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { BehaviorSubject, from, of } from 'rxjs';
 import { User } from './user.model';
-import {map, switchMap, tap} from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { IonicStorageService } from '../Services/ionic-storage.service';
 import { VariableManagementService } from '../Services/variable-management.service';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -69,7 +69,7 @@ export class AuthService {
         return this.variableManagementService.fetchDevices().pipe(tap(() => {
           let mqttHost = userData['mqttBroker'];
           let topics: string[] = [];
-          this.mqttService.createClient(topics, { host: mqttHost, port: 8000 });
+          this.mqttService.createClient(topics, { host: mqttHost, port: 8000, clientId: this._user.value.id });
         }, (error: any) => {
           console.log(error);
         }));
@@ -89,7 +89,7 @@ export class AuthService {
         return this.variableManagementService.fetchDevices().pipe(tap(() => {
           let mqttHost = data['mqttBroker'];
           let topics: string[] = [];
-          this.mqttService.createClient(topics, { host: mqttHost, port: 8000 });
+          this.mqttService.createClient(topics, { host: mqttHost, port: 8000, clientId: this._user.value.id });
         }, (error: any) => {
           console.log(error);
         }));

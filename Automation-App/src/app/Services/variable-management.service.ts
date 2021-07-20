@@ -148,6 +148,7 @@ export class VariableManagementService {
   }
 
   public updateDeviceStartedStatus(deviceStatus: boolean, deviceType: string, deviceID: string, deviceIndex: number) {
+    console.log(deviceID);
     let endPointURL = "";
     let localStorageKey = "";
     let deviceSubject: BehaviorSubject<Devices[]>;

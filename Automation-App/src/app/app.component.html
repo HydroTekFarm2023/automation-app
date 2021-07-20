@@ -11,29 +11,27 @@
       </ion-header>
      <!--side menu options-->
      <ion-content>
+      <ion-item (click)="newDevice()" lines="full">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        <ion-label>Setup Device</ion-label>
+      </ion-item>
       <ion-list>
-        <ion-item>
-          <ion-title>Fertigation Systems</ion-title>
-          <ion-button (click)="newDevice()" fill="clear" size="large">
-            <ion-icon name="add-circle-outline"></ion-icon>
-          </ion-button>
+        <ion-item lines="none">
+          <ion-title class="column-title">Fertigation Systems</ion-title>
         </ion-item>
         <ion-menu-toggle *ngFor="let device of (variableManagementService.fertigationSystemSettings | async); let i = index">
-          <ion-item lines="none" routerLink="/dashboard/monitoring" [queryParams]="{ deviceType: device.type, deviceIndex: i }">
+          <ion-item lines="full" routerLink="/dashboard/monitoring" [queryParams]="{ deviceType: device.type, deviceIndex: i }">
             <ion-icon name="leaf-outline" slot="start"></ion-icon>
             <ion-label>{{ device.name }}</ion-label>
           </ion-item>
         </ion-menu-toggle>
       </ion-list>
       <ion-list>
-        <ion-item>
-          <ion-title>Climate Controllers</ion-title>
-          <ion-button (click)="newDevice()" fill="clear" size="large">
-            <ion-icon name="add-circle-outline"></ion-icon>
-          </ion-button>
+        <ion-item lines="none">
+          <ion-title class="column-title">Climate Controllers</ion-title>
         </ion-item>
         <ion-menu-toggle *ngFor="let device of (variableManagementService.climateControllerSettings | async); let i = index">
-          <ion-item lines="none" routerLink="/dashboard/monitoring" [queryParams]="{ deviceType: device.type, deviceIndex: i }">
+          <ion-item lines="full" routerLink="/dashboard/monitoring" [queryParams]="{ deviceType: device.type, deviceIndex: i }">
             <ion-icon name="cloudy-outline" slot="start"></ion-icon>
             <ion-label>{{ device.name }}</ion-label>
           </ion-item>

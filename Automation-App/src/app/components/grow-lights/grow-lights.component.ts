@@ -45,7 +45,6 @@ export class GrowLightsComponent implements OnInit {
       'lights_off': this.fb.control(null, [Validators.required]),
       'power_outlets': this.fb.array([])
     });
-    this.growLightsForm.valueChanges.subscribe(data => {console.log(data)});
     this.parentForm.addControl('grow_lights', this.growLightsForm);
   }
 

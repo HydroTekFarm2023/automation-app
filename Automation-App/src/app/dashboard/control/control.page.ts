@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Devices, FertigationSystemString, ClimateControllerString, VariableManagementService } from 'src/app/Services/variable-management.service';
 import { FormGroup } from '@angular/forms';
-import { debounceTime, filter } from 'rxjs/operators';
+import { debounceTime, filter, take } from 'rxjs/operators';
 import { AlertController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import * as _ from "lodash";
@@ -21,11 +21,11 @@ import { AlertLoadingService } from 'src/app/Services/alert-loading.service';
 
 export class ControlPage implements OnInit {
 
-  FertigationSystemString = FertigationSystemString;
-  ClimateControllerString = ClimateControllerString;
+  public readonly FertigationSystemString = FertigationSystemString;
+  public readonly ClimateControllerString = ClimateControllerString;
 
-  startDeviceString = "Start Device";
-  stopDeviceString = "Stop Device";
+  public readonly startDeviceString = "Start Device";
+  public readonly stopDeviceString = "Stop Device";
 
   currentDevice: Devices;
   noDevices: boolean;
@@ -54,11 +54,7 @@ export class ControlPage implements OnInit {
     private alertLoadingService: AlertLoadingService,
     private changeDetector: ChangeDetectorRef, 
     private route: ActivatedRoute,
-    private alertController: AlertController) { 
-    this.mqttService.mqttStatus.subscribe((status) => {
-      console.log(status);
-    });
-  }
+    private alertController: AlertController) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -82,8 +78,9 @@ export class ControlPage implements OnInit {
         } 
       }
     });
+
     this.formValue$ = this.settingsForm.valueChanges.pipe(debounceTime(300), filter(() => this.noDevices != true));
-    this.formValue$.subscribe((formValue) => {   
+    this.formValue$.subscribe((formValue) => { 
       let a = JSON.parse(JSON.stringify(formValue));
       let b = JSON.parse(JSON.stringify(this.currentDevice.settings));
       this.isDirty = (_.isEqual(a, b) == false);
@@ -104,16 +101,12 @@ export class ControlPage implements OnInit {
 
     this.mqttService.publishMessage(deviceStatusTopic + "/" + this.currentDevice.topicID, isDeviceStarted? "1" : "0").then(() => {
       this.alertLoadingService.dismissLoadingScreen();
-      this.variableManagementService.updateDeviceStartedStatus(isDeviceStarted, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex).subscribe(() => {
+      this.variableManagementService.updateDeviceStartedStatus(isDeviceStarted, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex).pipe(take(1)).subscribe(() => {
         this.presentDeviceToggledDialog(isDeviceStarted, this.currentDevice.name);
         console.log("Published Device Status");
-      }, (error) => {
-        console.warn(error);
-        this.alertLoadingService.dismissLoadingScreen();
-        this.presentDeviceStartedError(isDeviceStarted);
       });
     }).catch(error => {
-      console.warn("asddddddddd", error);
+      console.warn(error);
       this.alertLoadingService.dismissLoadingScreen();
       this.presentDeviceStartedError(isDeviceStarted);
     });
@@ -173,6 +166,7 @@ export class ControlPage implements OnInit {
       }
       this.variableManagementService
         .updateDeviceSettings(device, this.currentDeviceType, this.currentDevice._id, this.currentDeviceIndex)
+          .pipe(take(1))
           .subscribe(() => {
             this.currentDevice = device;
             this.isDirty = false;

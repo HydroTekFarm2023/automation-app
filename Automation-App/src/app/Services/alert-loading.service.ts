@@ -27,7 +27,6 @@ export class AlertLoadingService {
   }
 
   async dismissLoadingScreen() {
-    console.log("here");
     this.isLoading = false;
     while (await this.loadingController.getTop() !== undefined) {
       await this.loadingController.dismiss();
