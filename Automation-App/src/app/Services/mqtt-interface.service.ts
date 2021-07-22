@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, take, timeout } from 'rxjs/operators';
-import { resolve } from "url";
 
 declare const Paho: any;
 declare const document: any;
