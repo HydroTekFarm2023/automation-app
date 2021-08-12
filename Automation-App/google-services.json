@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "464480010563",
+    "project_id": "hydrotek-286213",
+    "storage_bucket": "hydrotek-286213.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464480010563:android:645e3a4d25ffd36585aff6",
+        "android_client_info": {
+          "package_name": "com.hydrotekfarm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "464480010563-rcif384uk0bqlc2pq0gnb73hpndj8hgd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwtcGAKP9bPiecnN83HERjRRQVVnGS23g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "464480010563-rcif384uk0bqlc2pq0gnb73hpndj8hgd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464480010563:android:4ef123ef4aee853685aff6",
+        "android_client_info": {
+          "package_name": "kansastek.hydrotek"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "464480010563-rcif384uk0bqlc2pq0gnb73hpndj8hgd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwtcGAKP9bPiecnN83HERjRRQVVnGS23g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "464480010563-rcif384uk0bqlc2pq0gnb73hpndj8hgd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,5 +3,8 @@
   "appName": "Hydrotek Farm",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "www"
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  }
 }
