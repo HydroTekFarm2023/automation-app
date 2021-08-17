@@ -104,7 +104,7 @@ export class VariableManagementService {
   } 
 
   public createClimateController(climateController: ClimateController): Observable<any> {
-    return this.http.post(this.dbURL + "/climmate-controller-settings/create", climateController)
+    return this.http.post(this.dbURL + "/climate-controller-settings/create", climateController)
       .pipe(map((resData: {_id: string}) => {
         console.log(resData);
         climateController._id = resData._id;

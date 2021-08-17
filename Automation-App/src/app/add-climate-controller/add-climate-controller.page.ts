@@ -1,6 +1,6 @@
+import { AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
 import { ClimateController } from '../models/climate-controller.model';
 import { PowerOutlet } from '../models/power-outlet.model';
@@ -13,7 +13,7 @@ import { VariableManagementService } from '../Services/variable-management.servi
   templateUrl: './add-climate-controller.page.html',
   styleUrls: ['./add-climate-controller.page.scss'],
 })
-export class AddClimateControllerPage implements OnInit {
+export class AddClimateControllerPage implements OnInit, AfterViewInit {
 
   @Input() topicId: string;
 
@@ -23,37 +23,20 @@ export class AddClimateControllerPage implements OnInit {
 
   powerOutlets: PowerOutlet[] = [];
 
-  plantName: string;
-
   climateController: ClimateController;
 
   climateControllerForm: FormGroup = new FormGroup({});
   settingsForm: FormGroup = new FormGroup({});
 
-  plantAlertOptions: any = {
-    header: "Plant Name"
-  }
-
   isLoading: boolean = false;
 
-  constructor(public variableManagementService: VariableManagementService, private fb: FormBuilder, private mqttService: MqttInterfaceService, private modalController: ModalController, private alertController: AlertController) { 
-    if(this.variableManagementService.plants.length == 0){
-      this.isLoading = true;
-      this.variableManagementService.getPlants().subscribe(() => {
-        this.isLoading = false;
-      });
-    } else {
-      this.isLoading = false;
-    }
+  constructor(public variableManagementService: VariableManagementService, private fb: FormBuilder, private mqttService: MqttInterfaceService, private modalController: ModalController, private alertController: AlertController, private changeDetectorRef: ChangeDetectorRef) { 
     this.climateControllerForm = this.fb.group({
-      'name': this.fb.control(null),
-     // 'plant_name': this.fb.control(null),
       'settings': this.settingsForm
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   onSubmit() {
     console.log(this.climateControllerForm.value);
@@ -70,7 +53,7 @@ export class AddClimateControllerPage implements OnInit {
     this.mqttService.publishMultipleMessages(messages).then((index) => {
       if(index == messages.length) {
         let climateController = {
-          name: this.climateControllerForm.get("name").value,
+          name: this.climateControllerForm.get(["general_settings", "name"]).value,
           topicID: this.topicId,
           type: "climate-controller",
           settings: this.settingsForm.value,
@@ -82,7 +65,7 @@ export class AddClimateControllerPage implements OnInit {
         this.variableManagementService.createClimateController(new ClimateController().deserialize(climateController)).subscribe(() => {
           this.dismiss();
         }, error => {
-          console.log(error);
+          console.warn(error);
           this.presentMongoPushError();
         });
 
@@ -91,28 +74,10 @@ export class AddClimateControllerPage implements OnInit {
         this.presentDevicePushError();
       }
     }).catch((error) => {
-      console.log(error);
+      console.warn(error);
       this.presentDevicePushError();
     });
   }
-
-  // addRecommendedSettings(value: plant){
-  //   var temp = { ...value.settings };
-  //   for(var key of Object.keys(temp)){
-  //     temp[key] = {
-  //       "monitoring_only": false,
-  //       "alarm_min":  temp[key].alarm_min,
-  //       "alarm_max": temp[key].alarm_max,
-  //       "control": {
-  //         "target_value": temp[key].target_value,
-  //         "day_and_night": temp[key].day_and_night,
-  //         "day_target_value": temp[key].day_target_value,
-  //         "night_target_value": temp[key].night_target_value
-  //       }
-  //     }
-  //   }
-  //   this.settingsForm.patchValue(temp);
-  // }
 
   onAddPowerOutlet(newPowerOutlet: PowerOutlet) {
     this.powerOutlets.push(newPowerOutlet);
@@ -121,6 +86,10 @@ export class AddClimateControllerPage implements OnInit {
   // Close modal and return the index of the new device
   dismiss(){
     this.modalController.dismiss(this.variableManagementService.climateControllerSettings.value.length - 1);
+  }
+
+  ngAfterViewInit() {
+    this.changeDetectorRef.detectChanges();
   }
 
   async presentDevicePushError() {

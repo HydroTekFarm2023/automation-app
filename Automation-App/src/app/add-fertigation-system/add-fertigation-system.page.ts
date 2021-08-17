@@ -40,8 +40,7 @@ export class AddFertigationSystemPage implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   onSubmit() {
     console.log(this.fertigationSystemForm.value);
