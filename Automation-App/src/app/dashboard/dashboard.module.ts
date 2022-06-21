@@ -8,6 +8,7 @@ import { DashboardPageRoutingModule } from './dashboard-routing.module';
 
 import { DashboardPage } from './dashboard.page';
 import { ComponentsModule } from '../components/components.module';
+import { NotificationsPageModule } from './notifications/notifications.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { ComponentsModule } from '../components/components.module';
     FormsModule,
     IonicModule,
     ComponentsModule,
-    DashboardPageRoutingModule
+    DashboardPageRoutingModule,
+    NotificationsPageModule
   ],
   declarations: [DashboardPage]
 })

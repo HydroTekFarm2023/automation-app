@@ -9,6 +9,11 @@ const routes: Routes = [
     component: DashboardPage,
     children:[
  //Routing for tabs  
+
+ {
+  path: 'notifications',
+  loadChildren: () => import('./notifications/notifications.module').then( m => m.NotificationsPageModule)
+},
   {
     path: 'monitoring',
     loadChildren: () => import('./monitoring/monitoring.module').then( m => m.MonitoringPageModule)

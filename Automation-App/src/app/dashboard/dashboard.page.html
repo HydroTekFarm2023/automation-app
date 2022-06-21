@@ -25,6 +25,10 @@
       <ion-tab-button (click)="navigateToTab('cameras')">
         <ion-icon name="camera-outline"></ion-icon> Cameras
       </ion-tab-button>
+      <ion-tab-button (click)="navigateToTab('notifications')">
+        <ion-icon name="notifications-outline"></ion-icon> Notifications
+        <ion-badge  id='badge' color ='danger'>{{this.unOpened}}</ion-badge>
+      </ion-tab-button>
     </ion-tab-bar> 
     <div slot="top">
       <connection-status [mqttStatus]="mqttService.mqttStatus.value"></connection-status>

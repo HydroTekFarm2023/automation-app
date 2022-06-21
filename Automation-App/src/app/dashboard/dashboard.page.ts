@@ -9,6 +9,9 @@ import { MqttInterfaceService } from '../Services/mqtt-interface.service';
 })
 export class DashboardPage implements OnInit {
   title: String;
+  unOpened: number;
+  correct = true;
+  
   constructor(private router: Router, public mqttService: MqttInterfaceService) { }
 
   ngOnInit() { //initial name
@@ -23,8 +26,14 @@ export class DashboardPage implements OnInit {
     this.router.navigate(['/dashboard/'+tabName], { queryParamsHandling: "preserve" });
     this.title = tabName[0].toUpperCase() + tabName.substr(1); // capitalize this
   }
-}
 
+
+addItem(newItem: number) {
+  this.unOpened = newItem;
+  console.log(newItem);
+  
+}
+}
    
 
   

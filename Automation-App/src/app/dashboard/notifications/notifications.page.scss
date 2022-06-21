@@ -1,0 +1,56 @@
+h2 {
+    color: white;
+    padding-left: 10px;
+    margin-top: 10px;
+    padding-top: 0px;
+    display: inline-block;
+}
+
+ion-toolbar{
+    --background: transparent;
+    padding-top: 8px;
+}
+
+ion-item{
+    --background: transparent;
+}
+
+ion-select{
+    color: white;
+}
+
+.spinner {
+    padding-top: 20px;
+}
+
+h6 {
+    color: white;
+    padding-left: 10px;
+    margin-top: 10px;
+    padding-top: 0px;
+    display: inline-block;
+}
+
+.options{
+
+    position: absolute;
+    right: 28px; 
+
+}
+
+.image{
+    position: absolute;
+    left: 14px;
+}
+
+ion-item {
+    --min-height: 85px;
+}
+
+.notification-text{
+    margin: 0px 10px;
+    
+}
+
+
+
