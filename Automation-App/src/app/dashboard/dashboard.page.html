@@ -7,8 +7,9 @@
   </ion-toolbar> 
 </ion-header>
 <!--Navigation from one tab to other tab-->
-<ion-content padding>
+<ion-content *ngIf="loaded" padding>
   <ion-tabs>
+ 
     <ion-tab-bar color="primary" slot="top"> 
       <!--<ion-tab-button tab="warnings">
         <ion-label class="tab-label">Warnings</ion-label>
@@ -24,6 +25,10 @@
       </ion-tab-button>
       <ion-tab-button (click)="navigateToTab('cameras')">
         <ion-icon name="camera-outline"></ion-icon> Cameras
+      </ion-tab-button>
+      <ion-tab-button (click)="navigateToTab('notifications')">
+        <ion-icon name="notifications-outline"></ion-icon> Notifications
+        <ion-badge *ngIf="!onNotification && !noNotifs"  color ='danger'>{{this.unOpened}}</ion-badge> 
       </ion-tab-button>
     </ion-tab-bar> 
     <div slot="top">

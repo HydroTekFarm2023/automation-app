@@ -1,0 +1,38 @@
+h2 {
+    color: white;
+    padding-left: 10px;
+    margin-top: 10px;
+    padding-top: 0px;
+    display: inline-block;
+}
+
+ion-toolbar{
+    --background: transparent;
+    padding-top: 8px;
+}
+
+ion-item{
+    --background: transparent;
+}
+
+ion-select{
+    color: white;
+}
+
+.spinner {
+    padding-top: 20px;
+}
+
+.image{
+    
+    width: 75%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  
+}
+
+.clickedNotification-text{
+    margin: 10px 10px;
+    
+}

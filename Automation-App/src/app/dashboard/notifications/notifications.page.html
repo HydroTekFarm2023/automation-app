@@ -1,0 +1,49 @@
+
+<ion-content class="gradient_background">
+  <div class="content">
+   
+  </div>
+  <div *ngIf="noNotifs">
+    <ion-grid>
+      <ion-row>
+        <ion-col class="text_center" size="10" offset="1">
+          <h6>You have no notifications.</h6>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+    <div *ngIf="!noNotifs">
+      <ion-refresher slot="fixed" id="refresher" (ionRefresh)="refreshNotifications($event)">
+          <ion-refresher-content></ion-refresher-content>
+        </ion-refresher>
+     
+    
+    <ion-item-sliding *ngFor="let not of notifs" id="saveBtn" lines = "full" [ngStyle]="{'background-color': not.isRead? '#FFFFFF': '#d6ecff' }">
+      <div *ngIf= "!not.isDeleted" >
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click) = "deleteNotification(notifs, not)">Delete</ion-item-option>
+      </ion-item-options>    
+          <ion-item >
+          <img src="https://www.seekpng.com/png/detail/250-2503958_potted-plants-clipart-transparent-background-plant-logo-free.png" width="40" height="40">
+          <ion-label button (click) = "notificationClicked('clickedNotifications', notifs, not)">
+          
+            <h3 *ngIf= not.title.length<38  class="notification-text"  style="color:black;"> {{ not.title }}</h3>
+            <h3 *ngIf= 38<not.title.length class="notification-text" style="color:black;"> {{ not.title.substring(0,38) +"..." }}</h3>
+            <h4 class="notification-text" style="color:black;"> {{ convertDate(not.timestamp).toLocaleString()}}</h4>
+          </ion-label>
+          <ion-icon (click) = "openActionSheetController(notifs, not)" class="options" name="ellipsis-horizontal" ></ion-icon>
+          </ion-item>
+        </div>
+        </ion-item-sliding>
+        <ion-infinite-scroll threshold="100px" (ionInfinite)="loadNotifications($event)" [disabled]="numTimesLeft <= 0">  
+          <ion-infinite-scroll-content  
+            loadingSpinner="bubbles"  
+            loadingText="Loading notifications...">  
+          </ion-infinite-scroll-content>  
+        </ion-infinite-scroll> 
+      </div>
+    
+      
+</ion-content>
+
