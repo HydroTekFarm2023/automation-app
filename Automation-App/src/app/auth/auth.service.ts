@@ -54,6 +54,11 @@ export class AuthService {
     {email: email, password: password, confirmpassword: confirmpassword, returnSecureToken: true }).pipe(tap(this.setUserData.bind(this)));
   }
 
+  delete(email: string, IDToken){
+    return this.http.post<AuthResponseData>(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${environment.firebaseConfig.apiKey}`,
+    {email: email, IDToken: IDToken, returnSecureToken: true }).pipe(tap(this.setUserData.bind(this)));
+  }
+
   login(email: string, password: string) { 
     return this.http.post<AuthResponseData>(
       `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseConfig.apiKey}`,

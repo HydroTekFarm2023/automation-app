@@ -13,6 +13,8 @@ import { FertigationSystem } from "../models/fertigation-system.model";
 import { ClimateController } from "../models/climate-controller.model";
 import { IonicStorageService } from "./ionic-storage.service";
 import { Plant } from "../models/plant";
+import { Notification } from "../models/notification.model";
+
 
 @Injectable({
   providedIn: "root",
@@ -56,6 +58,10 @@ export class VariableManagementService {
   public noDevices: boolean = true;
 
   public plants: Plant[] = [];
+  public notifications: Notification[] = [];
+  public notificationClicked: Notification;
+  public notificationsUpdate: Notification[] = [];
+  
 
   public analyticsDataArray;
 
@@ -311,6 +317,52 @@ export class VariableManagementService {
       });
       return of(this.plants);
     }));
+  }
+
+  public getNotifications(amount: number){
+
+    let counter = 0;
+
+    return this.http.get<Notification[]>(this.dbURL + '/notifications/get/0/100').pipe(switchMap(notifications => {
+      this.notifications = [];
+      notifications.forEach((notification) => {
+        if( notification.isDeleted == false && counter < amount ){
+        this.notifications.push(new Notification().deserialize(notification));
+        counter++;
+        }  
+      });
+      
+      return of(this.notifications);
+    }));
+  }
+
+  //load up to ten unread notifications for badge alerting user how many notifcations are unread
+  public getNotificationsUnRead(amount: number){
+    let counter = 0;
+    
+    
+    return this.http.get<Notification[]>(this.dbURL + '/notifications/get/0/100').pipe(switchMap(notifications => {
+      this.notifications = [];
+      notifications.forEach((notification) => {
+        if(notification.isRead == false && notification.isDeleted == false && counter < 11){
+        this.notifications.push(new Notification().deserialize(notification));
+        counter++;
+        }
+        
+      });
+      
+      return of(this.notifications);
+    }));
+  }
+
+  public updateNotificationRead(notifi: Notification){
+    let httpReq = `/notifications/${notifi.notificationType}/read/${notifi._id}`;
+    return this.http.put(this.dbURL + httpReq, notifi );
+  }
+
+  public updateNotificationDeleted(notifi: Notification){
+    let httpReq = `/notifications/${notifi.notificationType}/delete/${notifi._id}`;
+    return this.http.put(this.dbURL + httpReq, notifi );
   }
 
   //---------------------------------------------Analytics page - historic data management------------------------------------------------

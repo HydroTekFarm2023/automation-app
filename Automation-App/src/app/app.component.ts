@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 
-import { MenuController, ModalController, Platform } from '@ionic/angular';
+import { MenuController, ModalController, Platform, AlertController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AuthService } from './auth/auth.service';
@@ -31,7 +31,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private modalController: ModalController,
     private authService: AuthService,
     private router: Router,
-    private mqttService: MqttInterfaceService
+    private mqttService: MqttInterfaceService,
+    private alertController: AlertController
   ) {
     this.initializeApp();
   }
@@ -44,13 +45,72 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       this.previousAuthState = isAuth;
     });
+    window.onbeforeunload = () => this.ngOnDestroy();
   }
 
   ngOnDestroy() {
+
+    //when app is closed, update read notificiations and deleted notifications
+    for(let x = 0; x < this.variableManagementService.notificationsUpdate.length; x++){
+      if(this.variableManagementService.notificationsUpdate[x].isDeleted == true){
+      this.variableManagementService.updateNotificationDeleted(this.variableManagementService.notificationsUpdate[x]).subscribe(() => {
+      }, (error) => {
+        console.log(error);
+      });
+    }
+
+    if(this.variableManagementService.notificationsUpdate[x].isRead == true){
+      this.variableManagementService.updateNotificationRead(this.variableManagementService.notificationsUpdate[x]).subscribe(() => {
+      }, (error) => {
+        console.log(error);
+      });
+    }
+    
+
+    }
+
+
+
     if(this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
   }
+
+  deleteAccount(){
+
+
+  }
+
+
+  deleteAccountPopUp(){
+
+    this.alertController.create({
+      subHeader: 'Are you sure you want to delete your account?',
+      message: 'Doing so is irreversable.',
+       buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            this.deleteAccount();
+          },
+        },
+        {
+          text: 'No',
+          handler: () => {
+          
+          },
+        },
+      ]
+    }).then(res => {
+
+      res.present();
+
+    });
+
+  }
+
+
+
 
   newDevice() {
     this.menuController.close();

@@ -17,6 +17,13 @@
       </ion-item>
       <ion-list>
         <ion-item lines="none">
+          <ion-title class="column-title">User Settings</ion-title>
+        </ion-item>
+        <ion-item lines="full" (click) = deleteAccountPopUp()>
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          <ion-label>Delete Account</ion-label>
+        </ion-item>
+        <ion-item lines="none">
           <ion-title class="column-title">Fertigation Systems</ion-title>
         </ion-item>
         <ion-menu-toggle *ngFor="let device of (variableManagementService.fertigationSystemSettings | async); let i = index">
