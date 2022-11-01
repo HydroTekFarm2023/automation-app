@@ -1,0 +1,105 @@
+
+<ion-content  *ngIf="darkMode" color="dark" class="gradient_background">
+ 
+  <ion-grid>
+    <ion-row size="12">
+     <ion-col>
+      <ion-card onclick="document.location='https://hydrotekfarm.com/cloud-terms-of-service/'" color="success">
+              <ion-icon name="document-outline"></ion-icon>
+             <ion-card-subtitle class='ion-text-center'> User Agreement </ion-card-subtitle>
+         </ion-card>
+     </ion-col>
+     <ion-col>
+      <ion-card button (click) = "deleteAccountPopUp()" color="tertiary">
+        <ion-icon name="trash-outline"></ion-icon>
+        <ion-card-subtitle class='ion-text-center'> Delete Account </ion-card-subtitle>
+         </ion-card>
+     </ion-col>
+    </ion-row>
+    <div>
+    <ion-row size="12">
+     <ion-col>
+      <ion-card color="medium" button (click) = "changePassword()">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+       <ion-card-subtitle class='ion-text-center'> Change Password </ion-card-subtitle>
+   </ion-card>
+</ion-col>
+<ion-col>
+<ion-card  onclick="document.location='https://hydrotekfarm.com/contact-us/'" color="secondary">
+  <ion-icon name="help-outline"></ion-icon>
+  <ion-card-subtitle class='ion-text-center'> Help </ion-card-subtitle>
+   </ion-card>
+     </ion-col>
+    </ion-row>
+  </div>
+  <ion-row size="12">
+    <ion-col>
+     <ion-card onclick="document.location='https://hydrotekfarm.com/privacy-policy/'" color="success">
+             <ion-icon name="document-outline"></ion-icon>
+            <ion-card-subtitle class='ion-text-center'> Privacy Policy </ion-card-subtitle>
+        </ion-card>
+    </ion-col>
+    <ion-col>
+     <ion-card button (click) = "changeDarkMode()" color="tertiary">
+       <ion-icon name="moon-outline"></ion-icon>
+       <ion-card-subtitle class='ion-text-center'> Toggle Dark Mode </ion-card-subtitle>
+        </ion-card>
+    </ion-col>
+   </ion-row>
+   </ion-grid>
+
+</ion-content>
+
+
+
+<ion-content  *ngIf="!darkMode" class="gradient_background">
+ 
+  <ion-grid>
+    <ion-row size="12">
+     <ion-col>
+      <ion-card onclick="document.location='https://hydrotekfarm.com/cloud-terms-of-service/'" color="success">
+              <ion-icon name="document-outline"></ion-icon>
+             <ion-card-subtitle class='ion-text-center'> User Agreement </ion-card-subtitle>
+         </ion-card>
+     </ion-col>
+     <ion-col>
+      <ion-card button (click) = "deleteAccountPopUp()" color="tertiary">
+        <ion-icon name="trash-outline"></ion-icon>
+        <ion-card-subtitle class='ion-text-center'> Delete Account </ion-card-subtitle>
+         </ion-card>
+     </ion-col>
+    </ion-row>
+    <div>
+    <ion-row size="12">
+     <ion-col>
+      <ion-card color="medium" button (click) = "changePassword()">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+       <ion-card-subtitle class='ion-text-center'> Change Password </ion-card-subtitle>
+   </ion-card>
+</ion-col>
+<ion-col>
+<ion-card  onclick="document.location='https://hydrotekfarm.com/contact-us/'" color="secondary">
+  <ion-icon name="help-outline"></ion-icon>
+  <ion-card-subtitle class='ion-text-center'> Help </ion-card-subtitle>
+   </ion-card>
+     </ion-col>
+    </ion-row>
+  </div>
+  <ion-row size="12">
+    <ion-col>
+     <ion-card onclick="document.location='https://hydrotekfarm.com/privacy-policy/'" color="success">
+             <ion-icon name="document-outline"></ion-icon>
+            <ion-card-subtitle class='ion-text-center'> Privacy Policy </ion-card-subtitle>
+        </ion-card>
+    </ion-col>
+    <ion-col>
+     <ion-card button (click) = "changeDarkMode()" color="tertiary">
+       <ion-icon name="moon-outline"></ion-icon>
+       <ion-card-subtitle class='ion-text-center'> Toggle Dark Mode </ion-card-subtitle>
+        </ion-card>
+    </ion-col>
+   </ion-row>
+   </ion-grid>
+
+</ion-content>
+

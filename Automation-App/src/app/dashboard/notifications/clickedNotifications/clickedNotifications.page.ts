@@ -11,6 +11,7 @@ export class clickedNotificationsPage implements OnInit {
 
 isClicked: boolean = true;
 notification;
+darkMode: boolean;
 
   constructor(private router: Router, public variableManagementService: VariableManagementService) {
    
@@ -18,6 +19,7 @@ notification;
  
   ngOnInit() {
     this.notification  = JSON.parse(localStorage.getItem('loggedInfo'));
+    this.darkMode = JSON.parse(localStorage.getItem('darkMode'));
   }
 
 //navigate back to notifications menu after back-arrow button is clicked

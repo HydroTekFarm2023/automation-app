@@ -12,6 +12,8 @@ import { ClimateController } from 'src/app/models/climate-controller.model';
 import { PowerOutlet } from 'src/app/models/power-outlet.model';
 import { deviceSettingsTopic, deviceStatusTopic } from 'src/app/Services/topicKeys';
 import { AlertLoadingService } from 'src/app/Services/alert-loading.service';
+import { UserPage } from '../user/user.page';
+import { User } from 'src/app/auth/user.model';
 
 @Component({
   selector: 'app-control',
@@ -31,6 +33,7 @@ export class ControlPage implements OnInit {
   noDevices: boolean;
   currentDeviceType: string;
   currentDeviceIndex: number;
+  darkMode: boolean;
 
   settingsForm: FormGroup = new FormGroup({});
   growLightArray = [];
@@ -48,13 +51,15 @@ export class ControlPage implements OnInit {
 
   formValue$: Observable<any>;
   isDirty: boolean = false;
+  
 
   constructor(public variableManagementService: VariableManagementService, 
     public mqttService: MqttInterfaceService, 
     private alertLoadingService: AlertLoadingService,
     private changeDetector: ChangeDetectorRef, 
     private route: ActivatedRoute,
-    private alertController: AlertController) {}
+    private alertController: AlertController,
+    private User: UserPage) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -85,6 +90,8 @@ export class ControlPage implements OnInit {
       let b = JSON.parse(JSON.stringify(this.currentDevice.settings));
       this.isDirty = (_.isEqual(a, b) == false);
     });
+    this.darkMode = JSON.parse(localStorage.getItem('darkMode'));
+
   }
 
   onAddPowerOutlet(newPowerOutlet: PowerOutlet) {
@@ -230,4 +237,3 @@ export class ControlPage implements OnInit {
     await alert.present();
   }
 }
-

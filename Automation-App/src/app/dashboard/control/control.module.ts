@@ -10,7 +10,7 @@ import { ControlPage } from './control.page';
 import { ComponentsModule } from 'src/app/components/components.module';
 import { AddClimateControllerPageModule } from 'src/app/add-climate-controller/add-climate-controller.module';
 import { AddFertigationSystemPageModule } from 'src/app/add-fertigation-system/add-fertigation-system.module';
-
+import { UserPage } from '../user/user.page';
 @NgModule({
   imports: [
     CommonModule,
@@ -22,6 +22,7 @@ import { AddFertigationSystemPageModule } from 'src/app/add-fertigation-system/a
     AddClimateControllerPageModule,
     AddFertigationSystemPageModule
   ],
-  declarations: [ControlPage]
+  declarations: [ControlPage],
+  providers: [UserPage]
 })
 export class ControlPageModule {}

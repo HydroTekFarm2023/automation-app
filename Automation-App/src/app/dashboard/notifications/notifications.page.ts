@@ -1,14 +1,12 @@
 import { Router } from '@angular/router';
 import { Component, OnInit, Output, EventEmitter, ViewChild  } from "@angular/core";
 import { Notification } from 'src/app/models/notification.model';
-import { IonInfiniteScroll } from '@ionic/angular';
 import { ActionSheetController } from '@ionic/angular';
 import { MqttInterfaceService } from 'src/app/Services/mqtt-interface.service';
 import { VariableManagementService } from 'src/app/Services/variable-management.service';
-import { Title } from '@angular/platform-browser';
 import { IonicStorageService } from 'src/app/Services/ionic-storage.service';
-import { Capacitor } from '@capacitor/core';
-import { NotificationThermal } from 'src/app/models/notification-thermal.model';
+import { Platform } from '@ionic/angular';
+
 
 
 
@@ -26,6 +24,9 @@ export class NotificationsPage implements OnInit {
   numTimesLeft = 5;  
   notifsLoaded = 8;
   readCounter = 0;
+  ios: boolean;
+  refreshed = true;
+  darkMode: boolean;
 
 
   
@@ -33,7 +34,7 @@ export class NotificationsPage implements OnInit {
 
   //see control page - ngOnInit about getting device settings and then getting topicID
   constructor(
-    public router: Router, public actionSheetCtrl: ActionSheetController, public variableManagementService: VariableManagementService, 
+    public platform: Platform, public router: Router, public actionSheetCtrl: ActionSheetController, public variableManagementService: VariableManagementService, 
     public mqttService: MqttInterfaceService, public ionicStorageService: IonicStorageService
 
   ) {}
@@ -52,6 +53,17 @@ export class NotificationsPage implements OnInit {
     });
     let loggedNotification = JSON.parse(localStorage.getItem('loggedInfo'));
    
+    this.platform.ready().then(() => {
+      if(this.platform.is('ios')){
+        this.ios = true;
+        console.log("pizza");
+      }
+      else{
+        this.ios = false;
+        console.log('anchovies');
+    }})
+
+    this.darkMode = JSON.parse(localStorage.getItem('darkMode'));
     
   }
 
@@ -100,7 +112,8 @@ export class NotificationsPage implements OnInit {
   
   //resubsribe to mongodb to refresh notifications
   refreshNotifications(event){
-    this.noNotifs = true;
+    this.refreshed = false;
+    let noNotifs2 = true;
     this.variableManagementService.getNotifications(8).subscribe(notificationsArray => {
       this.notifs = notificationsArray;
       this.updateDisplayedNotifications(this.notifs);
@@ -108,12 +121,14 @@ export class NotificationsPage implements OnInit {
         for(let z = 0; this.notifs.length; z++){
           if(this.notifs.length > 0){
           if(this.notifs[z].isDeleted == false){
-            this.noNotifs = false;
+            noNotifs2 = false;
             break;
           }
         }
        }
       }
+      this.noNotifs = noNotifs2;
+      console.log(this.noNotifs);
     });
     //if user has deleted all notifications, refresh loads more
     for(let x = 0; x < this.notifs.length; x++){
@@ -132,8 +147,9 @@ export class NotificationsPage implements OnInit {
     }
     setTimeout(() => {
       console.log('Async operation has ended');
+      this.refreshed = true;
       event.target.complete();
-    }, 8000);
+    }, 3000);
   }
 
   updateDisplayedNotifications(notifArray: Notification[]){

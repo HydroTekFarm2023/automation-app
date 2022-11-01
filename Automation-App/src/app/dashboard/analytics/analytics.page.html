@@ -1,4 +1,72 @@
-<ion-content class="gradient_background">
+<ion-content *ngIf="darkMode" color="dark" class="gradient_background">
+  <div color = "dark" class="content">
+  </div>
+  <ion-item no-lines id="timeframe">
+    <ion-label style="color: white">Graph Timeframe</ion-label>
+    <ion-select
+      (ionChange)="onSelectChange($event)"
+      value="{{defaultTimeframeValue}}"
+    >
+      <ion-select-option
+        *ngFor="let option of timeframeOptions"
+        value="{{option.value}}"
+        >{{option.label}}</ion-select-option
+      >
+    </ion-select>
+  </ion-item>
+  <div *ngIf="existingSensors && !isLoading">
+    <div *ngIf="deviceIsFertigation">
+      <sensor-graph
+        [historicalData]="historicalData"
+        sensorType="ph"
+        [timeframe]="currentTimeframeValue"
+        [sensor]="currentDevice.settings.ph"
+      ></sensor-graph>
+      <sensor-graph
+        [historicalData]="historicalData"
+        sensorType="ec"
+        [timeframe]="currentTimeframeValue"
+        [sensor]="currentDevice.settings.ec"
+      ></sensor-graph>
+      <sensor-graph
+        [historicalData]="historicalData"
+        sensorType="water_temp"
+        [timeframe]="currentTimeframeValue"
+        [sensor]="currentDevice.settings.water_temp"
+      ></sensor-graph>
+    </div>
+    <div *ngIf="!deviceIsFertigation">
+      <sensor-graph
+      [historicalData]="historicalData"
+      sensorType="air_temp"
+      [timeframe]="currentTimeframeValue"
+      [sensor]="currentDevice.settings.air_temp"
+    ></sensor-graph>
+    <sensor-graph
+      [historicalData]="historicalData"
+      sensorType="humidity"
+      [timeframe]="currentTimeframeValue"
+      [sensor]="currentDevice.settings.humidity"
+    ></sensor-graph>
+    <sensor-graph
+      [historicalData]="historicalData"
+      sensorType="co2"
+      [timeframe]="currentTimeframeValue"
+      [sensor]="currentDevice.settings.co2" 
+    ></sensor-graph>
+    </div>
+  </div>
+  <p *ngIf="!existingSensors && !isLoading" class="text_center" style="color: white">
+    No historical data found in this timeframe!
+  </p>
+  <div *ngIf="isLoading" class="text_center spinner">
+    <ion-spinner color="secondary"></ion-spinner>
+    <p style="color: white;">Loading historical data graphs...</p>
+  </div>
+</ion-content>
+
+
+<ion-content *ngIf="!darkMode" class="gradient_background">
   <div class="content">
   </div>
   <ion-item no-lines id="timeframe">

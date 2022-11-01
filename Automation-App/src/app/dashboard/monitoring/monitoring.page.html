@@ -1,4 +1,52 @@
-<ion-content class="gradient_background">
+<ion-content *ngIf="darkMode" color="dark" class="gradient_background">
+  <div class="content">
+ 
+    <div *ngIf="!noDevices">
+      <h2 class="h2_title">{{ this.currentDevice.name }}</h2>
+      <div class="timestamp-div">
+        <h6>Last Updated: {{ timestamp }}</h6>
+      </div>
+      <span *ngFor="let sensorSettings of currentDeviceSettings">
+        <sensor-display [sensor]="sensorSettings" [allLiveData]="liveData"></sensor-display>
+      </span>
+
+      <div class="margin-top">
+         <h2 class="h2_title">Power Outlets</h2>
+      </div>
+      <ion-card>
+        <ion-card-content>
+          <ion-list *ngIf="currentDevice.power_outlets.length > 0">
+            <div *ngFor="let powerOutlet of currentDevice.power_outlets">
+              <power-outlet [data]="powerOutlet" [topicID]="this.currentDevice.topicID"></power-outlet>
+            </div>
+          </ion-list>
+          <div *ngIf="currentDevice.power_outlets.length <= 0">
+            <h3 class="text_center gray-text">No Power Outlets in this Device</h3>
+            <h3 class="text_center gray-text">Setup Power Outlet in Control Page</h3>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+   
+    <div *ngIf="noDevices" class="center">
+      <ion-grid>
+        <ion-row>
+          <ion-col  class="text_center" size="10" offset="1">
+            <h6>You have no Hydrotek Devices</h6>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col  class="text_center" size="10" offset="1">
+            <h6>Click the Create Device Button in the side menu to create a Hydrotek Device</h6>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+  </div>
+</ion-content>
+
+<ion-content *ngIf="!darkMode" class="gradient_background">
   <div class="content">
  
     <div *ngIf="!noDevices">

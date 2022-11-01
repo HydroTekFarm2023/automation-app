@@ -4,6 +4,7 @@ import { VariableManagementService } from "./../../Services/variable-management.
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Devices, FertigationSystemString} from "./../../Services/variable-management.service";
+import { UserPage } from "../user/user.page";
 @Component({
   selector: "app-analytics",
   templateUrl: "./analytics.page.html",
@@ -14,6 +15,7 @@ export class AnalyticsPage implements OnInit {
   currentDevice: Devices;
   prevDeviceIndex: number;
   historicalData: analytics_data;
+  darkMode: boolean;
 
   existingSensors: string[]; //will contain list of sensor names that exist in the fetched data
 
@@ -42,10 +44,11 @@ export class AnalyticsPage implements OnInit {
   //see control page - ngOnInit about getting device settings and then getting topicID
   constructor(
     private varman: VariableManagementService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute, private User: UserPage
   ) {}
 
   ngOnInit() {
+    console.log(this.darkMode);
     this.existingSensors = [];
     //use queryParams to get topicID, then use that and a selected timespan to get data from varman (which gets it from the backend)
     this.route.queryParams.subscribe((params) => {
@@ -88,6 +91,7 @@ export class AnalyticsPage implements OnInit {
     //last timestamp = right now. First timestamp = last timestamp minus duration
     this.fetchHistoricData(this.currentTimeframeValue);
     });
+    this.darkMode = JSON.parse(localStorage.getItem('darkMode'));
   }
 
   //uses fetched data to decide which sensor-graph components need to be displayed and calculate their data

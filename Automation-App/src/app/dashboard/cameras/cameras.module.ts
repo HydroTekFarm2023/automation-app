@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { CamerasPageRoutingModule } from './cameras-routing.module';
 
 import { CamerasPage } from './cameras.page';
+import { UserPage } from '../user/user.page';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { CamerasPage } from './cameras.page';
     CamerasPageRoutingModule,
     ComponentsModule
   ],
-  declarations: [CamerasPage]
+  declarations: [CamerasPage],
+  providers: [UserPage]
 })
 export class CamerasPageModule {}

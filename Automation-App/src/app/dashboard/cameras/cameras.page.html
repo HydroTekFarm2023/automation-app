@@ -1,4 +1,31 @@
-<ion-content class="gradient_background">
+<ion-content *ngIf="darkMode" color="dark" class="gradient_background">
+  <div class="content">
+    <ion-toolbar>
+      <h2>Cameras</h2>
+      <ion-buttons slot="end">
+        <ion-button color="primary" fill="clear" (click)="onCreateCamera()">
+          <ion-icon slot="end" name="add-outline" class="add-icon"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </div>
+  <div *ngIf="noCameras">
+    <ion-grid>
+      <ion-row>
+        <ion-col class="text_center" size="10" offset="1">
+          <h6>You have no Hydrotek Cameras</h6>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+  <div *ngIf="!noCameras">
+    <div *ngFor="let cam of cameras">
+      <camera [cameraData]="cam"></camera>
+    </div>
+  </div>
+</ion-content>
+
+<ion-content *ngIf="!darkMode" color ="primary" class="gradient_background">
   <div class="content">
     <ion-toolbar>
       <h2>Cameras</h2>

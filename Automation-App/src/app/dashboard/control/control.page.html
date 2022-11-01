@@ -1,4 +1,54 @@
-<ion-content class="gradient_background">
+<ion-content *ngIf="darkMode" color="dark" class="gradient_background">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="dark" (click)="onSettingsFormSubmit()" [disabled]="!isDirty">
+      <ion-icon name="save-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <div class="content">
+
+    <div *ngIf="currentDevice != null">
+      <form [formGroup]="settingsForm">
+        <div>
+          <h2 class="h2_title inline-heading">{{ currentDevice.name }}</h2>
+          <!--<ion-button class="inline-button" (click)="onSettingsFormSubmit()" [disabled]="!isDirty">Save</ion-button>-->
+          <ion-button color = "dark" class="start-button" (click)="onBootButtonClick()">{{ currentDevice.device_started? stopDeviceString: startDeviceString }}</ion-button>
+        </div>
+
+        <div *ngIf="currentDeviceType == FertigationSystemString">  
+          <ph *ngIf="ph" [parentForm]="settingsForm"></ph>
+          <ec *ngIf="ec" [parentForm]="settingsForm"></ec>
+          <water-temp *ngIf="waterTemperature" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></water-temp>
+          <grow-lights *ngIf="growLights" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)" [powerOutletArray]="growLightArray"></grow-lights>
+          <irrigation *ngIf="irrigation" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></irrigation>
+          <reservoir *ngIf="reservoir" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></reservoir>
+        </div>
+        <div *ngIf="currentDeviceType == ClimateControllerString">
+          <air-temperature *ngIf="airTemperature" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></air-temperature>
+          <humidity *ngIf="humidity" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></humidity>
+          <co2 *ngIf="co2" [parentForm]="settingsForm" [powerOutlets]="currentDevice.power_outlets" [topicID]="this.currentDevice.topicID" (newPowerOutletEvent)="onAddPowerOutlet($event)"></co2>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="noDevices" class="center">
+      <ion-grid>
+        <ion-row>
+          <ion-col  class="text_center" size="10" offset="1">
+            <h6>You have no Hydrotek Devices</h6>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col  class="text_center" size="10" offset="1">
+            <h6>Click the Create Device Button in the side menu to create a Hydrotek Device</h6>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+  </div>
+</ion-content>
+
+<ion-content *ngIf="!darkMode" class="gradient_background">
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="onSettingsFormSubmit()" [disabled]="!isDirty">
       <ion-icon name="save-outline"></ion-icon>
