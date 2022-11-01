@@ -28,6 +28,7 @@ export class SensorDisplayComponent implements OnInit {
 }
 
 export interface SensorMonitoringWidget {
+  //test_toggle: boolean;
   name: string,
   display_name: string;
   sensorUnit: string;

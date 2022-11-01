@@ -1,0 +1,83 @@
+<ion-content class="gradient_background">
+  <div class="content">
+      <div class="margin-top">
+        <ion-card>
+          <ion-card-content>
+            <ion-item>
+              <ion-icon name="construct-outline"></ion-icon>
+              <ion-text style="margin-left: 20px;"> Testing Mode </ion-text>
+              <ion-text class="gray-text" slot="end" *ngIf="testState == false">Off</ion-text>
+              <ion-text color="success" slot="end" *ngIf="testState == true">On</ion-text>
+              <ion-toggle slot="end" (click)="onToggleTesting()"></ion-toggle>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </div>
+      <div *ngIf="!testState" class="testOff">
+        Toggle testing mode on in order to test your devices
+      </div>
+      <div class="margin-top" *ngIf="testState">
+         <h2 class="h2_title">Power Outlets</h2>
+      </div>
+      <ion-card *ngIf="testState">
+        <ion-card-content>
+          <ion-list *ngIf="currentDevice.power_outlets.length > 0">
+            <div *ngFor="let powerOutlet of currentDevice.power_outlets">
+              <po-testing [data]="powerOutlet" [topicID]="this.currentDevice.topicID"></po-testing>
+            </div>
+          </ion-list>
+          <div *ngIf="currentDevice.power_outlets.length <= 0">
+            <h3 class="text_center gray-text">No Power Outlets in this Device</h3>
+            <h3 class="text_center gray-text">Setup Power Outlet in Control Page</h3>
+          </div>
+        </ion-card-content>
+      </ion-card>
+  </div>
+  <div class="content" *ngIf="testState">
+    <div class="margin-top">
+       <h2 class="h2_title">Motors</h2>
+    </div>
+    <ion-card>
+      <ion-card-content>
+        <ion-list *ngIf="pumps.length > 0">
+          <div *ngFor="let pump of pumps">
+            <pump-testing [data]="pump" [topicID]="this.currentDevice.topicID"></pump-testing>
+          </div>
+        </ion-list>
+        <div *ngIf="pumps.length <= 0">
+          <h3 class="text_center gray-text">No Pumps in this Device</h3>
+          <h3 class="text_center gray-text">Setup Pumps in Control Page</h3>
+        </div>
+      </ion-card-content>
+    </ion-card>
+</div>
+<div class="content" *ngIf="testState">
+  <div class="margin-top">
+     <h2 class="h2_title">Float Switches</h2>
+  </div>
+  <ion-card>
+    <ion-card-content>
+      <ion-list *ngIf="floatSwitches.length > 0">
+        <div *ngFor="let floatSwitch of floatSwitches">
+          <float-switch [data]="floatSwitch" [topicID]="this.currentDevice.topicID"></float-switch>
+        </div>
+      </ion-list>
+      <div *ngIf="floatSwitches.length <= 0">
+        <h3 class="text_center gray-text">No Pumps in this Device</h3>
+        <h3 class="text_center gray-text">Setup Pumps in Control Page</h3>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</div>
+  <div class="content" *ngIf="testState">
+    <div class="margin-top">
+      <h2 class="h2_title">Sensors</h2>
+   </div>
+    <span *ngFor="let sensorSettings of currentDeviceSettings">
+      <sensor-testing [sensor]="sensorSettings" [allLiveData]="liveData" [topicID]="this.currentDevice.topicID"></sensor-testing>
+    </span>
+    </div>
+</ion-content>
+
+
+

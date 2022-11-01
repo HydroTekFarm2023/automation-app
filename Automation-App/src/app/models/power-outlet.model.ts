@@ -6,6 +6,8 @@ export class PowerOutlet implements Deserializable {
     name: string;
     logo: string;
     currentValue: boolean = false;
+    currentState: number;
+    //
 
     constructor(id?: string, name?: string, logo?: string, currentValue?: boolean) {
         if(id) this.id = id;

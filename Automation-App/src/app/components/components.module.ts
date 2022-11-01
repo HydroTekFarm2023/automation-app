@@ -17,11 +17,15 @@ import { IrrigationComponent } from './irrigation/irrigation.component';
 import { PowerOutletComponent } from './power-outlet/power-outlet.component';
 import { Co2Component } from './co2/co2.component';
 import { ConnectionStatusComponent } from './connection-status/connection-status.component';
+import { SensorTestingComponent } from './sensor-testing/sensor-testing.component';
+import { PumpTestingComponent } from './pump-testing/pump-testing.component';
+import { PoTestingComponent } from './po-testing/po-testing.component';
+import { FloatSwitchComponent } from './float-switch/float-switch.component';
 
 @NgModule({
-    declarations: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent, ReservoirComponent, GrowLightsComponent, GeneralSettingsComponent, IrrigationComponent, PowerOutletComponent, CameraComponent, Co2Component, ConnectionStatusComponent, SensorGraphComponent],
+    declarations: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent, ReservoirComponent, GrowLightsComponent, GeneralSettingsComponent, IrrigationComponent, PowerOutletComponent, CameraComponent, Co2Component, ConnectionStatusComponent, SensorGraphComponent,SensorTestingComponent, PumpTestingComponent, FloatSwitchComponent, PoTestingComponent],
     imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
-    exports: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent, ReservoirComponent, GrowLightsComponent, GeneralSettingsComponent, IrrigationComponent, PowerOutletComponent, CameraComponent, Co2Component, ConnectionStatusComponent, SensorGraphComponent]
+    exports: [SensorDisplayComponent, PhComponent, EcComponent, AirTemperatureComponent, HumidityComponent, WaterTempComponent, ReservoirComponent, GrowLightsComponent, GeneralSettingsComponent, IrrigationComponent, PowerOutletComponent, CameraComponent, Co2Component, ConnectionStatusComponent, SensorGraphComponent, SensorTestingComponent, PumpTestingComponent, PoTestingComponent, FloatSwitchComponent]
 })
 
 export class ComponentsModule {}

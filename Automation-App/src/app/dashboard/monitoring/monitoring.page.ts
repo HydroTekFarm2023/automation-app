@@ -104,7 +104,6 @@ export class MonitoringPage implements OnInit {
     });
 
     this.mqttService.deviceLiveData.subscribe(resData => {
-      console.log("hereeeee");
       // Try parsing system MQTT string as JSON Data
       try {
         var jsonSensorData = JSON.parse(resData);

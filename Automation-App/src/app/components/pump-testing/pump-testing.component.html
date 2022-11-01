@@ -1,0 +1,8 @@
+<ion-item>
+  <ion-icon [name]="data.logo"></ion-icon>
+  <ion-text style="margin-left: 20px;">{{ data.name }}</ion-text>
+  <ion-text *ngIf="data.currentState == 0" slot="end" class="gray"> Off </ion-text>
+  <ion-text *ngIf="data.currentState == 1" slot="end" color="success"> On </ion-text>
+  <ion-text *ngIf="data.currentState == -1" slot="end" color="danger"> Err </ion-text>
+  <ion-toggle slot="end" [(ngModel)]="data.currentValue" (click)="onToggleClick()"></ion-toggle>
+</ion-item>

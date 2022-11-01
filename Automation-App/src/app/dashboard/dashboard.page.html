@@ -7,7 +7,8 @@
   </ion-toolbar> 
 </ion-header>
 <!--Navigation from one tab to other tab-->
-<ion-content *ngIf="loaded" padding>
+<!-- *ngIf="loaded" -->
+<ion-content padding>
   <ion-tabs>
  
     <ion-tab-bar color="primary" slot="top"> 
@@ -29,6 +30,9 @@
       <ion-tab-button (click)="navigateToTab('notifications')">
         <ion-icon name="notifications-outline"></ion-icon> Notifications
         <ion-badge *ngIf="!onNotification && !noNotifs"  color ='danger'>{{this.unOpened}}</ion-badge> 
+      </ion-tab-button>
+      <ion-tab-button (click)="navigateToTab('testing')">
+        <ion-icon name="bug-outline"></ion-icon> Testing
       </ion-tab-button>
     </ion-tab-bar> 
     <div slot="top">

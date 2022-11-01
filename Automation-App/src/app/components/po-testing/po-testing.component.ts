@@ -3,24 +3,25 @@ import { AlertController } from '@ionic/angular';
 import * as internal from 'assert';
 import { PowerOutlet } from 'src/app/models/power-outlet.model';
 import { MqttInterfaceService } from 'src/app/Services/mqtt-interface.service';
-import { manualRfControlTopic } from 'src/app/Services/topicKeys';
+import { manualRfControlTopic, outletTestReqTopic } from 'src/app/Services/topicKeys';
+
 
 @Component({
-  selector: 'power-outlet',
-  templateUrl: './power-outlet.component.html',
-  styleUrls: ['./power-outlet.component.scss'],
+  selector: 'po-testing',
+  templateUrl: './po-testing.component.html',
+  styleUrls: ['./po-testing.component.scss'],
 })
-export class PowerOutletComponent implements OnInit {
-
+export class PoTestingComponent implements OnInit {
   @Input() data: PowerOutlet;
   @Input() topicID: string;
-  stateToggle: number;
+  //stateToggle: number;
+  numState: number;
   //@Input() isTest: boolean;
 
   constructor(private mqttService: MqttInterfaceService, private alertController: AlertController) { }
 
   ngOnInit() {
-    this.stateToggle = 0;
+    //this.stateToggle = 0;
 
 
   }
@@ -28,25 +29,35 @@ export class PowerOutletComponent implements OnInit {
   onToggleClick() {
   
     //this.mqttService.subscribeToTopic();
+    if(this.data.currentValue == false){
+      this.numState = 1;
+    }
+    else{
+      this.numState = 0;
+    }
 
     let outletObj = {
-      [this.data.id]: !this.data.currentValue 
+      "choice":parseInt(this.data.id),
+      //"switch_status":!this.data.currentValue
+      "switch_status":this.numState,
+      //"currentState":this.data.currentState
+      //[this.data.id]: !this.data.currentValue 
     }
 
     let outletJsonString = JSON.stringify(outletObj);
     
-    this.mqttService.publishMessage(manualRfControlTopic + "/" + this.topicID, outletJsonString, 1, false).catch((error) => {
+    this.mqttService.publishMessage(outletTestReqTopic+"/" + this.topicID, outletJsonString, 1, false).catch((error) => {
       console.log(error);
       this.presentPowerOutletToggleError(this.data.currentValue, this.data.name);
       this.data.currentValue = !this.data.currentValue; 
     });
 
-    if (this.stateToggle == 0){
-      this.stateToggle = 1;
-    }
-    else{
-      this.stateToggle = 0;
-    }
+    // if (this.stateToggle == 0){
+    //   this.stateToggle = 1;
+    // }
+    // else{
+    //   this.stateToggle = 0;
+    // }
   }
 
   async presentPowerOutletToggleError(state: boolean, outletName: string) {

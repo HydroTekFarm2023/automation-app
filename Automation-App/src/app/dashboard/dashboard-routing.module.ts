@@ -39,12 +39,18 @@ const routes: Routes = [
     loadChildren: () => import('./analytics/analytics.module').then( m => m.AnalyticsPageModule)
   },
   {
+    path: 'testing',
+    loadChildren: () => import('./testing/testing.module').then( m => m.TestingPageModule)
+  },
+  {
     path: '',
     redirectTo: '/dashboard/monitoring',
     pathMatch: 'full'
   }
  ]
-},
+  }
+  
+
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

@@ -37,6 +37,10 @@ const routes: Routes = [
     path: 'add-camera',
     loadChildren: () => import('./add-camera/add-camera.module').then( m => m.AddCameraPageModule),
     canLoad: [AuthGuard]
+  },
+  {
+    path: 'testing',
+    loadChildren: () => import('./testing/testing.module').then( m => m.TestingPageModule)
   }
 
 ];

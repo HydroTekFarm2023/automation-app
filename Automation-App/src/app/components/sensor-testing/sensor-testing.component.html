@@ -1,0 +1,43 @@
+<ion-card class="dashboard-card">
+  <ion-card-content>
+    <ion-grid class="no_padding">
+      
+      <ion-row>
+        <ion-col class="no_padding" size="5">
+          <h3 class="header-title" lines="none">{{ sensor.display_name }}</h3>
+          <h3 class="header-unit" lines="none" *ngIf="sensor.sensorUnit"> ({{ sensor.sensorUnit }})</h3>
+          <ion-item *ngIf="sensor.test_toggle == true" lines="none">
+            <h1>{{ currentVal }}</h1>
+            <ion-icon class="check-icon" name="checkmark-circle"></ion-icon>
+          </ion-item>
+          <ion-item *ngIf="sensor.test_toggle == false" lines="none">
+            <h1>0</h1>
+            <ion-icon class="check-icon" name="checkmark-circle"></ion-icon>
+          </ion-item>
+        </ion-col>
+        <ion-col offset="3"  class="details no_padding">
+            <!-- <div *ngIf="!sensor.monit_only"> -->
+              <!-- <ion-label class="title">Current Status</ion-label> -->
+              <div class="value">
+                <ion-text *ngIf="sensor.test_status == 0" slot="end" class="gray"> Off </ion-text>
+                <ion-text *ngIf="sensor.test_status == 1" slot="end" color="success"> On </ion-text>
+                <ion-text *ngIf="sensor.test_status == -1" slot="end" color="danger"> Err </ion-text>
+                <!-- <ion-icon name="locate-sharp"></ion-icon>
+                <ion-label class="value">{{ sensor.tgt }} {{sensor.sensorUnit}}</ion-label> -->
+              </div>
+              
+            <!-- </div> -->
+            <!-- <ion-label class="title">On/Off</ion-label> -->
+            
+        </ion-col>
+        <ion-col>
+          <div>
+            <!-- <ion-icon name="alarm"></ion-icon> -->
+            <ion-toggle [(ngModel)]="sensor.test_toggle" slot="start" (click)="onToggleClick()"></ion-toggle>
+            <!-- <ion-label class="value">{{ sensor.alarm_min + ' - ' + sensor.alarm_max }}</ion-label> -->
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>
