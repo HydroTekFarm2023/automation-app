@@ -22,7 +22,9 @@
           </ion-item>
           <ion-item>
             <ion-label position="floating">Password</ion-label>
-            <ion-input type="password" formControlName="password"></ion-input>
+            <ion-input [type]="passwordType" formControlName="password"></ion-input>
+            <ion-icon *ngIf="!passwordShown" name="eye-outline" slot = "end" color="gray" style="padding-top: 16px;" (click)="togglePassword()"></ion-icon>
+            <ion-icon *ngIf="passwordShown" name="eye-off-outline" slot = "end" color="gray" style="padding-top: 16px;" (click)="togglePassword()"></ion-icon>
           </ion-item>
           <ion-item  *ngIf="formgroup.get('password').hasError('message') && !formgroup.controls.password.valid && formgroup.controls.password.touched" lines='none'>
            <!--If the password property is touched, is invalid or has custom errors, custom error messages are shown.-->

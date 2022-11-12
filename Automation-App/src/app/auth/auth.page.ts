@@ -17,6 +17,9 @@ export class AuthPage implements OnInit {
 
   formgroup: FormGroup;
   
+  passwordType: string = 'password';
+  passwordShown: boolean = false;
+
   isLoading = false; //set to false as a default.
   isLogin = true; //set to true as a default.
   //Parameters injected to trigger the necessary methods.
@@ -30,6 +33,17 @@ export class AuthPage implements OnInit {
    }
 
   ngOnInit() {}
+
+  togglePassword(){
+    if(!this.passwordShown){
+      this.passwordType = "text";
+      this.passwordShown = true;
+    }
+    else{
+      this.passwordType = "password";
+      this.passwordShown = false;
+    }
+  }
 
   onSubmit(){
     if(!this.formgroup.valid) {
